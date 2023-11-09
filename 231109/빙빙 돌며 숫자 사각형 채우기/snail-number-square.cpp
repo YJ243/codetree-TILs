@@ -23,8 +23,8 @@ int main() {
         x += dirs[cur_d][0];
         y += dirs[cur_d][1];
 
-        maze[x][y] = num;
-        num++;
+        maze[x][y] = i;
+
     }
     for(int i=0; i<n; i++){
         for(int j=0; j<m; j++){
