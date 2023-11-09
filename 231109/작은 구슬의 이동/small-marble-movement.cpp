@@ -3,7 +3,8 @@
 using namespace std;
 int maze[MAX_N][MAX_N];
 int n, t;
-int r, c, d;
+int r, c;
+char d;
 int cur_d;
 int dirs[4][2] = {{0,1},{-1,0},{1,0},{0,-1}}; // R,U,D,L
 
@@ -15,6 +16,7 @@ int main() {
     cin >> n >> t;
     cin >> r >> c >> d;
     r--;c--;
+
     if(d=='U'){
         cur_d=1;
     }
@@ -24,6 +26,7 @@ int main() {
         cur_d=2;
     else
         cur_d=3;
+
     while(t--){
         int nr=r+dirs[cur_d][0], nc=c+dirs[cur_d][1];
         if(InRange(nr,nc)){
@@ -31,6 +34,7 @@ int main() {
             c = nc;
         }
         else cur_d = 3-cur_d;
+
     }
     cout<<r+1 << ' ' <<c+1;
     return 0;
