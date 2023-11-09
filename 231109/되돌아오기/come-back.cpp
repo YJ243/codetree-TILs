@@ -6,7 +6,7 @@ int move_time;
 int dirs[4][2]={{0,1},{1,0},{0,-1},{-1,0}}; // 우,하,좌,상
 int main() {
     cin >> N;
-    int final_time=0;
+    int final_time=-1;
     for(int i=0; i<N; i++){
         char d;
         int l,cur_d;
@@ -27,6 +27,7 @@ int main() {
         }
         if(final_time > 0) break;
     }
+
     cout<<final_time;
     return 0;
 }
