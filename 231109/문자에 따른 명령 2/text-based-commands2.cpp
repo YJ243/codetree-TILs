@@ -9,13 +9,15 @@ int main() {
     string cmd;
     cin>>cmd;
     for(auto c : cmd){
+        
         if(c == 'L')
             cur_d = (cur_d+3)%4;
         else if(c == 'R')
             cur_d = (cur_d+1)%4;
-        else
+        else{
             x += dirs[cur_d][0];
             y += dirs[cur_d][1];
+        }
     }
     cout<< x << ' ' << y;
     return 0;
