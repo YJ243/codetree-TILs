@@ -5,7 +5,7 @@ int N, M;
 int dirs[4][2] = {{-1,0},{1,0},{0,-1},{0,1}}; // 위, 아래, 왼쪽, 오른쪽
 int maze[MAX_N][MAX_N];
 bool InRange(int x, int y){
-    return 0 <= x && x < N && 0 <= y && y <= N;
+    return 0 <= x && x < N && 0 <= y && y < N;
 }
 
 bool IsComfort(int x, int y){
@@ -20,12 +20,12 @@ bool IsComfort(int x, int y){
 }
 int main() {
     cin >> N >> M;
-    for(int i=0; i<M; i++){
-        int x, y;
-        cin >> x >> y;
-        x--; y--;
-        maze[x][y] = 1;
-        if(IsComfort(x,y)){
+    while(M--){
+        int r, c;
+        cin >> r >> c;
+        r--; c--;
+        maze[r][c] = 1;
+        if(IsComfort(r,c)){
             cout<< 1<<'\n';
         }
         else{
