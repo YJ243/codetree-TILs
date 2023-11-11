@@ -24,15 +24,16 @@ int do_laser(){
             cur_d = 3-cur_d;
         }
         else{
+            x += dirs[3-cur_d][0];
+            y += dirs[3-cur_d][1];
             if(cur_d % 2 == 0){
                 cur_d++;
             }
             else{
                 cur_d--;
             }
-            x += dirs[3-cur_d][0];
-            y += dirs[3-cur_d][1];
         }
+
         cnt++;
     }
 
@@ -66,6 +67,7 @@ int main() {
         y = 0;
         cur_d=3;
     }
+    
     cout<< do_laser();
     
     return 0;
