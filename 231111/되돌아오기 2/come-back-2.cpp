@@ -21,7 +21,7 @@ int main() {
             cur_d = (cur_d+1)%4;
         }
         else{
-            cur_d = (cur_d-1)%4;
+            cur_d = (cur_d+3)%4;
         }
         t++;
     }
