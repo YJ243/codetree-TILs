@@ -10,14 +10,16 @@ int main() {
     //'1'==49, '0'==48
     int max_val = 0;
     for(int i=0; i<a.size(); i++){
+        // 한 자리부터 바꿔보기
         if(a[i] == '0') a[i] = '1';
         else            a[i] = '0';
+
         int cur_val = 0;
         for(int i=a.size()-1; i>=0; i--){
             int num = 0;
             if(a[i] == '0') num = 0;
             else            num = 1;
-            cur_val += num * pow(2,3-i);
+            cur_val += num * pow(2,a.size()-i-1);
         }
         max_val = max(max_val, cur_val);
         
