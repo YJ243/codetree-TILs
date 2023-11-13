@@ -19,7 +19,7 @@ int main() {
                 int cur_sum = 0;
                 bool IsCarry = false;
                 int a = arr[i],b=arr[j],c=arr[k];
-                for(int l=1; l<=3; l++){
+                for(int l=1; l<=4; l++){
                     //1의자리 숫자부터 5번째 자리 숫자까지 확인해야하는
                     if(a%10+b%10+c%10 >= 10) IsCarry = true;
                     a = (a-a%10) / 10;
