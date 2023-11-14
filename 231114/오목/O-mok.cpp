@@ -39,7 +39,6 @@ int main() {
                 return 0;
             }
             if(a[i][j] == 1 && a[i+1][j] == 1 && a[i+2][j] == 1 && a[i+3][j] == 1 && a[i+4][j] == 1){
-                cout<<'b';
                 cout << 1 << '\n';
                 cout << i+3 << ' ' << j+1 << '\n';
                 return 0;
