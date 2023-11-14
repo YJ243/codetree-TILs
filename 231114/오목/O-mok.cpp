@@ -15,12 +15,13 @@ int main() {
     // 1. 가로 확인
     for(int i=0; i<MAX_N; i++){
         for(int j=0; j<=MAX_N-5; j++){
-            if(a[i][j]+a[i][j+1]+a[i][j+2]+a[i][j+3]+a[i][j+4] == 10){
+            if(a[i][j]== 2 && a[i][j+1] == 2 && a[i][j+2] == 2 && a[i][j+3] == 2 && a[i][j+4] == 2){
                 cout << 2 << '\n';
                 cout << i+1 << ' ' << j+3 << '\n';
                 return 0;
             }
-            if(a[i][j]+a[i][j+1]+a[i][j+2]+a[i][j+3]+a[i][j+4] == 5){
+            if(a[i][j]== 1 && a[i][j+1] == 1 && a[i][j+2] == 1 && a[i][j+3] == 1 && a[i][j+4] == 1){
+
                 cout << 1 << '\n';
                 cout << i+1 << ' ' << j+3 << '\n';
                 return 0;
@@ -32,14 +33,15 @@ int main() {
     // 2. 세로 확인
     for(int j=0; j<MAX_N; j++){
         for(int i=0; i<=MAX_N-5; i++){
-            if(a[i][j]+a[i+1][j]+a[i+2][j]+a[i+3][j]+a[i+4][j] == 10){
+            if(a[i][j] == 2 && a[i+1][j] == 2 && a[i+2][j] == 2 && a[i+3][j] == 2 && a[i+4][j] == 2){
                 cout << 2 << '\n';
-                cout << i+1 << ' ' << j+3 << '\n';
+                cout << i+3 << ' ' << j+1 << '\n';
                 return 0;
             }
-            if(a[i][j]+a[i+1][j]+a[i+2][j]+a[i+3][j]+a[i+4][j] == 5){
+            if(a[i][j] == 1 && a[i+1][j] == 1 && a[i+2][j] == 1 && a[i+3][j] == 1 && a[i+4][j] == 1){
+                cout<<'b';
                 cout << 1 << '\n';
-                cout << i+1 << ' ' << j+3 << '\n';
+                cout << i+3 << ' ' << j+1 << '\n';
                 return 0;
             }
         }
@@ -49,17 +51,17 @@ int main() {
     for(int i=0; i<MAX_N; i++){
         for(int j=0; j<MAX_N; j++){
             if(!InRange(i+4, j+4)) continue;
-            if(a[i][j]+a[i+1][j+1]+a[i+2][j+2]+a[i+3][j+3]+a[i+4][j+4] ==10)
+            if(a[i][j] == 2 &&  a[i+1][j+1] == 2 && a[i+2][j+2] == 2 && a[i+3][j+3] == 2 &&a[i+4][j+4] ==2)
             {
                 cout << 2 << '\n';
-                cout << i+1 << ' ' << j+3 << '\n';
+                cout << i+3 << ' ' << j+3 << '\n';
                 return 0;
             }
 
-            if(a[i][j]+a[i+1][j+1]+a[i+2][j+2]+a[i+3][j+3]+a[i+4][j+4] ==5)
+            if(a[i][j] == 1 &&  a[i+1][j+1] == 1 && a[i+2][j+2] == 1 && a[i+3][j+3] == 1 &&a[i+4][j+4] ==1)
             {
                 cout << 1 << '\n';
-                cout << i+1 << ' ' << j+3 << '\n';
+                cout << i+3 << ' ' << j+3 << '\n';
                 return 0;
             }
             
