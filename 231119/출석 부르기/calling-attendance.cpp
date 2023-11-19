@@ -9,7 +9,7 @@ int main() {
     else if(n == 2)
         cout << "Tom";
     else if(n == 3)
-        cout << "paul";
+        cout << "Paul";
     else cout << "Vacancy";
     return 0;
 }
