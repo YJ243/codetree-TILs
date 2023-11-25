@@ -23,7 +23,7 @@ void dfs(int x, int y){
     for(int i=0; i<4; i++){
         int nx = x+dirs[i][0], ny = y+dirs[i][1];
         if(CanGo(nx,ny)){
-            person++;
+            person++; // 마을에 존재하는 사람을 한 명 추
             visited[nx][ny] = true;
             dfs(nx,ny);
         }
@@ -44,16 +44,20 @@ int main() {
         for(int j=0; j<n; j++){
             // (i,j)부터 시작하는데
             if(!visited[i][j] && arr[i][j]){
-                // 만약 방문하지 않은 사람 만났다면
+                // 만약 방문하지 않은 사람 만났다면 탐색 시작할 수 있음
                 visited[i][j] = true;
-                person = 1;
+                person = 1; // 새로운 마을 탐
                 village_cnt++;
                 dfs(i,j);   // 그 격자점에서 방문 진행
+
+                // 한 마을에 대한 탐색이 끝난 경우 마을 내의 사람 수를 저장
                 people.push_back(person);
             }
         }
     }
     cout << village_cnt << '\n';
+
+    // 각 마을 내 사람의 수를 오름차순으로 정렬
     sort(people.begin(), people.end());
     for(auto p : people){
         cout << p << '\n';
