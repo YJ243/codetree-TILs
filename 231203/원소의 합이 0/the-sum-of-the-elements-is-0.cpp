@@ -15,7 +15,6 @@ int main() {
     for(int i=0; i<4; i++){
         for(int j=0; j<n; j++){
             cin >> arr[i][j];
-            //cout << arr[i][j] << ' ';
         }
     }
     // 시간복잡도: O(N^2)=25*10^6
@@ -34,7 +33,7 @@ int main() {
         int diff = -(it->first);
         //cout << diff << ' ' ;
         if(freq_second.find(diff) != freq_second.end())
-            ans += freq_second[diff];
+            ans += freq_second[diff]*(it->second);
     }
     cout << ans << '\n';
     return 0;
