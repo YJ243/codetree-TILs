@@ -16,7 +16,7 @@ int main(){
         double tmp = k-arr[i];
         if(m.find(tmp) != m.end()){
             // 만약 현재 수와 배열에 있는 수를 더해서 k를 만들 수 있다면
-            ans++;
+            ans += m[tmp];
         }
         m[arr[i]]++;
     }
