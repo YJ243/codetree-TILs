@@ -12,7 +12,7 @@ int main() {
         cin >> x;
         pq.push(x);
     }
-    while(pq.size() != 1){
+    while(pq.size() > 1){
         int a,b;
         a = pq.top();
         pq.pop();
