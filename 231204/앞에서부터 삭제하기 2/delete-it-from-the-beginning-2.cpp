@@ -13,24 +13,26 @@ int main() {
         cin >> arr[i];
     }
     int ans = 0;
+    pq.push(arr[N-1]);
+    pq.push(arr[N-2]);
 
-    // 시간복잡도: O(N^2)=> 시간초과 
-    for(int K=N-2; K>=1; K--){
-        for(int i=K; i<N; i++){
-            pq.push(arr[i]);    // 앞에서부터 K개를 삭제하고 pq에 집어넣음
+    int sum_val = 0, cnt = 1;
+    sum_val = pq.top();
+    pq.pop();
+    int cur_min = pq.top();
+    ans = max(ans, sum_val/cnt);
 
-        }
-        int sum_val = 0;
-        while(pq.size() > 1){   // 
-            int val = pq.top();
-            pq.pop();
-            sum_val += val;
-        }
-        int avg_val = sum_val / (N-K-1);
-
-        ans = max(ans, avg_val);
+    // 시간복잡도: O(N^2)=> 시간초과
+    for(int K=N-3; K>=1; K--){
+        pq.push(arr[K]);
+        int val = pq.top();
         pq.pop();
-
+        sum_val += val;
+        cnt++;
+        ans = max(ans,sum_val/cnt);
+        if(val < cur_min){
+            cur_min = val;
+        }
     }
     cout << fixed;
     cout.precision(2);
