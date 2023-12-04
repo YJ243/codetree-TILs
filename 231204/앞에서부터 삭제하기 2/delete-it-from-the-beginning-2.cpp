@@ -1,41 +1,32 @@
 #include <iostream>
 #include <queue>
 #define MAX_N 100000
-
 using namespace std;
 int N;
 int arr[MAX_N];
+priority_queue<int> pq; 
+double ans;
+int sum_val;
 
-priority_queue<int> pq;
-int main() {
+int main(){
     cin >> N;
     for(int i=0; i<N; i++){
         cin >> arr[i];
     }
-    int ans = 0;
-    pq.push(arr[N-1]);
-    pq.push(arr[N-2]);
+    pq.push(-arr[N-1]);
+    sum_val = arr[N-1];
 
-    int sum_val = 0, cnt = 1;
-    sum_val = pq.top();
-    pq.pop();
-    int cur_min = pq.top();
-    ans = max(ans, sum_val/cnt);
-
-    // 시간복잡도: O(N^2)=> 시간초과
-    for(int K=N-3; K>=1; K--){
-        pq.push(arr[K]);
-        int val = pq.top();
-        pq.pop();
-        sum_val += val;
-        cnt++;
-        ans = max(ans,sum_val/cnt);
-        if(val < cur_min){
-            cur_min = val;
-        }
+    for(int i=N-2; i>=1; i--){
+        pq.push(-arr[i]);
+        sum_val += arr[i];
+        
+        double cur_avg = (double)(sum_val + pq.top()) / (N-i-1);
+        ans = max(cur_avg, ans);
     }
+
     cout << fixed;
     cout.precision(2);
-    cout << (double)ans;
+
+    cout << ans;
     return 0;
 }
