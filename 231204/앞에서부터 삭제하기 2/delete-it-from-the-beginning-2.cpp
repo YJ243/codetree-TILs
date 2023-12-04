@@ -13,13 +13,15 @@ int main() {
         cin >> arr[i];
     }
     int ans = 0;
-    for(int K=1; K<=N-2; K++){
+
+    // 시간복잡도: O(N^2)=> 시간초과 
+    for(int K=N-2; K>=1; K--){
         for(int i=K; i<N; i++){
             pq.push(arr[i]);    // 앞에서부터 K개를 삭제하고 pq에 집어넣음
 
         }
         int sum_val = 0;
-        while(pq.size() > 1){
+        while(pq.size() > 1){   // 
             int val = pq.top();
             pq.pop();
             sum_val += val;
