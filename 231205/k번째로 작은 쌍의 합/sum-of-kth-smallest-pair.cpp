@@ -1,9 +1,3 @@
-/*
- * 2023.12.05
- * A수열과 B수열을 모두 돌면서 해당 쌍으로 PQ안에 넣으면 시간초과가 나온다는 것은 알았음
- * 그런데 어떻게 시간초과가 안나도록 PQ를 활용해야 하는지 몰라서 토론 확인
-*/
-
 #include <iostream>
 #include <algorithm>
 #include <queue>
@@ -28,12 +22,12 @@ int main(){
     for(int i=0; i<m; i++)
         cin >> arr2[i];
     sort(arr2, arr2+m);
-    int cnt = 0;
+    
     for(int i=0; i<n; i++){
         // 일단 수열 (A의 최솟값, B와의 조합) 넣기
         // 합을 넣어야 그 합이 작은 순으로 정렬됨
         // 그리고 pop한 조합에서의 다음 인덱스를 알기 위해 다음 인덱스도 넣기
-        pq.push(make_tuple(-arr1[i]-arr2[0], -arr1[i], -arr2[0], i));   // 합, A원소, B원소, B원소의 인덱스
+        pq.push(make_tuple(-arr1[i]-arr2[0], -arr1[i], -arr2[0], 0));   // 합, A원소, B원소, B원소의 인덱스
     }
 
     // k번째 조합을 찾기
