@@ -22,7 +22,7 @@ int main() {
             }
         }
         else{
-            pq.push(make_tuple(abs(x),-x));
+            pq.push(make_tuple(-abs(x),-x));
         }
     }
     return 0;
