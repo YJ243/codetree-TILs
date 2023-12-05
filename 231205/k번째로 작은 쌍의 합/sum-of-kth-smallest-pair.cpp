@@ -33,7 +33,7 @@ int main(){
         // 일단 수열 (A의 최솟값, B와의 조합) 넣기
         // 합을 넣어야 그 합이 작은 순으로 정렬됨
         // 그리고 pop한 조합에서의 다음 인덱스를 알기 위해 다음 인덱스도 넣기
-        pq.push(make_tuple(-arr1[i]-arr2[0], -arr1[i], -arr2[1], i));   // 합, A원소, B원소, B원소의 인덱스
+        pq.push(make_tuple(-arr1[i]-arr2[0], -arr1[i], -arr2[0], i));   // 합, A원소, B원소, B원소의 인덱스
     }
 
     // k번째 조합을 찾기
