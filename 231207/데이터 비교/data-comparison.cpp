@@ -4,7 +4,7 @@
 using namespace std;
 
 unordered_set<int> s1;
-unordered_set<int> s2;
+
 int arr1[MAX_N];
 int arr2[MAX_N];
 int n, m;
@@ -17,7 +17,7 @@ int main(){
     cin >> m;
     for(int i=0; i<m; i++){
         cin >> arr2[i];
-        s2.insert(arr2[i]);
+
     }
 
     for(int i=0; i<m; i++){
