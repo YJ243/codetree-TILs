@@ -26,7 +26,8 @@ int main(){
 
     sort(people, people+N+1);
     int exit_time = 0;
-    for(int i=0; i<N; i++){
+    for(int i=0; i<=N; i++){
+        
         // 일단 도착 시간이 빠른 순으로 사람을 보기 시작하는데
         int arrive, num, stay;
         tie(arrive,num,stay) = people[i];
@@ -49,6 +50,7 @@ int main(){
         if(arrive >= exit_time){
             // 대기 없이 바로 들어갈 수 있는 경우
             exit_time = arrive + stay;
+            //cout << exit_time << '\n';
         }
         // 기다려야 한다면
         else
