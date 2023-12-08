@@ -56,7 +56,7 @@ int main(){
                 if(is_divide(i,j,k)) ans++;
             }
         }
-    }.
+    }
 
     // 두 그룹을 구분해낼 수 있는 조합 수 출력
     cout << ans;
