@@ -41,35 +41,39 @@ int main() {
     for(int pp=0; pp<g; pp++)
         cout << num_in_group[pp].size() << ' ' << person_in_group[pp]<<'\n';
 */
-    for(int cnt=0; cnt<=max_person; cnt++){  // 가장 많은 인원수를 가진 그룹의 인원수*10만큼 반
+    for(int cnt=0; cnt<=max_person*10; cnt++){  // 가장 많은 인원수를 가진 그룹의 인원수*10만큼 반복
         for(int i=0; i<g; i++){         // 모든 그룹을 탐색,
             if(num_in_group[i].size() == person_in_group[i]) continue;      // 그 그룹이 초대장을 다 받았다면 무시
             
             else if(num_in_group[i].size()-1 == person_in_group[i]){        // 그룹 인원수가 k인 그룹에서 k-1명 사람들이 초대장을 받았다면
                 // 나머지 한명은 무조건 받음
                 for(auto person: num_in_group[i]){
-                    if(!received[person]){
-                        received[person] = true;
-                        ans.insert(person);
-                        person_in_group[i]++;
+                    if(!received[person] && num_in_group[i].size() != person_in_group[i]){  // 초대장 못받은 친구 발견
+                        received[person] = true;    // 초대장 주기
+                        //cout<<"plus of group " <<i << ' ' << person << '\n';
+                        ans.insert(person);         // 정답에 추가
+                        person_in_group[i]++;       // 해당 그룹의 초대장 받은 친구 개수 추가
+                        //cout << "heyjhlkj" << i << ' ' << num_in_group[i].size() << ' ' << person_in_group[i]<<'\n';
                     }
                 }
             }
             else{   // k-1보다 적은 사람들이 초대장을 받았다면
                 // 초대장 받은 사람 업데이트
+                int invited = 0;
                 for(int p=1; p<=n; p++){
                     // 만약 초대장을 받은 사람이 해당 그룹에 있다면
-                    if(received[p]){
-                        for(auto person:num_in_group[i]){
-                            if(p == person){
-                                person_in_group[i]++;   // 해당 그룹에서 초대장 받은 인원수 추가
+                        for(auto person: num_in_group[i]){
+                            if(received[p] && p == person){
+                                invited++;
                             }
                         }
                     }
-                }
+                person_in_group[i] = invited;   // 해당 그룹에서 초대장 받은 인원수 추가
             }
         }
     }
+    
     cout << ans.size();
+
     return 0;
 }
