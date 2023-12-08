@@ -41,7 +41,7 @@ int main() {
     for(int pp=0; pp<g; pp++)
         cout << num_in_group[pp].size() << ' ' << person_in_group[pp]<<'\n';
 */
-    for(int cnt=0; cnt<=max_person*10; cnt++){  // 가장 많은 인원수를 가진 그룹의 인원수*10만큼 반복
+    for(int cnt=0; cnt<=max_person; cnt++){  // 가장 많은 인원수를 가진 그룹의 인원수만큼 반복
         for(int i=0; i<g; i++){         // 모든 그룹을 탐색,
             if(num_in_group[i].size() == person_in_group[i]) continue;      // 그 그룹이 초대장을 다 받았다면 무시
             
