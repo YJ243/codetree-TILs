@@ -1,76 +1,73 @@
+/*
+ * 2023.12.09
+ * HashSet을 이용해 그룹 별로 초대받지 못한 사람 목록을 관리
+ * => 나는 HashSet으로 전체 사람 중에서 초대 받은 사람만 관리하도록 하였었음. 이렇게는 생각 못함. 그냥 리스트랑 해쉬셋 두개 선언하기는 했었음
+ * 1. 주어진 사람별 속해있는 그룹 정보를 인접리스트로 만들기
+ * 2. 1번 사람을 시작으로 bfs 탐색 진행
+ * 3. 큐에 새로운 원소를 추가하게 되는 조건 = 현재 사람 x가 속해 있는 그룹에서 x를 제거했을 때 해당 그룹에 남아있는 사람 수가 1명이 되는 경우
+ *      이 때 정확히 k-1명만 초대장을 받게 되는 경우이므로 해당 사람을 queue에 넣어주기
+*/
+
 #include <iostream>
 #include <unordered_set>
+#include <queue>
 #include <vector>
-#define MAX_N 100000
-#define MAX_G 250000
 
 using namespace std;
 
+#define MAX_N 100000
+#define MAX_G 250000
+
+// 변수 선언
 int n, g;
-bool received[MAX_N+1];   // selected[i]: i번 번호를 가진 사람이 초대장을 받았는지 여부
-int person_in_group[MAX_G];  // person_in_group[i]: 그 중 초대장 받은 수
-vector<int> num_in_group[MAX_G];  // num_in_group[i]: i번 그룹에 있는 번호표들
+bool invited[MAX_N];
+
+// 각 그룹마다 초대장을 받지 못한 사람들을 관리
+// 그 이유는 각 그룹마다 누가 초대장을 받지 못했는지 순회하는 방식은 시간초과 나기 때문에 
 unordered_set<int> groups[MAX_G];
-unordered_set<int> ans;                  // 초대장 받은 번호들
-int max_person;
+// 각 사람이 어떤 그룹에 속하는지를 관리해주기
+vector<int> people_groups[MAX_N];   // i번 사람이 몇번 그룹들에 속해있는지
+queue<int> q;
+int ans;
 
-int main() {
-    cin >> n >> g;  // 1~n번까지 번호표, g개 그룹
+int main(){
+    // 입력:
+    cin >> n >> g;
     for(int i=0; i<g; i++){
-        int cnt;
-        cin >> cnt;
-        max_person = max(max_person, cnt);
-        for(int j=0; j<cnt; j++){
-            int number_person;
-            cin >> number_person;
-            num_in_group[i].push_back(number_person);
-            groups[i].insert(number_person);
+        int s, x;
+        cin >> s;
+        for(int j=0; j<s; j++){
+            cin >> x; x--;
+            groups[i].insert(x);
+            people_groups[x].push_back(i);
         }
     }
+    q.push(0);  // 첫번째 번호표에게 초대장 주기
+    invited[0] = true;
+    while(!q.empty()){
+        int x = q.front();
+        q.pop();
+        ans++;
 
-    // 1번 사람에게 초대장 주기
-    ans.insert(1);
-    received[1] = true;
-    for(int i=0; i<g; i++){
-        if(groups[i].find(1) != groups[i].end()){
-            // 만약 1이 그룹에 있다면
-            person_in_group[i]++;
-        }
-    }
-/*
-    for(int pp=0; pp<g; pp++)
-        cout << num_in_group[pp].size() << ' ' << person_in_group[pp]<<'\n';
-*/
-    for(int cnt=0; cnt<=max_person; cnt++){  // 가장 많은 인원수를 가진 그룹의 인원수만큼 반복
-        for(int i=0; i<g; i++){         // 모든 그룹을 탐색,
-            if(num_in_group[i].size() == person_in_group[i]) continue;      // 그 그룹이 초대장을 다 받았다면 무시
-            
-            else if(num_in_group[i].size()-1 == person_in_group[i]){        // 그룹 인원수가 k인 그룹에서 k-1명 사람들이 초대장을 받았다면
-                // 나머지 한명은 무조건 받음
+        // x가 들어있는 그룹에서 x를 지우기
+        // hashset에는 그룹에서 초대받지 않은 인원만을 남기기
+        for(int i=0; i<(int) people_groups[x].size(); i++){
+            int g_num = people_groups[x][i];
 
-                for(auto person: num_in_group[i]){
-                    if(!received[person] && num_in_group[i].size() != person_in_group[i]){  // 초대장 못받은 친구 발견
-                        received[person] = true;    // 초대장 주기
-                        //cout<<"plus of group " <<i << ' ' << person << '\n';
-                        ans.insert(person);         // 정답에 추가
-                        person_in_group[i]++;       // 해당 그룹의 초대장 받은 친구 개수 추가
-                        //cout << "heyjhlkj" << i << ' ' << num_in_group[i].size() << ' ' << person_in_group[i]<<'\n';
-                    }
+            // 해당 그룹에서 x를 지우기
+            groups[g_num].erase(x);
+            // 초대받지 않은 인원이 한 명밖에 없다면 초대
+            if((int) groups[g_num].size() == 1){
+                int p_num = *(groups[g_num].begin());
+                if(!invited[p_num]){
+                    invited[p_num] = true;
+                    q.push(p_num);
                 }
             }
-            else{   // k-1보다 적은 사람들이 초대장을 받았다면
-                // 초대장 받은 사람 업데이트
-                int invited = 0;
-                for(auto person: num_in_group[i]){
-                    // 만약 초대장을 받은 사람이 해당 그룹에 있다면
-                    if(received[person]) invited++;
-                }
-                person_in_group[i] = invited;   // 해당 그룹에서 초대장 받은 인원수 추가
-            }
         }
     }
-    
-    cout << ans.size();
 
+    // 초대장을 받는 인원 출력
+    cout << ans;
     return 0;
 }
