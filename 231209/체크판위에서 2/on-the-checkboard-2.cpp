@@ -14,7 +14,10 @@ int main(){
         }
     }
     char cur = arr[0][0];
-
+    if(cur == arr[r-1][c-1]){
+        cout << 0 ;
+        return 0;
+    }
     for(int i=1; i<r-1; i++){
         for(int j=1; j<c-1; j++){
             if(cur != arr[i][j]){
