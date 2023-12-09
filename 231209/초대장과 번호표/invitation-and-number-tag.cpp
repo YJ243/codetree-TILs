@@ -61,14 +61,10 @@ int main() {
             else{   // k-1보다 적은 사람들이 초대장을 받았다면
                 // 초대장 받은 사람 업데이트
                 int invited = 0;
-                for(int p=1; p<=n; p++){
+                for(auto person: num_in_group[i]){
                     // 만약 초대장을 받은 사람이 해당 그룹에 있다면
-                        if(received[p]){
-                            if(groups[i].find(p) != groups[i].end()){
-                                invited++;
-                            }
-                        }
-                    }
+                    if(received[person]) invited++;
+                }
                 person_in_group[i] = invited;   // 해당 그룹에서 초대장 받은 인원수 추가
             }
         }
