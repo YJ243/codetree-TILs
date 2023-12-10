@@ -7,8 +7,8 @@ using namespace std;
 
 int arr[19][19];
 
-int dx[DIR_NUM] = {1,1,1,0};
-int dy[DIR_NUM] = {-1,0,1,1};
+int dx[DIR_NUM] = {1,1,1,-1,-1,-1,0,0};
+int dy[DIR_NUM] = {-1,0,1,-1,0,1,-1,1};
 
 int InRange(int x, int y){
     return 0 <= x && x < 19 && 0 <= y && y < 19;
