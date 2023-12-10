@@ -7,7 +7,7 @@ int n;
 int arr[MAX_N];
 
 bool is_carry(int x, int y, int z){
-    int cnt = 5;
+    int cnt = 4;
     int a=x, b=y, c=z;
     int remain_a, remain_b, remain_c;
     while(cnt--){
