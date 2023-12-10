@@ -1,78 +1,50 @@
 #include <iostream>
+#include <algorithm>
+
+#define DIR_NUM 8
 
 using namespace std;
-int a[19][19];
-int main() {
 
-    for(int i=0; i<19; i++){
-        for(int j=0; j<19; j++){
-            cin >> a[i][j];     // 검:1, 흰:2, 알X:0
-        }
-    }
+int arr[19][19];
+
+int dx[DIR_NUM] = {1,1,1,0};
+int dy[DIR_NUM] = {-1,0,1,1};
+
+int InRange(int x, int y){
+    return 0 <= x && x < 19 && 0 <= y && y < 19;
+}
+
+int main(){
+    // 입력
+    for(int i=0; i<19; i++)
+        for(int j=0; j<19; j++)
+            cin >> arr[i][j];
     
-    for(int i=0; i<19; i++){
+    // 모든 좌표에서 다 확인해보기
+    for(int i=0; i<19; i++)
+        // 격자를 벗어나지 않을 범위로만 잡기
         for(int j=0; j<19; j++){
-            // 아래 방향
-            if(0 <= i+4 && i+4 < 19){
-                // 맨 아래칸이 범위 안에 들어올 경우에만 확인
-                if(a[i][j] == 1 && a[i+1][j] == 1 && a[i+2][j] == 1 && a[i+3][j] == 1 && a[i+4][j] == 1){
-                    cout << 1 << '\n';
-                    cout << i+3 << ' ' << j+1 << '\n';
-                    return 0;
-                }
-                if(a[i][j] == 2 && a[i+1][j] == 2 && a[i+2][j] == 2 && a[i+3][j] == 2 && a[i+4][j] == 2){
-                    cout << 2 << '\n';
-                    cout << i+3 << ' ' << j+1 << '\n';
-                    return 0;
-                }
-            }
+            if(arr[i][j] == 0) continue;
 
-            // 우 방향
-            if(0 <= j+4 && j+4 < 19){
-                // 맨 오른쪽 칸이 범위 안에 들어올 경우에만 확인
-                if(a[i][j] == 1 && a[i][j+1] == 1 && a[i][j+2] == 1 && a[i][j+3] == 1 && a[i][j+4] == 1){
-                    cout << 1 << '\n';
-                    cout << i+1 << ' ' << j+3 << '\n';
-                    return 0;
-                }
-                if(a[i][j] == 2 && a[i][j+1] == 2 && a[i][j+2] == 2 && a[i][j+3] == 2 && a[i][j+4] == 2){
-                    cout << 2 << '\n';
-                    cout << i+1 << ' ' << j+3 << '\n';
-                    return 0;
-                }
-            }
+            for(int k=0; k<DIR_NUM; k++){
+                int curt = 1;
+                int curx = i, cury = j;
+                while(true){
+                    int nx = curx + dx[k];
+                    int ny = cury + dy[k];
+                    if(InRange(nx,ny) == false) break;
+                    if(arr[nx][ny] != arr[i][j]) break;
 
-            // 우하 방향
-            if(0 <= i+4 && i+4 < 19 && 0 <= j+4 && j+4 < 19){
-                // 맨 아래칸에 범위 안에 들어올 경우에만 확인
-                if(a[i][j] == 1 && a[i+1][j+1] == 1 && a[i+2][j+2] == 1 && a[i+3][j+3] == 1 && a[i+4][j+4] == 1){
-                    cout << 1 << '\n';
-                    cout << i+3 << ' ' << j+3 << '\n';
-                    return 0;
+                    curt++;
+                    curx = nx; cury = ny;
                 }
-                if(a[i][j] == 2 && a[i+1][j+1] == 2 && a[i+2][j+2] == 2 && a[i+3][j+3] == 2 && a[i+4][j+4] == 2){
-                    cout << 2 << '\n';
-                    cout << i+3 << ' ' << j+3 << '\n';
-                    return 0;
-                }
-            }
-
-            // 좌하 방향
-            if(0 <= i+4 && i+4 < 19 && 0 <= j-4 && j-4 < 19){
-                // 맨 아래칸에 범위 안에 들어올 경우에만 확인
-                if(a[i][j] == 1 && a[i+1][j-1] == 1 && a[i+2][j-2] == 1 && a[i+3][j-3] == 1 && a[i+4][j-4] == 1){
-                    cout << 1 << '\n';
-                    cout << i+3 << ' ' << j-1 << '\n';
-                    return 0;
-                }
-                if(a[i][j] == 2 && a[i+1][j-1] == 2 && a[i+2][j-2] == 2 && a[i+3][j-3] == 2 && a[i+4][j-4] == 2){
-                    cout << 2 << '\n';
-                    cout << i+3 << ' ' << j-1 << '\n';
+                if(curt == 5){
+                    cout << arr[i][j] << '\n';
+                    cout << i + 2*dx[k]+1 << ' ' << j + 2*dy[k]+1;
                     return 0;
                 }
             }
         }
-    }
-    cout << 0 << '\n';
+    cout << 0;
     return 0;
 }
