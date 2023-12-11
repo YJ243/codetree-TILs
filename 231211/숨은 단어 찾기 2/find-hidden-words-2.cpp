@@ -29,6 +29,7 @@ int main() {
                     int cnt = 1;
                     int x=i, y=j;
                     while(true){
+                        if(cnt == 3) break;
                         int nx = x+dirs[d][0], ny = y+dirs[d][1];
                         if(!InRange(nx,ny) || arr[nx][ny] != 'E')   break;
                         x = nx, y = ny;
