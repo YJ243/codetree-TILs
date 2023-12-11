@@ -14,17 +14,15 @@ int main() {
         sum += arr[i];
     }
     int min_diff = INT_MAX;
-    int info[2];    // info[0]: 전체합-두개합의 최소, info[0]: 그때의 수 첫번째, info[1]: 그때의 수 두번째
 
     for(int i=0; i<n; i++){
         for(int j=i+1; j<n; j++){
-            int two_sum = arr[i]+arr[j];
-            if(min_diff > sum-two_sum){
-                info[0] = i, info[1] = j;
-                min_diff = sum-two_sum;
+            int two_sum = arr[i]+arr[j];    // 제외할 두 수의 합
+            if(min_diff > abs(s-(sum-two_sum))){
+                min_diff = abs(s-(sum-two_sum));
             }
         }
     }
-    cout << abs(info[0]-info[1]);
+    cout << min_diff;
     return 0;
 }
