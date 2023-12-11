@@ -1,3 +1,5 @@
+// 실수 1: MAX_LOC를 MAX_N으로 적음
+// 실수 2: k가 최대 범위보다 크게 주어질 경울를 생각 못
 #include <iostream>
 #define MAX_LOC 10000
 using namespace std;
