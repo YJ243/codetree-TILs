@@ -1,6 +1,6 @@
 #include <iostream>
 #include <vector>
-#include <unordered_set>
+#include <algorithm>
 
 #define MAX_N 100
 
@@ -9,8 +9,7 @@ int n, m;
 int A[MAX_N];
 int B[MAX_N];
 
-vector<int> tmp;
-unordered_set<int> arr;
+
 int ans;
 
 int main() {
@@ -20,24 +19,25 @@ int main() {
     
     for(int j=0; j<m; j++){
         cin >> B[j];
-        arr.insert(B[j]);
     }
-
+    sort(B, B+m);   // B 정렬
     
     // A에서 길이가 M인 부분 수열을 찾기
     for(int i=0; i<=n-m; i++){
         // (i, i+1, ... i+m-1)
-        bool all_flag = true;
+        vector<int> tmp;
         for(int j=i; j<i+m; j++){
-            if(arr.find(A[j]) == arr.end()){
-                // 만약 하나라도 원소가 없다면
-                all_flag  = false;
-                break;
-            }
+            tmp.push_back(A[j]);
         }
-        if(all_flag){
-            ans++;
+        sort(tmp.begin(), tmp.end());
+        bool all_flag = true;
+        for(int k=0; k<m; k++){
+            if(B[k] != tmp[k]){
+                all_flag = false;
+            } 
         }
+
+        if(all_flag)    ans++;
     }
     
     cout << ans;
