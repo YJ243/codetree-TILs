@@ -21,6 +21,7 @@ int main() {
             int two_sum = arr[i]+arr[j];
             if(min_diff > sum-two_sum){
                 info[0] = i, info[1] = j;
+                mindiff = sum-two_sum;
             }
         }
     }
