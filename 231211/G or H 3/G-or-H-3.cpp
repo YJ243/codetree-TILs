@@ -13,8 +13,9 @@ int main(){
         max_idx = max(idx, max_idx);
     }
 
+
     int ans = 0;
-    for(int i=1; i<=max_idx-k; i++){
+    for(int i=1; i<=MAX_LOC-k; i++){
         int cur=0;
         for(int j=i; j<=i+k; j++){
             if(arr[j] == 'G') cur += 1;
