@@ -7,11 +7,6 @@ int arr1[3];
 int arr2[3];
 int ans;
 
-int correctDiff(int a, int b) {
-    int diff = abs(a - b);
-    return min(diff, n - diff);
-}
-
 int main() {
     cin >> n;
     for(int i=0; i<3; i++)
@@ -22,16 +17,13 @@ int main() {
     for(int i=1; i<=n; i++){
         for(int j=1; j<=n; j++){
             for(int k=1; k<=n; k++){
-                int a1 = correctDiff(i, arr1[0]);
-                int a2 = correctDiff(j, arr1[1]);
-                int a3 = correctDiff(k, arr1[2]);
-                
-                int b1 = correctDiff(i, arr2[0]);
-                int b2 = correctDiff(j, arr2[1]);
-                int b3 = correctDiff(k, arr2[2]);
+                // 모든 자리가 주어진 첫 조합과의  거리가 2 이내인지 확인
+                if((abs(arr1[0]-i) <= 2 || abs(arr1[0]-i) >= n-2) && (abs(arr1[1]-j) <= 2 || abs(arr1[1]-j) >= n-2) &&
+                 (abs(arr1[2]-k) <= 2 || abs(arr1[2]-k) >= n-2)) ans++;
 
-                if((a1 <= 2 && a2 <= 2 && a3 <= 2) || (b1 <= 2 && b2 <= 2 && b3 <= 2))
-                    ans++;
+                // 모든 자리가 주어진 첫 조합과의 거리가 2 이내인지 확인
+                else if((abs(arr2[0]-i) <= 2 || abs(arr2[0]-i) >= n-2) && (abs(arr2[1]-j) <= 2 || abs(arr2[1]-j) >= n-2) &&
+                 (abs(arr2[2]-k) <= 2 || abs(arr2[2]-k) >= n-2)) ans++;
             }
         }
     }
