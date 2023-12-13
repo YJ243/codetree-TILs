@@ -10,7 +10,7 @@ int sum = 0;
 int make_diff(int a, int b, int c){
     // a,b,c가 한 그룹에 있음
     int sum1, sum2;
-    sum1 = a+b+c;
+    sum1 = arr[a]+arr[b]+arr[c];
     sum2 = sum-sum1;
     return abs(sum1-sum2);
 }
