@@ -18,6 +18,7 @@ int main() {
         for(int j=1; j<=9; j++){
             for(int k=1; k<=9; k++){
                 // 현재 확인하는 숫자는 (ijk)
+                //i = 1, j = 3; k = 2;
                 bool countable = true;
                 for(int idx=0; idx < n; idx++){
                     // 각 n개의 숫자마다 사용할 자료구조
@@ -29,7 +30,8 @@ int main() {
                     numbers.insert(k);
 
                     // 이 idx는?
-                    int a = arr[idx]/100, b = ((arr[idx]-a)/10)%10, c = arr[idx]%10;
+                    int a = arr[idx]/100, c = arr[idx]%10;
+                    int b = ((arr[idx]-c)/10)%10;
                     if(a == i) cur_cnt.first++;
                     if(b == j) cur_cnt.first++;
                     if(c == k) cur_cnt.first++;
@@ -51,7 +53,7 @@ int main() {
                 if(countable && (i != j && j != k && k != i)) {
                     ans++;
                 }
-
+            //return 0;
             }
         }
     }
