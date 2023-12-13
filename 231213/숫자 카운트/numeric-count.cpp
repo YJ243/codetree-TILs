@@ -43,11 +43,12 @@ int main() {
                     if((cur_cnt.first != count[idx].first) || (cur_cnt.second != count[idx].second)){
                         // 둘 중 하나라도 다르다면
                         countable = false;
+                        //cout<< i << ' ' << j << ' ' << k << '\n';
 
 
                     }
                 }
-                if(countable) {
+                if(countable && (i != j && j != k && k != i)) {
                     ans++;
                 }
 
