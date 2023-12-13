@@ -14,11 +14,12 @@ int main() {
     for(int i=0; i<n; i++){
         for(int j=i+t-1; j<n; j++){
             // (i ~ j) 까지 탐색하기, 구간은 최소 t이상
-            //cout << i << ' ' << j << '\n';
+
             int cur_cost = 0;
             for(int k=i; k<=j; k++){
-                if(arr[k] < h) cur_cost++;
-                else if(arr[k] > h) cur_cost++;
+                if(arr[k] < h || arr[k] > h) {
+                    cur_cost += abs(arr[k]-h);
+                }
             }
             cost = min(cost, cur_cost);
         }
