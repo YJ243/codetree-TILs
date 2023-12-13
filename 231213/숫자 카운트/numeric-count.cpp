@@ -19,6 +19,7 @@ int main() {
             for(int k=1; k<=9; k++){
                 // 현재 확인하는 숫자는 (ijk)
                 //i = 1, j = 3; k = 2;
+                if(i == j || j == k || k == i) continue;
                 bool countable = true;
                 for(int idx=0; idx < n; idx++){
                     // 각 n개의 숫자마다 사용할 자료구조
@@ -50,7 +51,7 @@ int main() {
 
                     }
                 }
-                if(countable && (i != j && j != k && k != i)) {
+                if(countable ) {
                     ans++;
                 }
             //return 0;
