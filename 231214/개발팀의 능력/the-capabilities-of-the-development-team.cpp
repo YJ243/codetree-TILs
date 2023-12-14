@@ -33,6 +33,9 @@ int main() {
             }
         }
     }
-    cout << ans << '\n';
+    if(ans == INT_MAX)
+        cout << -1 << '\n';
+    else
+        cout << ans << '\n';
     return 0;
 }
