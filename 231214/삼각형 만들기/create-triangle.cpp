@@ -1,3 +1,4 @@
+// bool 변수를 초기화하는 위치를 잘못 잡아서 틀림
 #include <iostream>
 #include <climits>
 
@@ -15,6 +16,8 @@ int main(){
     for(int i=0; i<n; i++)
         cin >> x[i] >> y[i];
 
+    // 3개의 점을 모두 골라보면서
+    // 조건을 맍고하는 경우 중 최대 넒이를 계산하기
     for(int i=0; i<n; i++){
         for(int j=i+1; j<n; j++){
             for(int k=j+1; k<n; k++){
