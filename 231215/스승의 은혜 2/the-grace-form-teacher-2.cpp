@@ -23,8 +23,9 @@ int main() {
         for(int j=0; j<n; j++){
             // n명의 학생 선물 값 더해가면서 최대 명수 잡아보기
             sum_price += p[j];
-            if(sum_price > b){
+            if(sum_price > b){ 
                 ans = max(ans, j);
+                break;
             }
         }
         if(sum_price <= b)
