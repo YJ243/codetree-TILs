@@ -23,6 +23,7 @@ int main() {
                 break;
             }
         }
+        // 겹치지 않았다면 정답 개수에 하나를 추가하
         if(!overlapped) ans++;
     }
     cout << ans << '\n';
