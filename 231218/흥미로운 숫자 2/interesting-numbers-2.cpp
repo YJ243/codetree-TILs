@@ -6,31 +6,34 @@ int x, y;
 int ans;
 
 vector<int> tmp;
-void DigitOfNumber(int num){
+void DigitOfNumber(int num, vector<int>& arr){
     if(num < 10){
-        tmp.push_back(num);
+        arr.push_back(num);
         return;
     }
-    tmp.push_back(num%10);
-    DigitOfNumber(num/10);
+    arr.push_back(num%10);
+    DigitOfNumber(num/10, arr);
 
 }
 
 bool IsInteresting(int number){
     tmp.clear();
-    DigitOfNumber(number);
+    DigitOfNumber(number, tmp);
     int cnt = 0, cur = tmp[0];
-    for(int j=1; j<(int) tmp.size(); j++){
-        if(j >=2){
-            if(tmp[j] != tmp[j-1] && tmp[j] != tmp[j-2]) cnt++;
-        }
-        else{
-            if(tmp[j] != tmp[j-1])    cnt++;
-        }
-
+    int number_cnt[10] = {};
+    for(int j=0; j<(int) tmp.size(); j++){
+        number_cnt[tmp[j]]++;
     }
-    // number의 각 자리수가 같은지 보기
-    return cnt == 1;
+    int one_cnt = 0, second_cnt = 0;
+    for(int j=0; j<10; j++){
+        if(number_cnt[j] == 1) {
+            one_cnt++;
+        }
+        if(number_cnt[j] > 1) second_cnt++;
+        //cout << number_cnt[j] << ' ';
+    }
+
+    return (one_cnt == 1 && second_cnt == 1);
 }
 
 int main() {
