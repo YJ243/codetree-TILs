@@ -28,18 +28,17 @@ int main() {
         
         // Step3. 가격을 기준으로 오름차순 정렬, 그 안에서 배송비를 기준으로 오름차순 정하기
         sort(tmp, tmp+n, [](const pair<int, int> &a, const pair<int, int> &b){
-            if(a.first == b.first)
-                return a.second < b.second;
-            return a.first < b.first;
+            if(a.first + a.second == b.first + b.second)
+                return a.first < b.first;
+            return a.first + a.second < b.first + b.second;
         });
-        /*
+/*
         cout << i << "번째 가격을 반값으로" << '\n';
         for(int k=0; k<n; k++){
-            cout << students[k].first << ' ' << students[k].second << '\n';
+            cout << tmp[k].first << ' ' << tmp[k].second << '\n';
         }
-
-        cout << "**************"<<'\n';
         */
+
         // Step4. 예산범위 내에서 최대 명수 구하기
         int cost = 0, idx = 0;
         while(cost <= b && idx < n){
@@ -50,15 +49,16 @@ int main() {
         if(cost <= b && idx == n){
             idx++;
         }
+        //cout << cost << ' ' << idx << '\n';
         ans = max(ans, idx);
-
+        //cout << "**************"<<'\n';
         // Step6. 배송비를 기준으로 오름차순 정렬, 그 안에서 가격을 기준으로 정렬
+/*
         sort(tmp, tmp+n, [](const pair<int, int> &a, const pair<int, int> &b){
-            if(a.second == b.second)
+            if(a.first + a.second == b.first + b.second)
                 return a.first < b.first;
-            return a.second < b.second;
+            return a.first + a.second < b.first + b.second;
         });
-
         // Step7. 예산범위 내에서 최대 명수 구하기
         cost = 0, idx = 0;
         while(cost <= b && idx < n){
@@ -70,7 +70,7 @@ int main() {
             idx++;
         }
         ans = max(ans, idx);
-
+*/
     }
     cout << ans;
     return 0;
