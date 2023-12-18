@@ -22,15 +22,14 @@ bool IsInteresting(int number){
     int cnt = 0, cur = tmp[0];
     int number_cnt[10] = {};
     for(int j=0; j<(int) tmp.size(); j++){
+        // 각 숫자별 나온 자릿수 증가시키기
         number_cnt[tmp[j]]++;
     }
+    // 1개만 나오는 숫자 수, 1개 초과해서 나오는 수
     int one_cnt = 0, second_cnt = 0;
     for(int j=0; j<10; j++){
-        if(number_cnt[j] == 1) {
-            one_cnt++;
-        }
+        if(number_cnt[j] == 1) one_cnt++;
         if(number_cnt[j] > 1) second_cnt++;
-        //cout << number_cnt[j] << ' ';
     }
 
     return (one_cnt == 1 && second_cnt == 1);
@@ -39,9 +38,8 @@ bool IsInteresting(int number){
 int main() {
     cin >> x >> y;
     for(int i=x; i<=y; i++){
-        if(IsInteresting(i)){
+        if(IsInteresting(i)){   // 흥미로운 숫자면 정답 증가
             ans++;
-            //cout << i << '\n';
         }
     }
     cout << ans;
