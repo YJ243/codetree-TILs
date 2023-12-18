@@ -32,12 +32,6 @@ int main() {
                 return a.first < b.first;
             return a.first + a.second < b.first + b.second;
         });
-/*
-        cout << i << "번째 가격을 반값으로" << '\n';
-        for(int k=0; k<n; k++){
-            cout << tmp[k].first << ' ' << tmp[k].second << '\n';
-        }
-        */
 
         // Step4. 예산범위 내에서 최대 명수 구하기
         int cost = 0, idx = 0;
@@ -46,31 +40,7 @@ int main() {
             idx++;
         }
         idx--;
-        if(cost <= b && idx == n){
-            idx++;
-        }
-        //cout << cost << ' ' << idx << '\n';
         ans = max(ans, idx);
-        //cout << "**************"<<'\n';
-        // Step6. 배송비를 기준으로 오름차순 정렬, 그 안에서 가격을 기준으로 정렬
-/*
-        sort(tmp, tmp+n, [](const pair<int, int> &a, const pair<int, int> &b){
-            if(a.first + a.second == b.first + b.second)
-                return a.first < b.first;
-            return a.first + a.second < b.first + b.second;
-        });
-        // Step7. 예산범위 내에서 최대 명수 구하기
-        cost = 0, idx = 0;
-        while(cost <= b && idx < n){
-            cost += tmp[idx].first + tmp[idx].second;
-            idx++;
-        }
-        idx--;
-        if(cost <= b && idx == n){
-            idx++;
-        }
-        ans = max(ans, idx);
-*/
     }
     cout << ans;
     return 0;
