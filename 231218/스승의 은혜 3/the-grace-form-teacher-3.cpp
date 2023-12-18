@@ -32,7 +32,7 @@ int main() {
                 return a.first < b.first;
             return a.first + a.second < b.first + b.second;
         });
-
+        
         // Step4. 예산범위 내에서 최대 명수 구하기
         int cost = 0, idx = 0;
         while(cost <= b && idx < n){
@@ -40,6 +40,11 @@ int main() {
             idx++;
         }
         idx--;
+        /*
+        if(cost <= b && idx == n-1){
+            idx++;
+        }
+        */
         ans = max(ans, idx);
     }
     cout << ans;
