@@ -6,7 +6,7 @@ using namespace std;
 int n;
 int cups[MAX_N][MAX_N];
 int max_score;
-int ans;
+
 int main() {
     cin >> n;
     for(int i=0; i<n; i++){
@@ -30,13 +30,11 @@ int main() {
             }
 
             if(cups[j][2] == cur) score++;
-            //if(i == 2) cout << cur << ' ' << score << '\n';
+
         }
-        if(max_score < score){
-            max_score = score;
-            ans = i;
-        }
+        max_score = max(max_score, score);
+
     }
-    cout << ans;
+    cout << max_score;
     return 0;
 }
