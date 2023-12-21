@@ -14,8 +14,9 @@ int main() {
     for(int i=0; i<n; i++){
         cin >> x[i] >> y[i];
     }
-    for(int i=1; i<=100; i++){
-        for(int j=1; j<=100; j++){
+    for(int i=0; i<=100; i++){
+        for(int j=0; j<=100; j++){
+            if((i % 2 != 0) || (j % 2 != 0)) continue;
             // x=i, y=j의 평행한 직선들
             int dots[4] = {};
             for(int k=0; k<n; k++){
