@@ -27,6 +27,7 @@ int main(){
                     ans = 1;
 
                 // (x,y) == (3,0)
+                isPassed = true;
                 for(int a=0; a<n; a++){
                     if(x[a] == i || x[a] == j || x[a] == k)
                         continue;
@@ -37,6 +38,7 @@ int main(){
 
 
                 // (x,y) == (1,2)
+                isPassed = true;
                 for(int a=0; a<n; a++){
                     if(x[a] == i || y[a] == j || y[a] == k)
                         continue;
@@ -47,6 +49,7 @@ int main(){
                 
                 
                 // (x,y) == (2,1)
+                isPassed = true;
                 for(int a=0; a<n; a++){
                     if(x[a] == i || x[a] == j || y[a] == k)
                         continue;
