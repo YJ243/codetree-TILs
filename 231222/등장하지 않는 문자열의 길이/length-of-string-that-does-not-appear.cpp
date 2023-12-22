@@ -13,7 +13,7 @@ int main() {
     cin >> s;
 
     // i는 연속 부분 문자열의 개수임
-    for(int i=1; i<=n/2+1; i++){
+    for(int i=1; i<=n; i++){
         // step 1. s에서 i개수만큼 앞에서부터 뽑기
         int i_max = 0;
         for(int j=0; j<n; j++){
@@ -28,7 +28,9 @@ int main() {
             i_max = max(i_max, cnt);
         }
         if(i_max == 1){
-            ans = min(ans, i);
+            cout << i;
+            return 0;
+            //ans = min(ans, i);
         }
     }
     cout << ans;
