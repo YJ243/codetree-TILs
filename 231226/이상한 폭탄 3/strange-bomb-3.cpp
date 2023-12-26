@@ -16,7 +16,7 @@ int main() {
         cin >> arr[i];
 
     for(int i=0; i<n; i++){
-        for(int j=i+1; j<=min(i+3, n-1); j++){
+        for(int j=i+1; j<=min(i+k, n-1); j++){
             if(arr[i] == arr[j]){
                 bombed[i] = true;
                 bombed[j] = true;
