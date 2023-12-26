@@ -49,7 +49,7 @@ int main() {
 
 /*
  * 해설 풀이
-*/
+
 #include <iostream>
 
 #define MAX_N 100
@@ -100,3 +100,4 @@ int main(){
     cout << maxidx;
     return 0;
 }
+*/
