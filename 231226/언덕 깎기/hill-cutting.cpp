@@ -1,48 +1,28 @@
 #include <iostream>
-#include <algorithm>
+#include <climits>
+
 #define MAX_N 1000
 
 using namespace std;
 int n;
 int arr[MAX_N];
-int change[MAX_N];
 
-int main() {
+int main(){
     cin >> n;
     for(int i=0; i<n; i++)
         cin >> arr[i];
-    bool maxTurn = true;
-    while(true){
-        int cur_max = 0, cur_min = 1000, maxI=0, minI=0;
-        for(int i=0; i<n; i++){
-            if(cur_max<arr[i]){
-                cur_max = arr[i];
-                maxI = i;
+    int ans = INT_MAX;
+    for(int i=0; i<=100-17; i++){
+        // 최대~최소 범위는 i ~ i+17까지임
+        int cost = 0;
+        for(int j=0; j<n; j++){
+            if(arr[j] < i){
+                cost += (i-arr[j])*(i-arr[j]); 
             }
-            if(cur_min > arr[i]){
-                cur_min = arr[i];
-                minI = i;
-            }
+            else if(arr[j] > i+17)
+                cost += (arr[j]-(i+17))*(arr[j]-(i+17));
         }
-
-        // 높이 차이가 17 이하가 된다면 반복문 나가기
-        if(cur_max - cur_min <= 17) break;
-        if(maxTurn){
-            change[maxI]++;
-            arr[maxI]--;
-            maxTurn = false;
-        }
-        else{
-            change[minI]++;
-            arr[minI]++;
-            maxTurn = true;
-        }
-    }
-    int ans = 0;
-    for(int i=0; i<n; i++){
-        if(change[i]){
-            ans += change[i]*change[i];
-        }
+        ans = min(cost, ans);
     }
     cout << ans;
     return 0;
