@@ -17,9 +17,10 @@ int main() {
 
     for(int i=0; i<n; i++){
         for(int j=i+1; j<=min(i+3, n-1); j++){
-            if(arr[i] == arr[j])
+            if(arr[i] == arr[j]){
                 bombed[i] = true;
                 bombed[j] = true;
+            }
         }
     }
     for(int i=0; i<n; i++){
@@ -36,6 +37,9 @@ int main() {
             }
         }
     }
-    cout << ans;
+    if(max_cnt == 0)
+        cout << 0;
+    else
+        cout << ans;
     return 0;
 }
