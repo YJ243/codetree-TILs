@@ -1,3 +1,8 @@
+/*
+ * 2023.12.29
+ * 가능한 모든 최댓값 중 하나를 최댓값으로 임의 설정, 그 최댓값에 맞게 구간이 m개로 나누어지는지 판단, 그 중 가장 작은 값을 구하기
+*/
+
 #include <iostream>
 #include <algorithm>
 
@@ -9,6 +14,7 @@ int n, m;
 int arr[MAX_N];
 int ans;
 int main(){
+    // 입력:
     cin >> n >> m;
     int max_num = 0;
     for(int i=0; i<n; i++){
@@ -16,11 +22,10 @@ int main(){
         max_num = max(max_num, arr[i]);
     }
     // max_num ~ 전제 합까지 보기
+    // 구간의 합의 최댓값을 결정한다면, 구간을 몇 개로 나눠야 하는지 손쉽게 찾을 수 있음
     for(int cur_max = max_num; cur_max <= MAX_A; cur_max++){
-        bool possible = true;   // 현재 구간 합들 중 최댓값이 cur_max가 되면서, m개의 구간으로 나눌 수 있는가?
         int section = 1;        // 구간 개수
         int cur_sum = 0;        // 구간에서의 합
-        int tmp_max = 0;
         for(int i=0; i<n; i++){
             // 배열의 첫번째부터 볼 것인데,
             if(cur_sum + arr[i] > cur_max){
@@ -30,10 +35,8 @@ int main(){
             }
             
             cur_sum += arr[i];  // 현재 값 더하기
-            tmp_max = max(tmp_max, cur_sum);
         }
-        if(tmp_max == cur_max && section <= m){
-            //cout << tmp_max << ' ' << section << '\n';
+        if(section <= m){
             ans = cur_max;
             break;
         }
