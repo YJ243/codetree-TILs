@@ -30,9 +30,11 @@ int main() {
             // n개의 숫자를 보면서
             if(cur_min > a[i]){
                 cur_min = a[i];
+                minI = i;
             }
             if(cur_max < a[i]){
                 cur_max = a[i];
+                maxI = i;
             }
         }
         // 최댓값, 최솟값 개수 구하기
