@@ -30,12 +30,13 @@ int main() {
             }
         }
         if(cnt >= h){
-            //cout << "h: " << h << ' ' << "cnt: " << cnt << ' ' << "plus: " << plus_cnt << '\n';
             continue;
         }
         else{
+            //cout << "h: " << h << ' ' << "cnt: " << cnt << ' ' << "plus: " << plus_cnt << '\n';
             // 이제 L개 올려서 만들 수 있는지 보기
-            if(cnt + l >= h && plus_cnt >= l){
+            if(cnt + l >= h && plus_cnt >= h-cnt){
+                //cout << "hey";
                 //cout << "h: " << h << ' ' << "cnt: " << cnt << ' ' << "plus: " << plus_cnt << '\n';
                 continue;
             }
