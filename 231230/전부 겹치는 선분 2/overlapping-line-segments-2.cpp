@@ -1,3 +1,9 @@
+/*
+ * 2023.12.30
+ * 내 풀이
+ * 맨 마지막꺼 제거하고 비교 / 맨 처음꺼 제거하고 비교 => 겹치면 Yes
+*/
+
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -34,9 +40,7 @@ int main() {
     if(a[0].first != maxX[0] || a[0].second != maxX[1]){
         minX[0] = a[0].first, minX[1] = a[0].second;
     }
-    else{
-        minX[0] = a[1].first, minX[1] = a[1].second;
-    }
+
     if(maxX[0] <= minX[1])  isOverlapping = true;
 
     minX[0] = a[1].first, minX[1] = a[1].second;
@@ -45,9 +49,6 @@ int main() {
         maxX[0] = a[0].first, maxX[1] = a[0].second;
     }
 
-    else{
-        maxX[0] = a[1].first , maxX[1] = a[1].second;
-    }
     if(maxX[0] <= minX[1]) isOverlapping = true;
     if(isOverlapping) cout << "Yes";
     else cout << "No";
