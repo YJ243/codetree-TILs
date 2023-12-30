@@ -1,44 +1,61 @@
 #include <iostream>
-#include <climits>
+#include <vector>
 #include <algorithm>
 
-#define MAX_N 100
 using namespace std;
 
-int n;
-int a[MAX_N][2];
+#define MAX_N 100
 
-int minX1[2] = {INT_MAX,0}, minX2[2] = {INT_MAX,0};
-int maxX1[2] = {0,-1}, maxX2[2] = {0,-1};
+int n;
+vector<pair<int, int>> a;
+
+bool compare1(const pair<int, int>& a, const pair<int, int>& b) {
+    return a.first > b.first;
+}
+
+bool compare2(const pair<int, int>& a, const pair<int, int>& b) {
+    return a.second < b.second;
+}
+
 int main() {
     cin >> n;
-    for(int i=0; i<n; i++){
-        cin >> a[i][0] >> a[i][1];
-        if(maxX1[0] < a[i][0]){
-            maxX1[0] = a[i][0];
-            maxX1[1] = i;
-        }
-        if(minX1[0] > a[i][1]){
-            minX1[0] = a[i][1];
-            minX1[1] = i;
-        }
+    a.resize(n);
+    for(int i = 0; i < n; i++){
+        cin >> a[i].first >> a[i].second;
     }
 
-    for(int i=0; i<n; i++){
-        if(maxX2[0] < a[i][0] && i != maxX1[1]){
-            maxX2[0] = a[i][0];
-            maxX2[1] = i;
-        }
-        if(minX2[0] > a[i][1] && i != minX1[1]){
-            minX2[0] = a[i][1];
-            minX2[1] = i;
-        }
+    sort(a.begin(), a.end(), compare1);
+
+    bool isOverlapping = false;
+    int maxX[2] = {a[1].first, a[1].second};
+
+    sort(a.begin(), a.end(), compare2);
+    int minX[2] = {};
+    if(a[0].first != maxX[0] || a[0].second != maxX[1]){
+        minX[0] = a[0].first, minX[1] = a[0].second;
     }
-    //cout << minX1 << ' ' << minX2 << ' ' << maxX1 << ' ' <<maxX2 << '\n';
-    if(maxX2[0] >= minX1[0] || minX2[0] >= maxX1[0])  cout << "Yes";
-    else    cout << "No";
+    else{
+        minX[0] = a[1].first, minX[1] = a[1].second;
+    }
+    if(maxX[0] <= minX[1])  isOverlapping = true;
 
+    minX[0] = a[1].first, minX[1] = a[1].second;
+    sort(a.begin(), a.end(), compare1);
+    if(a[0].first != minX[0] || a[0].second != maxX[1]){
+        maxX[0] = a[0].first, maxX[1] = a[0].second;
+    }
 
+    else{
+        maxX[0] = a[1].first , maxX[1] = a[1].second;
+    }
+    if(maxX[0] <= minX[1]) isOverlapping = true;
+    if(isOverlapping) cout << "Yes";
+    else cout << "No";
+    /*
+    // 정렬된 배열 출력 (옵션)
+    for (const auto& pair : a) {
+        cout << pair.first << " " << pair.second << endl;
+    }*/
 
     return 0;
 }
