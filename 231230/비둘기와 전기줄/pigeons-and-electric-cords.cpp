@@ -17,7 +17,7 @@ int main() {
         count[number].push_back(loc);
     }
 
-    for(int i=0; i<n; i++){
+    for(int i=1; i<=n; i++){
         if(count[i].size() <= 1) continue;
         int cur = count[i][0];
         for(int j=1; j<count[i].size(); j++){
@@ -26,6 +26,7 @@ int main() {
                 cur = count[i][j];
             }
         }
+        //cout << cur << '\n';
     }
     cout << ans;
 
