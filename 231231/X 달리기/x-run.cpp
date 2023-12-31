@@ -20,7 +20,7 @@ int main() {
         time_sec++; // 현재 시간 1초 증가
 
         // 매 초마다 속도를 낮출지, 유지할지 높일지 선택하기
-        if((x-cur_speed >= final_loc/2 -1 )|| x-make_sum(cur_speed)>0){
+        if(x-make_sum(cur_speed)>=cur_speed+1){
             // 속도 높이기
             cur_speed++;
             x -= cur_speed;
