@@ -21,8 +21,11 @@ int main(){
     for(int i=0; i<n; i++)
         cin >> b[i];
 
+    // 입력으로 주어진 사람 수를 보고
+    // 최소 어느 만큼의 거리를 달려야 하는지 확인하기
     for(int i=0; i<n; i++){
         if(a[i] > b[i]){
+            // 최소 a[i]-b[i]명 사람들은 오른쪽으로 달려야 
             int cur = a[i]-b[i];
             a[i] -= cur;
             a[i+1] += cur;
