@@ -5,6 +5,8 @@ int n;
 int arr[MAX_N][2];
 int ans;
 int rcp[6][3] = {
+    // 가위, 바위, 보를 정의
+    // 항상 0을 1이 이기고, 1을 2가 이기고, 2를 0이 이
     {1,2,3},
     {1,3,2},
     {3,1,2},
@@ -24,7 +26,7 @@ int main() {
         for(int i=0; i<n; i++){
             if(arr[i][0] == rcp[t][1] && arr[i][1] == rcp[t][0]) cur++;
             if(arr[i][0] == rcp[t][2] && arr[i][1] == rcp[t][1]) cur++;
-            if(arr[i][0] == rcp[t][1] && arr[i][1] == rcp[t][2]) cur++;
+            if(arr[i][0] == rcp[t][0] && arr[i][1] == rcp[t][2]) cur++;
         }
         ans = max(cur, ans);
     }
