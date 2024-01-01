@@ -9,7 +9,7 @@ int main() {
         cin >> arr[i];
     
     // 주어진 값들을 정렬
-    sort(a, a+n);
+    sort(arr, arr+n);
 
     // Step 1. 시작부터 연속인 경우
     if(arr[1]-arr[0] == 1 && arr[2]-arr[1] == 1)
