@@ -65,6 +65,10 @@ int main() {
             max_k = k;
         }
     }
+    if(max_k == 0){
+        // 만약 최대 k가 1 이상인 수로 바뀌지 않았다면
+        max_k = 1;
+    }
     cout << max_k << ' ' << ans;
     return 0;
 }
