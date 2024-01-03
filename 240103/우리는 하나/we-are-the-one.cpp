@@ -44,7 +44,8 @@ void bfs(){                                 // 갈 수 있는 서로 다른 도�
     // 선택된 도시들을 시작점으로 하기 위해 큐에다가 담기
     for(int i=0; i<(int)selected_city.size(); i++){
         q.push(make_pair(selected_city[i].first, selected_city[i].second));
-        //cout << selected_city[i].first << ' ' << selected_city[i].second << '\n';
+        visited[selected_city[i].first][selected_city[i].second] = true;
+        cur_cnt++;
     }
 
     while(!q.empty()){
