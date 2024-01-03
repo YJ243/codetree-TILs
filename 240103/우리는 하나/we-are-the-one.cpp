@@ -73,16 +73,20 @@ void choose_city(int idx, int x, int y){    // selected_city의 idx번째 도시
         // 만약 k개 도시를 다 골랐다면
         // k개의 도시를 시작점으로 갈 수 있는 도시의 개수 구하기
         bfs();
+        /*
+        for(int i=0; i<(int)selected_city.size(); i++){
+            cout << selected_city[i].first << ' ' << selected_city[i].second << '\n';
+        }
+        cout << "---------------------"<<'\n';
+        */
         return;
     }
 
-    for(int cx = x; cx < n; cx++){
-        for(int cy = y; cy < n; cy++){
-            selected_city.push_back(make_pair(cx, cy));  // (cx, cy) 좌표의 도시 선택
-            choose_city(idx+1, cx, cy+1);
+    for (int i = x; i < n; i++) {
+        for (int j = (i == x ? y : 0); j < n; j++) {
+            selected_city.push_back(make_pair(i, j));
+            choose_city(idx + 1, i, j + 1);
             selected_city.pop_back();
-
-            choose_city(idx+1, cx+1, cy);
         }
     }
 }
