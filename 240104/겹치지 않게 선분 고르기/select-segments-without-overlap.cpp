@@ -8,7 +8,7 @@ using namespace std;
 int n;
 vector<pair<int, int> > lines;
 vector<pair<int, int> > selected_lines;
-int ans;
+int ans=1;
 
 void CheckOverlapping(int total){            // 현재까지 선택된 선분들이 겹치는 게 있는지 확인
     bool isOverlapped = false;
