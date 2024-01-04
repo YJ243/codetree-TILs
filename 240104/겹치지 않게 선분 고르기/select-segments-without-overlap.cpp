@@ -17,7 +17,6 @@ bool isOverlapped(){
             tie(x1,x2) = lines[i];
             tie(x3,x4) = lines[j];
             if((x1 <= x3 && x3 <= x2) || (x3 <= x1 && x1 <= x4)){
-                cout << x1 << ' ' << x2 << ' ' << x3 << ' ' << x4 << '\n';
                 return true;
             }
         }
