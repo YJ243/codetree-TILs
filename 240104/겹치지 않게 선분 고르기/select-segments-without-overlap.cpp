@@ -14,8 +14,8 @@ bool isOverlapped(){
         for(int j=0; j<(int)selected_idx.size(); j++){
             if(i==j) continue;
             int x1, x2, x3, x4;
-            tie(x1,x2) = lines[i];
-            tie(x3,x4) = lines[j];
+            tie(x1,x2) = lines[selected_idx[i]];
+            tie(x3,x4) = lines[selected_idx[j]];
             if((x1 <= x3 && x3 <= x2) || (x3 <= x1 && x1 <= x4)){
                 return true;
             }
