@@ -23,6 +23,9 @@ void update(){
             cur_sum *=numbers[i];
         }
     }
+    if(cur_sum==12){
+        cout << numbers[0] << ' ' << numbers[1] << ' ' << numbers[2] << '\n';
+    }
     ans = max(ans, cur_sum);
 }
 
@@ -45,7 +48,19 @@ int main() {
     for(int i=0; i<(n+1)/2; i++){
         operations[i] = s[i*2+1];
     }
-    choose(0);
-    cout << ans;
+    //choose(0);
+    int cur_sum = 4;
+    for(int i=1; i<(n+1)/2; i++){
+        if(operations[i-1]=='+'){
+            cur_sum += 4;
+        }
+        else if(operations[i-1]=='-'){
+            cur_sum -= 1;
+        }
+        else{
+            cur_sum *=4;
+        }
+    }
+    cout << cur_sum;
     return 0;
 }
