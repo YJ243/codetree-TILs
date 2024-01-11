@@ -1,96 +1,101 @@
 #include <iostream>
 #include <vector>
-#include <algorithm>
-
 #define MAX_N 10
+#define MAX_M 5
 using namespace std;
 int n, m, c;
 int grid[MAX_N][MAX_N];
-vector<pair<int, int> > firstA;
-vector<pair<int, int> > firstB;
+vector<int> a;
+vector<int> b;
+int tmp_sumA;
+int tmp_sumB;
 int ans;
-void getValue(){
-    vector<int> a;
-    vector<int> b;
-    for(int i=0; i<m; i++){
-        a.push_back(grid[firstA[0].first][firstA[0].second+i]);
-        b.push_back(grid[firstB[0].first][firstB[0].second+i]);
+
+void ChooseB(int num, int cur_sum, int cur_square){     // num번째 숫자를 선택하는지 확인하는 함수, 현재까지 합은 cur_sum, 현재까지 제곱의 합은 cur_square
+    if(num == m){
+        if(cur_sum <= c){
+            tmp_sumB = max(cur_square, tmp_sumB);
+            ans = max(ans, tmp_sumA+tmp_sumB);
+        }
+        return;
     }
 
-    sort(a.begin(), a.end());
-    sort(b.begin(), b.end());
-    int result_a=0, result_b=0;
-    int sum_a=0, sum_b=0;
-    
-    for(int i=m-1; i>=0; i--){
-        int cur = a[i];
-        if(cur+sum_a <=c){
-            sum_a += cur;
-            result_a += cur*cur;
-        }
-    }
-    for(int i=m-1; i>=0; i--){
-        int cur = b[i];
-        if(cur+sum_b <=c){
-            sum_b += cur;
-            result_b += cur*cur;
-        }
+    ChooseB(num+1, cur_sum, cur_square);
 
+    ChooseB(num+1, cur_sum+b[num], cur_square+b[num]*b[num]);
+
+}
+void ChooseA(int num, int cur_sum, int cur_square){     // num번째 숫자를 선택하는지 확인하는 함수, 현재까지 합은 cur_sum, 현재까지 제곱의 합은 cur_square
+    if(num == m){
+        if(cur_sum <= c){
+
+            tmp_sumA = max(cur_square, tmp_sumA);
+        }
+        return;
     }
-    
-    ans = max(ans, result_a+result_b);
+
+    ChooseA(num+1, cur_sum, cur_square);
+
+    ChooseA(num+1, cur_sum+a[num], cur_square+a[num]*a[num]);
+
 }
 
-bool IsOverlapping(){
-    int aX=firstA[0].first, aY = firstA[0].second;
-    int bX=firstB[0].first, bY = firstB[0].second;
-    if(aX != bX)    // 만약 줄이 다르면
-        return false;   // 겹치지 않는다.
-    else{
-        if(aY+m-1 < bY || bY+m-1 < aY)
-            return false;
+bool IsOverlapping(int sx1, int sy1, int sx2, int sy2){
+    return !(sy1+m-1 < sx2 || sy2+m-1 < sx1);
+}
+
+bool IsPossible(int sx1, int sy1, int sx2, int sy2){    // 해당 좌표가 가능한지 확인하는 함수
+    if(sy1+m-1 >= n || sy2+m-1 >= n){
+        // 만약 범위를 벗어나면
+        return false;
+    }
+
+    if(IsOverlapping(sx1, sy1, sx2, sy2)){
+        // 만약 범위가 겹치면
+        return false;
     }
     return true;
 }
+void insertNumber(int x1, int y1, int x2, int y2){
 
-void chooseB(int num){
-    if(num==1){
-        if(!IsOverlapping()){
-            getValue();
-        }
-        return;
+    for(int i=0; i<m; i++){
+        a.push_back(grid[x1][y1+i]);
     }
-    for(int i=0; i<n; i++){
-        for(int j=0; j<=n-m; j++){
-            firstB.push_back(make_pair(i,j));
-            chooseB(num+1);
-            firstB.pop_back();
-        }
+
+    for(int i=0; i<m; i++){
+        b.push_back(grid[x2][y2+i]);
     }
 }
-
-void chooseA(int num){  // num개의 칸을 선택했고 그 다음 A의 칸을 선택하는 함수 
-    if(num==1){
-        chooseB(0);
-        return;
-    }
-    for(int i=0; i<n; i++){
-        for(int j=0; j<=n-m; j++){
-            firstA.push_back(make_pair(i,j));
-            chooseA(num+1);
-            firstA.pop_back();
-        }
+void deleteNumber(int x1, int y1, int x2, int y2){
+    for(int i=0; i<m; i++){
+        a.pop_back();
+        b.pop_back();
     }
 }
-
 int main(){
-    // 입력:
     cin >> n >> m >> c;
     for(int i=0; i<n; i++)
         for(int j=0; j<n; j++)
             cin >> grid[i][j];
-    chooseA(0);
 
-    cout << ans;
+    for(int sx1=0; sx1<n; sx1++){
+        for(int sy1=0; sy1<n; sy1++){
+            for(int sx2=0; sx2<n; sx2++){
+                for(int sy2=0; sy2<n; sy2++){
+                    //(sx1, sy1) ~ (sx1, sy1+m-1)
+                    //(sy2, sy2) ~ (sy2, sy2+m-1)
+                    if(IsPossible(sx1, sy1, sx2, sy2)){
+                        // 이제 backtracking으로 해당 범위 내 숫자들을 고르면서 탐색해보기
+                        insertNumber(sx1, sy1, sx2, sy2);
+                        tmp_sumA=0, tmp_sumB=0;
+                        ChooseA(-1,0,0); // 0번째 숫자를 선택
+                        ChooseB(-1,0,0);
+                        deleteNumber(sx1, sy1, sx2, sy2);
+                    }
+                }
+            }
+        }
+    }
+    cout << ans << '\n';
     return 0;
 }
