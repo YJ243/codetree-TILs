@@ -2,11 +2,12 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <climits>
 #define MAX_N 200
 using namespace std;
 string s;
 int n;
-int ans;
+int ans=INT_MIN;
 vector<int> alpa_to_numbers;    // numbers[]
 char operations[MAX_N];
 
@@ -72,20 +73,6 @@ int main() {
     n = (int)s.size();
 
     choose(0);
-    /*
-    int cur_sum = 4;
-    for(int i=1; i<(n+1)/2; i++){
-        if(operations[i-1]=='+'){
-            cur_sum += 4;
-        }
-        else if(operations[i-1]=='-'){
-            cur_sum -= 1;
-        }
-        else{
-            cur_sum *=4;
-        }
-    }
-    */
     cout << ans;
     return 0;
 }
