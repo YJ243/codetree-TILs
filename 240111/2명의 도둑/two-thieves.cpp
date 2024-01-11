@@ -50,6 +50,8 @@ bool IsPossible(int sx1, int sy1, int sx2, int sy2){    // 해당 좌표가 가�
         return false;
     }
 
+    if(sx1!=sx2)
+        return true;
     if(IsOverlapping(sx1, sy1, sx2, sy2)){
         // 만약 범위가 겹치면
         return false;
