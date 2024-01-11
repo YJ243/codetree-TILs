@@ -41,7 +41,7 @@ void ChooseA(int num, int cur_sum, int cur_square){     // num번째 숫자를 �
 }
 
 bool IsOverlapping(int sx1, int sy1, int sx2, int sy2){
-    return !(sy1+m-1 < sx2 || sy2+m-1 < sx1);
+    return !(sy1+m-1 < sy2 || sy2+m-1 < sy1);
 }
 
 bool IsPossible(int sx1, int sy1, int sx2, int sy2){    // 해당 좌표가 가능한지 확인하는 함수
@@ -52,6 +52,7 @@ bool IsPossible(int sx1, int sy1, int sx2, int sy2){    // 해당 좌표가 가�
 
     if(sx1!=sx2)
         return true;
+
     if(IsOverlapping(sx1, sy1, sx2, sy2)){
         // 만약 범위가 겹치면
         return false;
