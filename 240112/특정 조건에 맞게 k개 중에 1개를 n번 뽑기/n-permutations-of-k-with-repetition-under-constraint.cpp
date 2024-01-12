@@ -25,7 +25,18 @@ void Choose(int num){   // num번째 숫자를 고르는 함수
             Choose(num+1);
             a.pop_back();
         }
+        /*
+        해설 풀이
+        for(int i=1; i<=k; i++){
+            if(num >= 2 && i == a[num-1] && i == a[num-2]) continue;
+            else{
+                a.push_back(i);
+                Choose(num+1);
+                a.pop_back();
+            }
+        }
         
+        */
     }
 }
 int main() {
