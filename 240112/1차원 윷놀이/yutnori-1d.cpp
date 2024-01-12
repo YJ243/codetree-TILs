@@ -4,10 +4,12 @@
 #define MAX_N 12
 #define MAX_M 100
 #define MAX_K 4
+
 using namespace std;
-int n, m, k;    // n: 턴수, m: 윷놀이 판 상태, k: 말의 수
-int jump[MAX_K];
-int locations[MAX_K];
+
+int n, m, k;            // n: 턴수, m: 윷놀이 판 상태, k: 말의 수
+int jump[MAX_N];        // 각 턴마다 나아갈 수 있는 거리
+int locations[MAX_K];   // 각 말의 현재 위치
 
 vector<int> pieces;
 int ans;
@@ -36,20 +38,25 @@ void Choose(int num){  // num번째 턴에 움직일 말을 선택하는 함수
         return;
     }
 
-    for(int i=1; i<=k; i++){
+    for(int i=1; i<=k; i++){    // 1부터 k번 말까지 고르기
         pieces.push_back(i);
         Choose(num+1);
         pieces.pop_back();
     }
 
 }
+
 int main() {
     // 입력:
     cin >> n >> m >> k;
-    for(int i=0; i<n; i++)
+
+    for(int i=0; i<n; i++){
         cin >> jump[i];
-    
+        //cout << jump[i] << ' ';
+    }
+
     Choose(0);
     cout << ans << '\n';
+
     return 0;
 }
