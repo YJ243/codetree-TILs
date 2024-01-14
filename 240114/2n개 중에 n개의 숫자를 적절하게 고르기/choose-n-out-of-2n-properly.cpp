@@ -8,7 +8,7 @@
 using namespace std;
 int n;
 int m;
-int arr[MAX_N];
+int arr[MAX_N*2];
 int total;
 
 vector<int> selected;
