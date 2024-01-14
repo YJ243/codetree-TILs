@@ -10,6 +10,11 @@ vector<int> tmp;
 int ans;
 
 void Print(){
+    /*
+    for(int i=0; i<(int)tmp.size(); i++)
+        cout << tmp[i] << ' ' ;
+    cout << '\n';
+    */
     int cur = tmp[0];
     for(int i=1; i<(int)tmp.size(); i++){
         cur = cur ^ tmp[i];
@@ -19,18 +24,23 @@ void Print(){
 }
 
 void Choose(int num){
-    if(num == m){
+    if((int)tmp.size() == m){
         Print();
         return;
     }
 
-    for(int i=0; i<n; i++){
+    for(int i=num; i<n; i++){
+        tmp.push_back(arr[i]);
+        Choose(i+1);
+        tmp.pop_back();
+        /*
         int last_num;
         if(tmp.size()>=1)   last_num = tmp.back();
         tmp.push_back(arr[i]);
         if(tmp.size() >= 1 && last_num != tmp.back())
             Choose(num+1);
         tmp.pop_back();
+        */
     }
 }
 
