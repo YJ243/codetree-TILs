@@ -14,24 +14,19 @@ int total;
 vector<int> selected;
 int ans = INT_MAX;
 
-void GetMinSum(){
-    int sum = 0;
-    for(int i=0; i<(int)selected.size(); i++){
-        sum += selected[i];
-    }
-    ans = min(ans, abs(total-sum-sum));
-}
 
-void ChooseHalf(int idx){
+void ChooseHalf(int idx, int curSum){
     if((int)selected.size() >= n){
-        GetMinSum();
+        ans = min(ans, abs(total-curSum-curSum));
         return;
     }
-
+    int curr = curSum;
     for(int i=idx; i<m; i++){
         selected.push_back(arr[i]);
-        ChooseHalf(i+1);
+        curr += arr[i];
+        ChooseHalf(i+1, curr);
         selected.pop_back();
+        curr -= arr[i];
     }
 }
 int main() {
@@ -42,8 +37,8 @@ int main() {
         total += arr[i];
     }
 
-    ChooseHalf(0);  // 2n개 중 총 n개 원소를 고르는 함수(0번째 원소를 선택하러 감)
+    ChooseHalf(0,0);  // 2n개 중 총 n개 원소를 고르는 함수(0번째 원소를 선택하러 감)
     cout << ans;
-    
+
     return 0;
 }
