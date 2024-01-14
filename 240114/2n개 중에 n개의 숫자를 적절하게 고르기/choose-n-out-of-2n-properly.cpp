@@ -22,6 +22,7 @@ void ChooseHalf(int idx, int curSum){
     }
     int curr = curSum;
     for(int i=idx; i<m; i++){
+        if(selected.size() == 0 && i > 0) return;
         selected.push_back(arr[i]);
         curr += arr[i];
         ChooseHalf(i+1, curr);
