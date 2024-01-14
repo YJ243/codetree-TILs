@@ -17,14 +17,13 @@ int ans = INT_MAX;
 
 void ChooseHalf(int idx, int curSum){
     if((int)selected.size() >= n){
-        //ans = min(ans, abs(total-curSum-curSum));
+        ans = min(ans, abs(total-curSum-curSum));
         return;
     }
     int curr = curSum;
     for(int i=idx; i<m; i++){
         selected.push_back(arr[i]);
         curr += arr[i];
-        ans = min(ans, abs(total-curr-curr));
         ChooseHalf(i+1, curr);
         selected.pop_back();
         curr -= arr[i];
