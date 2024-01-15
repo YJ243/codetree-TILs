@@ -13,12 +13,18 @@ bool visited[MAX_N];
 int ans = INT_MAX;
 void FindMinCost(){
     int currCost = 0, curNum = 0;
+    bool Movable = true;
     for(int i=0; i<(int)selected.size(); i++){
+        if(grid[curNum][selected[i]] == 0){
+            Movable = false;
+        }
         currCost += grid[curNum][selected[i]];
         curNum = selected[i];
     }
     currCost += grid[curNum][0];
-    ans = min(ans, currCost);
+    if(grid[curNum][0] == 0) Movable = false;
+    if(Movable)
+        ans = min(ans, currCost);
 }
 
 void Choose(int num){
