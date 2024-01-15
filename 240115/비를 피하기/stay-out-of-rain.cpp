@@ -9,6 +9,7 @@ int n, h, m;    // n: 격자 크기, h: 사람 명수, m: 비를 피할 수 있�
 int dirs[4][2] = {{1,0},{0,1},{-1,0},{0,-1}};
 int grid[MAX_N][MAX_N];     // 0: 이동 가능, 1: 벽으로 이동 불가, 2: 사람, 3: 비를 피할 수 있는 공간
 
+// 탐색을 위한 자료구
 queue<pair<int, int> > q;
 int step[MAX_N][MAX_N];
 bool visited[MAX_N][MAX_N];
@@ -24,14 +25,15 @@ bool CanGo(int x, int y){
     return InRange(x,y) && !visited[x][y] && grid[x][y] != 1;
 }
 
-void Initialize(){
+void Initialize(){      // 탐색 전 초기화하는 함수
     for(int i=0; i<n; i++)
         for(int j=0; j<n; j++){
-            visited[i][j] = false;
-            step[i][j] = 0;
+            visited[i][j] = false;  // 방문 배열 flase로 초기화
+            step[i][j] = 0;         // 움직인 거리 초기화
         }
 
-    curMin = INT_MAX;
+    curMin = INT_MAX;               // 가장 가까운 쉘터 공간까지의 거리 초기화
+    q = queue<pair<int, int> >();
 }
 void Push(int x, int y, int d){
     q.push(make_pair(x,y));
@@ -40,6 +42,7 @@ void Push(int x, int y, int d){
 }
 
 void bfs(){
+    bool findShelter = false;
     while(!q.empty()){
         pair<int, int> curr = q.front();
         q.pop();
@@ -50,9 +53,12 @@ void bfs(){
                 Push(nx,ny,step[curr.first][curr.second]+1);
                 if(grid[nx][ny] == 3){
                     curMin = min(curMin, step[curr.first][curr.second]+1);
+                    findShelter = true;
+                    break;
                 }
             }
         }
+        if(findShelter) break;
     }
 }
 
@@ -66,8 +72,8 @@ int main() {
     // 탐색 진행
     for(int i=0; i<n; i++){
         for(int j=0; j<n; j++){
-            if(grid[i][j] == 2){
-                // 초기화하기
+            if(grid[i][j] == 2){    // 만약 사람이 서있다면
+                // 탐색 전 초기화하기
                 Initialize();
                 Push(i,j,0);
                 bfs();
