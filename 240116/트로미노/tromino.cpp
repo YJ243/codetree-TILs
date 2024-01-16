@@ -29,7 +29,7 @@ int main() {
     }    
     // 먼저 첫번째 블럭을 보기
     for(int i=0; i<n; i++){
-        for(int j=0; j<n; j++){
+        for(int j=0; j<m; j++){
             if(j+2-1 >= n || i+2-1 >= n) continue;      // 범위 넘어가면 무시
             int a[4];
             int idx =0;
@@ -58,19 +58,19 @@ int main() {
 
     // 그다음 두 번째 블럭을 보기(회전 전)
     for(int i=0; i<n; i++){
-        for(int j=0; j<n; j++){
-            if(j+3-1 >= n) continue;    // 범위 넘어가면 무시
+        for(int j=0; j<m; j++){
+            if(j+3-1 >= m) continue;    // 범위 넘어가면 무시
             
-            for(int k=j; k<j+BLOCK_CNT; k++)
+            for(int k=j; k<j+BLOCK_CNT; k++){
                 tmp[k-j] = grid[i][k];
-
+            }
             ans = max(ans, getSum());
         }
     }
     // 두 번째 블록 회전 후
     for(int j=0; j<n; j++){
-        for(int i=0; i<n; i++){
-            if(i+3-1 >= n) continue;    // 범위 넘어가면 무시
+        for(int i=0; i<m; i++){
+            if(i+3-1 >= m) continue;    // 범위 넘어가면 무시
             for(int k=i; k<i+BLOCK_CNT; k++){
                 tmp[k-i] = grid[k][j];
             }
