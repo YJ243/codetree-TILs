@@ -28,15 +28,15 @@ int main(){
     for(int i=0; i<n; i++){
         for(int j=0; j<m; j++){
             // (i,j)는 첫번째 직사각형의 맨 왼쪽 위 점
-            for(int w1=0; w1<n; w1++){
+            for(int w1=0; w1<m; w1++){
                 for(int h1=0; h1<n; h1++){
-                    if(i+h1 >= n || j+w1 >= n) continue;
+                    if(i+h1 >= n || j+w1 >= m) continue;
 
                     for(int k=0; k<n; k++){
-                        for(int l=0; l<n; l++){
-                            for(int w2=0; w2<n; w2++){
+                        for(int l=0; l<m; l++){
+                            for(int w2=0; w2<m; w2++){
                                 for(int h2=0; h2<n; h2++){
-                                    if(k+h2 >= n || l+w2 >= n) continue;
+                                    if(k+h2 >= n || l+w2 >= m) continue;
                                     if(i+h1 < k || j+w1 < l){
                                         // 두 직사각형이 겹치지 않는 경우에만 
                                         int rectangle1 = getSum(i,j,w1,h1);
