@@ -30,7 +30,7 @@ int main() {
     // 먼저 첫번째 블럭을 보기
     for(int i=0; i<n; i++){
         for(int j=0; j<m; j++){
-            if(j+2-1 >= n || i+2-1 >= n) continue;      // 범위 넘어가면 무시
+            if(j+2-1 >= m || i+2-1 >= n) continue;      // 범위 넘어가면 무시
             int a[4];
             int idx =0;
             for(int k=i; k<i+2; k++){
