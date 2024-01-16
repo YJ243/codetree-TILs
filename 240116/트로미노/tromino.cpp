@@ -68,9 +68,9 @@ int main() {
         }
     }
     // 두 번째 블록 회전 후
-    for(int j=0; j<n; j++){
-        for(int i=0; i<m; i++){
-            if(i+3-1 >= m) continue;    // 범위 넘어가면 무시
+    for(int j=0; j<m; j++){
+        for(int i=0; i<n; i++){
+            if(i+3-1 >= n) continue;    // 범위 넘어가면 무시
             for(int k=i; k<i+BLOCK_CNT; k++){
                 tmp[k-i] = grid[k][j];
             }
