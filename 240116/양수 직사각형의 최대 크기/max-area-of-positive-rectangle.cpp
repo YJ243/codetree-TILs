@@ -32,7 +32,8 @@ int main() {
                     if(i + k >= n || j + l >= m) continue;
                     ans = max(ans, GetPositiveCnt(i,j,k,l));
                 }
-
+    if(ans==0)
+        ans = -1;
     cout << ans;
     return 0;
 }
