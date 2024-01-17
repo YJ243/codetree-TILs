@@ -7,9 +7,10 @@ int main() {
         cin >> age[i] >> sex[i];
     
     for(int i=0; i<2; i++){
-        if(age[i] >= 19 && sex[i] == 'M')
+        if(age[i] >= 19 && sex[i] == 'M'){
             cout << 1;
             return 0;
+        }
     }
     cout << 0 << '\n';
     return 0;
