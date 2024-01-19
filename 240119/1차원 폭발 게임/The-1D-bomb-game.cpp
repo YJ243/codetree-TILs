@@ -35,12 +35,13 @@ void Bomb(){
             // 같은게 나왔다면
             else{
                 curCnt++;                   // 같은 폭탄 개수 증가시키기
-                if(i == lastIdx){
-                    // 그런데 만약 마지막 인덱스라면
-                    if(curCnt >= m){
-                        IsBombed = true;
-                        doBomb(startIdx, i);    // start인덱스부터 현재까지 0으로 만들기
-                    }
+            }
+
+            if(i == lastIdx){
+                // 그런데 만약 마지막 인덱스라면
+                if(curCnt >= m){
+                    IsBombed = true;
+                    doBomb(startIdx, i);    // start인덱스부터 현재까지 0으로 만들기
                 }
             }
         }
@@ -73,10 +74,12 @@ int main() {
     
     // 폭발시키기
     Bomb();
+    /*
     if(m == 1){
         cout << 0;
         return 0;
     }
+    */
     // 출력:
     cout << lastIdx+1 << '\n';
     for(int i=0; i<=lastIdx; i++)
