@@ -37,13 +37,12 @@ void Bomb(){
                 curCnt++;                   // 같은 폭탄 개수 증가시키기
             }
 
-            if(i == lastIdx){
-                // 그런데 만약 마지막 인덱스라면
-                if(curCnt >= m){
-                    IsBombed = true;
-                    doBomb(startIdx, i);    // start인덱스부터 현재까지 0으로 만들기
-                }
-            }
+        }
+
+        // 그런데 만약 마지막 인덱스라면
+        if(curCnt >= m){
+            IsBombed = true;
+            doBomb(startIdx, lastIdx);    // start인덱스부터 현재까지 0으로 만들기
         }
 
         if(!IsBombed) break;        // 만약 폭탄이 터지지 않았다면 break
