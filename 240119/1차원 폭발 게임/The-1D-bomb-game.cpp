@@ -73,7 +73,10 @@ int main() {
     
     // 폭발시키기
     Bomb();
-
+    if(m == 1){
+        cout << 0;
+        return 0;
+    }
     // 출력:
     cout << lastIdx+1 << '\n';
     for(int i=0; i<=lastIdx; i++)
