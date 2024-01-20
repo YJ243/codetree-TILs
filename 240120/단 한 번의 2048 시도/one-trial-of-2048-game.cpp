@@ -1,134 +1,125 @@
 #include <iostream>
+#include <algorithm>
+
 #define MAX_N 4
+#define ASCII_NUM 128
+#define NONE -1
+
 using namespace std;
 
+int n = 4;
+
 int grid[MAX_N][MAX_N];
-char dir;
+int next_grid[MAX_N][MAX_N];
 
-
-void FindStraightNum(int idx){
-    if(dir == 'R' || dir == 'D'){
-        // 같은 수가 다음에 존재한다면 그 다음 수를 0으로 만들기
-        for(int j=MAX_N-1; j>=1; j--){
-            if(dir == 'R'){
-                if(grid[idx][j] == 0) continue; // 0이면 넘어가기
-                if(grid[idx][j] == grid[idx][j-1]){ // 만약 그 다음 수와 같다면
-                    grid[idx][j] *= 2;
-                    grid[idx][j-1] = 0; // 그 다음 수를 0으로 만들기
-                }
-            }
-            else{
-                if(grid[j][idx] == 0) continue;
-                if(grid[j][idx] == grid[j-1][idx]){
-                    grid[j][idx] *= 2;
-                    grid[j-1][idx] = 0;
-                }
-            }
-        }
-    }
-    else{
-        // 같은 수가 다음에 존재한다면 그 다음 수를 0으로 만들기
-        for(int j=0; j<MAX_N-1; j++){
-            if(dir == 'L'){
-                if(grid[idx][j] == 0) continue; // 0이면 넘어가기
-                if(grid[idx][j] == grid[idx][j+1]){ // 만약 그 다음 수와 같다면
-                    grid[idx][j] *= 2;
-                    grid[idx][j+1] = 0; // 그 다음 수를 0으로 만들기
-                }
-            }
-            else{
-                if(grid[j][idx] == 0) continue;
-                if(grid[j][idx] == grid[j+1][idx]){
-                    grid[j][idx] *= 2;
-                    grid[j+1][idx] = 0;
-                }
-            }
-        }
-    }
-}
-void MoveZero(int idx){        // idx번째 줄에서 0을 한쪽으로 모는 함수
-    // 임시로 옮겨놓을 배열 선언
-    int temp[MAX_N];
-    for(int j=0; j<MAX_N; j++)
-        temp[j] = 0;
-
-    // 끝에서부터 보기
-    if(dir == 'R' || dir == 'D'){
-        int tempLastIdx = MAX_N-1;
-        // 1-1. 줄 단위로 숫자를 오른쪽으로 몰기
-        for(int j=MAX_N-1; j>=0; j--){
-            if(dir == 'R'){
-                if(grid[idx][j])
-                    temp[tempLastIdx--] = grid[idx][j];
-            }
-
-            else{
-                if(grid[j][idx]){
-                    temp[tempLastIdx--] = grid[j][idx];
-                }
-            }
-        }
-        // 1-2. 원래 배열로 옮기기
-        for(int j=0; j<MAX_N; j++){
-            if(dir == 'R')
-                grid[idx][j] = temp[j];
-            else
-                grid[j][idx] = temp[j];
-        }
-    }
-
-    // 0번부터 보기
-    else if(dir == 'L' || dir == 'U'){
-        int tempLastIdx = 0;
-        // 1-1. 줄 단위로 숫자를 왼쪽으로 몰기
-        for(int j=0; j<MAX_N; j++){
-            if(dir == 'L'){
-                if(grid[idx][j])
-                    temp[tempLastIdx++] = grid[idx][j];
-            }
-            else{
-                if(grid[j][idx])
-                    temp[tempLastIdx++] = grid[j][idx];
-            }
-        }
-        // 1-2. 원래 배열로 옮기기
-        for(int j=0; j<MAX_N; j++){
-            if(dir == 'L')
-                grid[idx][j] = temp[j];
-            else
-                grid[j][idx] = temp[j];
-        }
-    }
-
+// grid를 시계방향으로 90' 회전시킵니다.
+void Rotate() {
+    // next_grid를 0으로 초기화합니다.
+    for(int i = 0; i < n; i++)
+		for(int j = 0; j < n; j++)
+            next_grid[i][j] = 0;
+    
+    // 90' 회전합니다.
+    for(int i = 0; i < n; i++)
+		for(int j = 0; j < n; j++)
+			next_grid[j][n-1-i] = grid[i][j];
+    
+    // next_grid를 grid에 옮겨줍니다.
+     for(int i = 0; i < n; i++)
+		for(int j = 0; j < n; j++)
+            grid[i][j] = next_grid[i][j];
 }
 
-void Move(){
-    // 한 줄 단위로 기
-    for(int idx=0; idx<MAX_N; idx++){
-        // Step 1. 0을 한쪽으로 몰기
-        MoveZero(idx);
-        // Step 2. 같은 숫자가 두개씩 있는지 탐색하기
-        FindStraightNum(idx);
-        // Step 3. 마지막으로 0을 한쪽으로 몰기
-        MoveZero(idx);
+// 아래로 숫자들을 떨어뜨립니다.
+void Drop() {
+    // next_grid를 0으로 초기화합니다.
+    for(int i = 0; i < n; i++)
+        for(int j = 0; j < n; j++)
+            next_grid[i][j] = 0;
+    
+    // 아래 방향으로 떨어뜨립니다.
+    for(int j = 0; j < n; j++) {
+        // 같은 숫자끼리 단 한번만
+        // 합치기 위해 떨어뜨리기 전에
+        // 숫자 하나를 keep해줍니다.
+        int keep_num = NONE, next_row = n - 1;
+        for(int i = n - 1; i >= 0; i--) {
+            if(!grid[i][j]) continue;
+            
+            // 아직 떨어진 숫자가 없다면, 갱신해줍니다.
+            if(keep_num == NONE)
+                keep_num = grid[i][j];
+            // 가장 최근에 관찰한 숫자가 현재 숫자와 일치한다면
+            // 하나로 합쳐주고, keep 값을 비워줍니다.
+            else if(keep_num == grid[i][j]) {
+                next_grid[next_row--][j] = keep_num * 2;
+                keep_num = NONE;
+            }
+            // 가장 최근에 관찰한 숫자와 현재 숫자가 다르다면
+            // 최근에 관찰한 숫자를 실제 떨어뜨려주고, keep 값을 갱신해줍니다.
+            else {
+                next_grid[next_row--][j] = keep_num;
+                keep_num = grid[i][j];
+            }
+        }
+        
+        // 전부 다 진행했는데도 keep 값이 남아있다면
+        // 실제로 한번 떨어뜨려줍니다.
+        if(keep_num != NONE)
+            next_grid[next_row--][j] = keep_num;
     }
+    
+    // next_grid를 grid에 옮겨줍니다.
+    for(int i = 0; i < n; i++)
+        for(int j = 0; j < n; j++)
+            grid[i][j] = next_grid[i][j];
 }
 
-int main(){
-    // 입력:
-    for(int i=0; i<MAX_N; i++)
-        for(int j=0; j<MAX_N; j++)
+// move_dir 방향으로 기울이는 것을 진행합니다.
+// 회전을 규칙적으로 하기 위해
+// 아래, 오른쪽, 위, 왼쪽 순으로 dx, dy 순서를 가져갑니다.
+void Tilt(int move_dir) {
+    // Step 1.
+    // move_dir 횟수만큼 시계방향으로 90'회전하는 것을 반복하여
+    // 항상 아래로만 숫자들을 떨어뜨리면 되게끔 합니다.
+    for(int i = 0; i < move_dir; i++)
+        Rotate();
+
+    // Step 2.
+    // 아래 방향으로 떨어뜨립니다.
+    Drop();
+    
+    // Step 3.
+    // 4 - move_dir 횟수만큼 시계방향으로 90'회전하는 것을 반복하여
+    // 처음 상태로 돌아오게 합니다. (총 360' 회전)
+    for(int i = 0; i < 4 - move_dir; i++)
+        Rotate();
+}
+
+int main() {
+    for(int i = 0; i < n; i++)
+        for(int j = 0; j < n; j++)
             cin >> grid[i][j];
-    cin >> dir;
-
-    Move();
-
-    // 출력:
-    for(int i=0; i<MAX_N; i++){
-        for(int j=0; j<MAX_N; j++){
-            cout << grid[i][j] << ' ';
-        }
-        cout << '\n';
+    
+    char dir_char;
+    cin >> dir_char;
+    
+    // 아래, 오른쪽, 위, 왼쪽 순으로 
+    // mapper를 지정합니다.
+    int dir_mapper[ASCII_NUM];
+    dir_mapper['D'] = 0;
+    dir_mapper['R'] = 1;
+    dir_mapper['U'] = 2;
+    dir_mapper['L'] = 3;
+    
+    // 기울입니다.
+    Tilt(dir_mapper[dir_char]);
+    
+    for(int i = 0; i < n; i++) {
+        for(int j = 0; j < n; j++)
+            cout << grid[i][j] << " ";
+        cout << endl;
     }
+    
     return 0;
 }
