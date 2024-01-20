@@ -31,16 +31,16 @@ void FindStraightNum(int idx){
         for(int j=0; j<MAX_N; j++){
             if(dir == 'L'){
                 if(grid[idx][j] == 0) continue; // 0이면 넘어가기
-                if(grid[idx][j] == grid[idx][j-1]){ // 만약 그 다음 수와 같다면
+                if(grid[idx][j] == grid[idx][j+1]){ // 만약 그 다음 수와 같다면
                     grid[idx][j] *= 2;
-                    grid[idx][j-1] = 0; // 그 다음 수를 0으로 만들기
+                    grid[idx][j+1] = 0; // 그 다음 수를 0으로 만들기
                 }
             }
             else{
                 if(grid[j][idx] == 0) continue;
-                if(grid[j][idx] == grid[j-1][idx]){
+                if(grid[j][idx] == grid[j+1][idx]){
                     grid[j][idx] *= 2;
-                    grid[j-1][idx] = 0;
+                    grid[j+1][idx] = 0;
                 }
             }
         }
