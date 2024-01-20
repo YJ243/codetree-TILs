@@ -28,7 +28,7 @@ void FindStraightNum(int idx){
     }
     else{
         // 같은 수가 다음에 존재한다면 그 다음 수를 0으로 만들기
-        for(int j=0; j<MAX_N; j++){
+        for(int j=0; j<MAX_N-1; j++){
             if(dir == 'L'){
                 if(grid[idx][j] == 0) continue; // 0이면 넘어가기
                 if(grid[idx][j] == grid[idx][j+1]){ // 만약 그 다음 수와 같다면
