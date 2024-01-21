@@ -4,7 +4,7 @@ using namespace std;
 
 int n, r, c;
 int grid[MAX_N][MAX_N];
-int dirs[4][2] = {{1,0},{-1,0},{0,-1},{0,1}};   // 상하좌우 우선순위
+int dirs[4][2] = {{-1,0},{1,0},{0,-1},{0,1}};   // 상하좌우 우선순위
 
 bool InRange(int x, int y){
     return 0 <= x && x < n && 0 <= y && y < n;
