@@ -22,12 +22,10 @@ void Simulation(){
     int firstX = r, firstY = c, firstD = curD;
     while(true){
         if(turn_cnt >= DIR_NUM){
-            cout << "aa" << '\n';
             ans = -1;
             break;
         }
         if(ans != 0 && firstD == curD && r == firstX && c == firstY){
-
             ans = -1;
             break;
         }
