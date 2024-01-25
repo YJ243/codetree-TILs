@@ -20,6 +20,15 @@ bool InRange(int x, int y){
     return 0 <= x && x < n && 0 <= y && y < n;
 }
 
+void Print(){
+    for(int i=0; i<n; i++){
+        for(int j=0; j<n; j++){
+            cout << grid[i][j] << ' ';
+        }
+        cout << '\n';
+    }
+}
+
 int main() {
     // 입력:
     cin >> n >> m >> k;
@@ -30,6 +39,7 @@ int main() {
     }
     grid[0][0] = 1;
     // 시뮬레이션 시작
+    //Print();
     for(int i=0; i<k; i++){
         // 뱀의 방향 전환 정보 입력받기
         char dir_info;
@@ -50,12 +60,14 @@ int main() {
             // 움직일 위치가 범위 안에 있다면
             else{
                 // 1. 만약 몸이 꼬여 서로 겹쳐졌을 경우
+                /*
                 if(grid[nx][ny] == 1 || grid[nx][ny] == 2){
                     cout << ans;
                     return 0;
                 }
-                // 2. 만약 사과라면
-                else if(grid[nx][ny] == 3){
+                */
+                // 1. 만약 사과라면
+                if(grid[nx][ny] == 3){
                     grid[nx][ny] = 1;   // 사과 자리에 머리 옮기기
                     grid[sX][sY] = 2;   // 머리 있던 자리는 몸통으로 만들기
                     if(eX == -1 && eY == -1){
@@ -64,13 +76,11 @@ int main() {
                     }
                     sX = nx, sY = ny;   // 시작 위치 옮기기
                 }
-                // 3. 만약 빈칸이라면
+                // 2. 만약 빈칸 또는 몸통/꼬리 자리라면
                 else{
-                    grid[nx][ny] = 1;   // 빈칸에 머리 옮기기
                     if(eX == -1 && eY == -1){
                         // 만약 꼬리가 없다면
-                        grid[sX][sY] = 0;
-                        sX = nx, sY = ny;
+                        grid[sX][sY] = 0;   // 원래 머리 있던 자리 0으로 만들기
                     }
                     else{
                         // 꼬리가 있었다면
@@ -84,10 +94,17 @@ int main() {
                             }
                         }
                     }
-                    sX = nx, sY = ny;
+                    if(grid[nx][ny] != 0){
+                        // 만약 꼬리를 옮기고도 머리가 이동할 자리가 빈칸이 아니라면
+                        cout << ans;
+                        return 0;
+                    }
+                    sX = nx, sY = ny;   // 머리 위치 좌표 옮기기
+                    grid[nx][ny] = 1;   // 머리 표시 하기
                 }
 
             }
+            //Print();
         }
     }
     cout << ans;
