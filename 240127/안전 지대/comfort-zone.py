@@ -1,3 +1,5 @@
+import sys
+sys.setrecursionlimit(10**6)
 n, m = tuple(map(int, input().split()))
 grid = [
     list(map(int, input().split()))
