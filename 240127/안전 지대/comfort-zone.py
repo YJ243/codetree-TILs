@@ -41,4 +41,6 @@ for k in range(1,101):
         max_safe = cur_safe
         height = k
 
+if height == 0:
+    height = 1
 print(height, max_safe)
