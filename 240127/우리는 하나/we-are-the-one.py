@@ -13,15 +13,15 @@ selected_city = []
 def InRange(x, y):
     return 0 <= x and x < n and 0 <= y and y < n
 
-def CanGo(nx, ny):
-    return InRange(nx, ny) and not visited[nx][ny] and u <= grid[nx][ny] and grid[nx][ny] <= d
+def CanGo(nx, ny, px, py):
+    return InRange(nx, ny) and not visited[nx][ny] and u <= abs(grid[nx][ny]-grid[px][py]) and abs(grid[nx][ny]-grid[px][py]) <= d
 
 def bfs():
     while q:
         x, y = q.popleft()
         for dx, dy in zip(dxs, dys):
             nx, ny = x+dx, y+dy
-            if CanGo(nx,ny):
+            if CanGo(nx,ny, x, y):
                 visited[nx][ny] = True
                 q.append((nx,ny))
             
