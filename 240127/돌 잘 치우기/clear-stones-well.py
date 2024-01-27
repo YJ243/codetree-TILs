@@ -65,16 +65,15 @@ def Move():
     for s in selected_stones:
         grid[s[0]][s[1]] = 1
 
-
-# m개의 돌 조합 구하기
-def Choose(idx, cnt):       # idx는 현재 stones 에서 선택할 시작점, cnt번째 돌을 고르는 함
+# m개의 돌 조합 고르기
+def Choose(cnt, idx):  # idx는 현재 stones 에서 선택할 시작점, cnt번째 돌을 고르는 함수
     if cnt == m:
         Move()
         return
-    
+
     for i in range(idx, len(stones)):
-        selected_stones.append(stones[idx])
-        Choose(idx+1, cnt+1)
+        selected_stones.append(stones[i])
+        Choose(idx + 1, cnt + 1)
         selected_stones.pop()
 
 # 시작점 입력받기
