@@ -59,25 +59,17 @@ def Move():
     for s in selected_walls:
         graph[s[0]][s[1]] = 1
 
-def Choose(idx, cnt):
-    if idx == len(walls):
-        if cnt == k:
-            Move()
-            return
-        else:
-            return
-
-    if cnt == k:
+def Choose(num):
+    if len(selected_walls) == k:
         Move()
         return
     
-    selected_walls.append(walls[idx])
-    Choose(idx+1, cnt+1)
-    selected_walls.pop()
+    for i in range(num, len(walls)):
+        selected_walls.append(walls[i])
+        Choose(i+1)
+        selected_walls.pop()
 
-    Choose(idx+1, cnt)
-
-Choose(0, 0)  # 함수 호출
+Choose(0)  # 함수 호출
 if ans == 300:
     ans = -1
 
