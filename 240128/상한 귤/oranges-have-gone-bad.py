@@ -75,3 +75,89 @@ for i in range(n):
     for j in range(n):
         print(step[i][j], end= ' ')
     print()
+
+''' 해설 '''
+'''
+from collections import deque
+
+# 변수 선언 및 입력
+n, k = tuple(map(int, input().split()))
+a = [
+    list(map(int, input().split()))
+    for _ in range(n)
+]
+
+s_pos = [
+    (i, j)
+    for i in range(n)
+    for j in range(n)
+    if a[i][j] == 2
+]
+
+# bfs에 필요한 변수들 입니다.
+q = deque()
+visited = [
+    [False for _ in range(n)]
+    for _ in range(n)
+]
+step = [                  # step[i][j] : 
+    [0 for _ in range(n)] # (i, j) 지점에 있는 귤이 
+    for _ in range(n)     # 최초로 상하게 되는 시간을 기록합니다.
+]
+
+
+def in_range(x, y):
+    return 0 <= x and x < n and 0 <= y and y < n
+
+# 격자를 벗어나지 않으면서, 해당 위치에 귤이 놓여있고, 아직 방문한 적이 없는 곳이라면
+# 지금 이동하는 것이 최초로 해당 귤을 상하게 하는 것이므로 가야만 함
+def can_go(x, y):
+    return in_range(x, y) and a[x][y] and not visited[x][y]
+
+# queue에 새로운 위치를 추가하고
+# 방문 여부를 표시해줍니다.
+# 상하게 되는 시간 값도 갱신해줍니다.
+def push(nx, ny, new_step):
+    q.append((nx, ny))
+    visited[nx][ny] = True
+    step[nx][ny] = new_step
+
+# bfs를 통해 각 칸마다 최초로 상하게 되는 시간을 구합니다.
+def bfs():
+    # queue에 남은 것이 없을때까지 반복합니다.
+    while q:
+        # queue에서 가장 먼저 들어온 원소를 뺍니다.
+        x, y = q.popleft()
+
+        dxs, dys = [-1, 1, 0, 0], [0, 0, -1, 1]
+
+        # queue에서 뺀 원소의 위치를 기준으로 4방향을 확인해봅니다.
+        for dx, dy in zip(dxs, dys):
+            nx, ny = x + dx, y + dy
+
+            # 아직 방문한 적이 없으면서 갈 수 있는 곳이라면
+            # 새로 queue에 넣어줍니다.
+            if can_go(nx, ny):
+                # 시간은 이전 시간에 1이 더해지게 됩니다. 
+                push(nx, ny, step[x][y] + 1)
+
+# 처음 상해있던 귤들을 전부 queue에 넣어놓고 시작
+# 이는 각 칸에 있는 신선한 귤에 대해
+# 가장 가까이에 있던 상한 귤로부터 최초로 상하게 되는 시간을
+# 단 한 번의 bfs로 가능하게끔 함
+for x, y in s_pos:
+    push(x, y, 0)
+
+bfs()
+
+for i in range(n):
+    for j in range(n):
+        if a[i][j] == 0:
+            print(-1, end=" ")
+        else:
+            if not visited[i][j]:
+                print(-2, end=" ")
+            else:
+                print(step[i][j], end=" ")
+    print()
+    '''
