@@ -10,6 +10,8 @@ for elem in arr:
         ans += freq[diff]
 
     if elem not in freq:
-        freq[elem] += 1
-    else:
         freq[elem] = 1
+    else:
+        freq[elem] += 1
+
+print(ans)
