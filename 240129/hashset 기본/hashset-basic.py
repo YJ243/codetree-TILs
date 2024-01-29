@@ -14,6 +14,7 @@ for _ in range(n):
             print("false")
         
 ''' 해설 '''
+'''
 # 변수 선언 및 입력:
 n = int(input())
 s = set()
@@ -31,3 +32,4 @@ for _ in range(n):
             print("true")
         else:
             print("false")
+'''
