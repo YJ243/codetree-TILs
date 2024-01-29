@@ -5,9 +5,10 @@ freq = dict()
 
 for i in range(n):
     for j in range(i+1,n):
-        if arr[i]+arr[j] not in freq:
-            freq[arr[i]+arr[j]] = 1
-        else:
-            freq[arr[i]+arr[j]] += 1
+        if arr[i]+arr[j] == k:
+            if arr[i]+arr[j] not in freq:
+                freq[arr[i]+arr[j]] = 1
+            else:
+                freq[arr[i]+arr[j]] += 1
 
 print(freq[k])
