@@ -3,12 +3,15 @@ arr = list(map(int, input().split()))
 
 freq = dict()
 
-for i in range(n):
-    for j in range(i+1,n):
-        if arr[i]+arr[j] == k:
-            if arr[i]+arr[j] not in freq:
-                freq[arr[i]+arr[j]] = 1
-            else:
-                freq[arr[i]+arr[j]] += 1
+for num in arr:
+    if num in freq:
+        freq[num] += 1
+    else:
+        freq[num] = 1
+ans = 0
+for num in arr:
+    if k-num in freq:
+        ans += freq[k-num]
 
-print(freq[k])
+
+print(ans // 2)
