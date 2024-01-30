@@ -3,11 +3,11 @@ n, g = tuple(map(int, input().split()))     # n: 사람 명수, g: 그룹 개수
 people = [list(map(int, input().split())) for _ in range(g)]    # 그룹의 멤버들 입력받기
 total_invited = set()
 
-people.sort(key=lambda x: x[0])
-'''
 for sublist in people:
     sublist[1:] = sorted(sublist[1:])
-'''
+
+people.sort(key=lambda x: (x[0], x[1]))
+
 total_invited.add(1)
 
 for group in people:
