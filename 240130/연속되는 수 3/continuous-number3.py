@@ -10,6 +10,7 @@ else:
     cur_sign = 1
 
 for i in range(1, len(arr)):
+
     if arr[i] > 0:
         now = 0
     else:
@@ -22,5 +23,5 @@ for i in range(1, len(arr)):
         cur_cnt += 1
     
     ans = max(ans, cur_cnt)
-
+ans = max(ans, cur_cnt)
 print(ans)
