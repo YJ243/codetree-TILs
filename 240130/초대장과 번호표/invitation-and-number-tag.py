@@ -1,32 +1,31 @@
-# 입력:
-n, g = tuple(map(int, input().split()))     # n: 사람 명수, g: 그룹 개수
-people = [list(map(int, input().split())) for _ in range(g)]    # 그룹의 멤버들 입력받기
-total_invited = set()
+from collections import deque
 
-for sublist in people:
-    sublist[1:] = sorted(sublist[1:])
+n, g = tuple(map(int, input().split()))
 
-people.sort(key=lambda x: (x[0], x[1]))
+not_invited = [ set() for _ in range(g) ]   # 각 그룹마다 초대받지 못한 사람들에 대한 HashSet
+person_in_group = [[] for _ in range(n+1)]  # 각 사람이 속해있는 그룹들
+invited = [False for _ in range(n+1)]
+for group_num in range(g):
+    inp = list(map(int, input().split()))
+    for i in range(1, len(inp)):
+        not_invited[group_num].add(inp[i])
+        person_in_group[inp[i]].append(group_num)
 
-total_invited.add(1)
+q = deque()
+invited[1] = True
+q.append(1)
 
-for _ in range(10):
-    for group in people:
-        total_cnt = group[0]
-        invited_cnt = 0
-        # 초대받은 인원수 확인
-        for i in range(1, len(group)):
-            if group[i] in total_invited:   # 만약 해당 번호를 가진 사람이 초대받았다면
-                invited_cnt += 1            # 초대받은 명수 추가
+while q:
+    cur_num = q.popleft()
 
-        # 한번더 확인하면서 개수가 k-1인지 확인
-        for i in range(1, len(group)):
-            if group[i] not in total_invited:
-                if invited_cnt == total_cnt-1:
-                    total_invited.add(group[i])
-                    invited_cnt += 1
-
-
+    for group_num in person_in_group[cur_num]:
+        not_invited[group_num].discard(cur_num)  # 현재 숫자를 해당 그룹에서 빼기
+        
+        if len(not_invited[group_num]) == 1:     # 만약 남은 원소가 한개라면
+            cur = not_invited[group_num].pop()
+            invited[cur] = True
+            q.append(cur)
 
 
-print(len(total_invited))
+ans = sum(invited)
+print(ans)
