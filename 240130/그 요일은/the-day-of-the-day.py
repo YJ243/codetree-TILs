@@ -14,7 +14,8 @@ def count_days(m, d):
 
 diff = count_days(m2, d2) - count_days(m1, d1)
 
-ans = diff // 7
+ans = diff // 7 + 1
+
 if diff % 7 <= day_of_week[day]:
     ans += 1
 
