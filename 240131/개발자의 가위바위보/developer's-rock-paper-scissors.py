@@ -1,18 +1,15 @@
 n = int(input())
 win_combination = [
     [[2,1],[3,2],[1,3]],
-    [[3,1],[2,3],[1,2]],
-    [[1,2],[3,1],[2,3]],
+    [[3,1],[2,3],[1,2]]
 ]
 
 results = [list(map(int, input().split())) for _ in range(n)]
 
 ans = 0
 for win in win_combination: # 한 줄씩 보기
-    # 이제 이 줄은 [2,1], [3,1], [1,3]임
     cur = 0
     for r in results:
-        # 이제 [1,2],[2,2],[1,3],[1,1],[3,2] 볼꺼임
         a, b = r[0], r[1]
         for i in range(len(win)):
             if a == win[i][0] and b == win[i][1]:
@@ -21,3 +18,41 @@ for win in win_combination: # 한 줄씩 보기
     ans = max(ans, cur)
 
 print(ans)
+
+''' 해설 '''
+'''
+# 변수 선언 및 입력
+n = int(input())
+arr = [
+    list(map(int, input().split()))
+    for _ in range(n)
+]
+
+max_win = 0
+
+# Case 1. 1이 2를 이기고, 2가 3을 이기고 3이 1을 이기는 경우
+win = 0
+for a, b in arr:
+    if a == 1 and b == 2:
+        win += 1
+    elif a == 2 and b == 3:
+        win += 1
+    elif a == 3 and b == 1:
+        win += 1
+
+max_win = max(max_win, win)
+
+# Case 2. 1이 3을 이기고, 3이 2를 이기고 2가 1을 이기는 경우
+win = 0
+for a, b in arr:
+    if a == 1 and b == 3:
+        win += 1
+    elif a == 3 and b == 2:
+        win += 1
+    elif a == 2 and b == 1:
+        win += 1
+
+max_win = max(max_win, win)
+
+print(max_win)
+'''
