@@ -7,6 +7,9 @@ cur = m
 if m == 0:
     print(n-1)
     exit(0)
+if n <= m:
+    print(1)
+    exit(0)
     
 while True:
     CanbeSetup = False
