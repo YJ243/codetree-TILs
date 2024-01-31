@@ -4,7 +4,7 @@ arr = list(map(int, input().split()))
 ans = 0
 cur = m
 if m == 0:
-    print(n-1)
+    print(sum(arr))
     exit(0)
 
 if n < m:
