@@ -1,6 +1,10 @@
+import sys
+INT_MAX = sys.maxsize
+
+# 변수 선언 및 입력
 a, b, x, y = tuple(map(int, input().split()))
 
-ans = 10000000
+ans = INT_MAX
 
 # 1. a->b
 ans = min(ans, abs(b-a))
