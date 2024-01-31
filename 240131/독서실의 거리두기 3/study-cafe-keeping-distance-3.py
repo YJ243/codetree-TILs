@@ -16,7 +16,7 @@ for i in range(1, len(seats)):
 # 2. 그 가운데에다가 1을 집어넣기
 seats[(maxX+maxY)//2] = '1'
 
-ans = 1000
+ans = 1000  # 현재 가장 가까운 두 사람 거
 # 3. 처음부터 순회하면서 가장 가까운 거리 찾아서 출력하기
 x, y = 0,0
 
@@ -26,6 +26,4 @@ for i in range(1, len(seats)):
         ans = min(ans, y-x)
         x, y = i,i
 
-if ans == 1:
-    ans = 0
 print(ans)
