@@ -3,6 +3,11 @@ arr = list(map(int, input().split()))
 
 ans = 0
 cur = m
+
+if m == 0:
+    print(n-1)
+    exit(0)
+    
 while True:
     CanbeSetup = False
     for i in range(cur-m, cur):
