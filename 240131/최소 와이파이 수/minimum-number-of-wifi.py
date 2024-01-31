@@ -24,7 +24,10 @@ while True:
 
     if CanbeSetup or cur + m >= n:
         ans += 1
-        cur += 2*m+1
+        if cur+2*m+1 < n:
+            cur += 2*m+1
+        else:
+            cur += m+1
     else:
         cur += m
 
