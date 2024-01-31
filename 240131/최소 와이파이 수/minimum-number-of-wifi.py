@@ -10,7 +10,9 @@ if m == 0:
 if n <= m:
     print(1)
     exit(0)
-    
+if sum(arr) == 0:
+    print(0)
+    exit(0)
 while True:
     CanbeSetup = False
     for i in range(cur-m, cur):
