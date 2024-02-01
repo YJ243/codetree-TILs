@@ -6,7 +6,11 @@ pq = []
 for num in arr:
     heapq.heappush(pq, -num)
 
-while len(pq) != 1:
+
+while True:
+    if len(pq) <= 1:
+        break
+
     first = -heapq.heappop(pq)
     second = -heapq.heappop(pq)
 
@@ -14,4 +18,7 @@ while len(pq) != 1:
 
     heapq.heappush(pq, -abs(first-second))
 
-print(-heapq.heappop(pq))
+if not pq:
+    print(-1)
+else:
+    print(-heapq.heappop(pq))
