@@ -24,7 +24,7 @@ while True:
             # ex) ... + 짝 + 홀 + ( )
             if odd > 0: # 만약 홀수가 한개 남아 있다면 짝+홀+홀수1개 합쳐서 짝 만들어야 함
                 group_num -= 1
-                break
+            break
     else:
         # 홀수를 만드는 차례
         if odd:
