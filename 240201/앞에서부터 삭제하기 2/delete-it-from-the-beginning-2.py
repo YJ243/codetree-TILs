@@ -4,34 +4,27 @@ arr = list(map(int, input().split()))
 
 total = sum(arr)
 
+# 초깃값 처리
 ans = 0
+pq = []
+cur_sum, cur_avg, cur_min = arr[n-1]+arr[n-2],0,0
+# 뒤의 두 개 값을 우선순위 큐에 넣기
+heapq.heappush(pq, arr[n-1])
+heapq.heappush(pq, arr[n-2])
+cur_min = heapq.heappop(pq)     # 현재까지 중 최솟값 빼기
+heapq.heappush(pq, cur_min)
 
-for k in range(2, n):
-    tmp_total = 0
-    pq = []
-    for i in range(1, k+1):
-        tmp_total += arr[n-i]
-        heapq.heappush(pq, arr[n-i])
-    tmp_total -= heapq.heappop(pq)
-    curr = tmp_total // len(pq)
-    ans = max(ans, curr)
+
+cur_avg = (cur_sum-cur_min) // (len(pq)-1)  # 남아있는 수 중 가장 작은 숫자 빼고 평균 구하기
+ans = max(ans, cur_avg)
+
+for k in range(n-3, 0, -1):
+    # k번재 숫자 보기
+    cur_sum += arr[k]
+    heapq.heappush(pq, arr[k])
+
+    if cur_min > arr[k]:
+        cur_min = arr[k]
+    cur_avg = (cur_sum-cur_min) // (len(pq)-1)
+    ans = max(ans, cur_avg)
 print(f"{ans:.2f}")
-'''
-for k in range(n-2, 0, -1):
-    # k개 만큼 앞에서부터 삭제하기( 큰 순에서 작은 순으로)
-    tmp_total = total
-    for i in range(k):
-        tmp_total -= arr[i]
-
-    pq = []
-    # 삭제하고 남은 나머지들을 pq에 넣기
-    for i in range(k, n):
-        heapq.heappush(pq, arr[i])
-    tmp_total -= heapq.heappop(pq)
-    
-    # 평균 구하기
-    avg = tmp_total / len(pq)
-    ans = max(ans, avg)
-
-print(f"{ans:.2f}")
-'''
