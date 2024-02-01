@@ -5,6 +5,18 @@ arr = list(map(int, input().split()))
 total = sum(arr)
 
 ans = 0
+
+for k in range(2, n):
+    tmp_total = 0
+    pq = []
+    for i in range(1, k+1):
+        tmp_total += arr[n-i]
+        heapq.heappush(pq, arr[n-i])
+    tmp_total -= heapq.heappop(pq)
+    curr = tmp_total // len(pq)
+    ans = max(ans, curr)
+print(f"{ans:.2f}")
+'''
 for k in range(n-2, 0, -1):
     # k개 만큼 앞에서부터 삭제하기( 큰 순에서 작은 순으로)
     tmp_total = total
@@ -22,3 +34,4 @@ for k in range(n-2, 0, -1):
     ans = max(ans, avg)
 
 print(f"{ans:.2f}")
+'''
