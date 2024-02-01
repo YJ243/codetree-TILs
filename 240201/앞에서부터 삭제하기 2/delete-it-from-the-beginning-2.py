@@ -15,7 +15,7 @@ cur_min = heapq.heappop(pq)     # 현재까지 중 최솟값 빼기
 heapq.heappush(pq, cur_min)
 
 
-cur_avg = (cur_sum-cur_min) // (len(pq)-1)  # 남아있는 수 중 가장 작은 숫자 빼고 평균 구하기
+cur_avg = (cur_sum-cur_min) / (len(pq)-1)  # 남아있는 수 중 가장 작은 숫자 빼고 평균 구하기
 ans = max(ans, cur_avg)
 
 for k in range(n-3, 0, -1):
@@ -25,6 +25,6 @@ for k in range(n-3, 0, -1):
 
     if cur_min > arr[k]:
         cur_min = arr[k]
-    cur_avg = (cur_sum-cur_min) // (len(pq)-1)
+    cur_avg = (cur_sum-cur_min) / (len(pq)-1)
     ans = max(ans, cur_avg)
 print(f"{ans:.2f}")
