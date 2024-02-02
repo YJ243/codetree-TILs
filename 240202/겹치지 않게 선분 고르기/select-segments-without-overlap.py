@@ -11,13 +11,13 @@ def IsOverlapped():
         for j in range(i+1, len(selected)):
             x1, y1 = selected[i]
             x2, y2 = selected[j]
-            if (x1 <= x2 and x2 <= y1) or (x1 <= y2 and y2 <= y1):
-                return False
-    return True
+            if (x1 <= x2 and x2 <= y1) or (x2 <= x1 and x1 <= y2):
+                return True
+    return False
 
 def Choose(idx, total):     # 총 total개 선분을 고르는 함수, idx번째 고려
     if len(selected) == total:
-        if IsOverlapped():
+        if not IsOverlapped():
             print(total)
             exit(0)
         return
