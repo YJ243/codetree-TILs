@@ -30,3 +30,4 @@ def Choose(idx, total):     # 총 total개 선분을 고르는 함수, idx번째
 for i in range(n, 1, -1):
     # i개 고르기
     Choose(0, i)
+print(1)
