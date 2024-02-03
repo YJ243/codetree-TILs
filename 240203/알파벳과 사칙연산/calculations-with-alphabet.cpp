@@ -8,7 +8,7 @@ using namespace std;
 string s;
 vector<int> selected;
 int numbers[ALPABET_NUM];
-int ans = 0;
+int ans = INT_MIN;
 
 void Calc(){
     int curr = selected[s[0]-'a'];      // 초깃값 설정
