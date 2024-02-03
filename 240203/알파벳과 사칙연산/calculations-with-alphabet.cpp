@@ -1,14 +1,14 @@
 #include <iostream>
 #include <string>
 #include <vector>
-
+#include <climits>
 #define ALPABET_NUM 6
 using namespace std;
 
 string s;
 vector<int> selected;
 int numbers[ALPABET_NUM];
-int ans;
+int ans = INT_MIN;
 
 void Calc(){
     int curr = selected[s[0]-'a'];      // 초깃값 설정
