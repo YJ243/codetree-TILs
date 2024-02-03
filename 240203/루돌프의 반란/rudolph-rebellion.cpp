@@ -142,7 +142,7 @@ void Bump(int id, int dX, int dY, int RudolfMove, int turn){        //  (x,y) �
         plus_score = 0;
     }
     int firstX = sx+dx*dist, firstY = sy+dy*dist;
-    
+    //cout << "움직일 곳" << firstX << ' ' <<firstY << ' ' << dist <<'\n';
     if(!InRange(firstX, firstY)){
         // 만약 튕겨나가 자리가 범위를 벗어난다면
         // id번 산타는 탈락
@@ -156,7 +156,8 @@ void Bump(int id, int dX, int dY, int RudolfMove, int turn){        //  (x,y) �
             //cout << grid[firstX][firstY] << ' ' << firstX << ' ' <<firstY << '\n';
             // 튕겨난 곳에 산타가 있다면
             // 상호작용하면서 산타 밀기
-            Bump(grid[firstX][firstY], dx, dy, 2, turn);
+            if(firstX != sx || firstY != sy)
+                Bump(grid[firstX][firstY], dx, dy, 2, turn);
         }
         // 그럼 이제 firstX, firstY가 비어있는 상황
         // 여기로 이동시키기
@@ -197,7 +198,6 @@ void MoveRudolf(int turn){                  // 루돌프를 이동시키는 함�
 void MoveSanta(int id, int turn){             // turn번째 턴에 id번 산타 이동시키기
     int rx, ry; tie(rx, ry) = GetRudolfLoc();    // 루돌프 위치
     int sx, sy; tie(sx, sy) = SantaLoc[id];     // 현재 움직이려는 산타 위치
-    
     int curDist = GetDist(sx, sy, rx, ry);
     int minDist = curDist;
 
@@ -215,6 +215,7 @@ void MoveSanta(int id, int turn){             // turn번째 턴에 id번 산타 
     }
 
     if(grid[minX][minY] == -1){
+        //cout << "루돌프" << sx << ' ' << sy << '\n';
         // 만약 해당 좌표에 루돌프 있다면
         Bump(id, minDX,minDY, 0, turn);       // 충돌 처리
         if(!IsFail[id])
@@ -247,8 +248,8 @@ void Simulate(int turn){            // turn번째 턴 게임 시작
         if(!IsFail[i]) 
             score[i]++;
     }
+    //Output();
     /*
-    Output();
     for(int i=1; i<=p; i++){
         cout << faint[i] << ' ';
     }
