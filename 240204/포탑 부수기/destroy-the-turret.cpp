@@ -13,10 +13,10 @@ pair<int, int> atk;             // 공격자 좌표
 pair<int, int> tgt;             // 공격 대상 좌표
 
 
-queue<pair<int, int> > q;                            // bfs 탐색을 위한 큐
+queue<pair<int, int> > q;               // bfs 탐색을 위한 큐
 bool visited[MAX_NM][MAX_NM];           // 레이저 공격을 시도하기 전 bfs 탐색을 위한 방문 배열
 pair<int, int> from[MAX_NM][MAX_NM];    // 레이저 공격을 시도하기 전 bfs 탐색을 진행하면서 어디에서 왔는지 표기하기 위한 배열
-int dirs[8][2] = {{0,1},{1,0},{-1,0},{0,-1},{-1,-1},{-1,1},{1,-1},{1,1}};   // 우/하/상/좌 우선순위, 나머지 대각선 방향은 포탄 공격을 위함
+int dirs[8][2] = {{0,1},{1,0},{0,-1},{-1,0},{-1,-1},{-1,1},{1,-1},{1,1}};   // 우/하/상/좌 우선순위, 나머지 대각선 방향은 포탄 공격을 위함
 
 void Input(){
     cin >> n >> m >> k;
@@ -33,8 +33,7 @@ void Choose_attacker(){         // 공격자를 찾는 함수
         for(int j=m-1; j>=0; j--){            // 열 값이 큰 순으로 확인
             int i=sum-j;
             if(i < 0 or i >= n) continue;   // 범위 벗어나면 나가기
-            if(grid[i][j] == 0) continue;   // 부서진 포탑이면 넘어가기
-            //cout << i << ' ' << j << '\n';
+            if(grid[i][j] == 0) continue;   // 이미 부서진 포탑이면 넘어가기
             if(minPower > grid[i][j]){      // 공격력이 현재 최소 공격력보다 낮다면 업데이트
                 minX = i, minY = j, minPower = grid[i][j];
             }
@@ -44,12 +43,13 @@ void Choose_attacker(){         // 공격자를 찾는 함수
         }
     }
     atk = make_pair(minX, minY);
+    //cout << minX << ' ' << minY << '\n';
 
 }
 
 void Choose_target(){           // 공격 대상을 찾는 함수
     int maxPower = 0, maxX=0, maxY=0;     // 현재 가장 작은 공격력을 가진 포탑
-    for(int sum = 0; sum <= n+m+2; sum++){    // 행+열의 합이 작은 순으로 확인
+    for(int sum = 0; sum <= n+m-2; sum++){    // 행+열의 합이 작은 순으로 확인
         for(int j=0; j < m; j++){            // 열 값이 큰 순으로 확인
             int i=sum-j;
             if(i < 0 or i >= n) continue;   // 범위 벗어나면 나가기
@@ -106,6 +106,7 @@ bool do_laser(){    // 레이저 공격 함수
     visited[atk.first][atk.second] = true;
     q.push(atk);
     bfs();
+
     // 3. 만약 공격 대상까지 도달할 수 없다면
     if(!visited[tgt.first][tgt.second])
         return false;
@@ -116,9 +117,13 @@ bool do_laser(){    // 레이저 공격 함수
     attack(tgt.first, tgt.second, power);
     // 4-2. 이제 따라가면서 공격 입히기
     int curX = tgt.first, curY = tgt.second;
+
+    //cout << "공격자" << atk.first << ' ' <<atk.second << '\n';
+    //cout << "대상" << tgt.first << ' ' << tgt.second << '\n';
     while(true){
         // 공격자에게 도달하기 전까지
         int nx = from[curX][curY].first, ny = from[curX][curY].second;
+        //cout << nx << ' ' << ny << '\n';
         if(nx == atk.first && ny == atk.second) break;      // 만약 공격자에 도달했다면 반복문 나가기
         attack(nx, ny, power/2);       // 경로에 있는 포탑은 공격자의 공격력의 절반만큼만!
         curX = nx, curY = ny;
@@ -144,7 +149,7 @@ void bombshell(){   // 포탄 공격 함수
         }
     }
 
-    //cout << "공격자와 대상" <<atk.first << ' ' << atk.second << ' ' <<tgt.first << ' ' <<tgt.second << '\n';
+
 }
 
 bool IsFinish(){    // 부서지지 않은 포탑이 1개인지 확인하기
@@ -161,7 +166,6 @@ bool IsFinish(){    // 부서지지 않은 포탑이 1개인지 확인하기
 } 
 void Simulation(){
     for(int i=1; i<=k; i++){        // k번의 턴에 대해서
-        //cout << "TURN: " << i << '\n';
         // 0. 이번 턴에 공격에 관련되었는지 초기화
         for(int i=0; i<n; i++){
             for(int j=0; j<m; j++){
@@ -170,7 +174,6 @@ void Simulation(){
         }
         // 1. 공격자 선정
         Choose_attacker();
-        //cout << "atk" << atk.first << ' ' << atk.second << '\n';
         // 2. 공격 대상 선정
         Choose_target();
         // 공격자에게 핸디캡 적용하기
@@ -178,6 +181,8 @@ void Simulation(){
         atk_time[atk.first][atk.second] = i;    // 공격대상의 공격 시간 업데트
         // 공격자
         //cout << grid[atk.first][atk.second] << '\n';
+        
+        //cout << "공격자와 대상" <<atk.first << ' ' << atk.second << ' ' <<tgt.first << ' ' <<tgt.second << '\n';
         // 3. 레이저 공격 시도
         if(!do_laser())
             // 4. 레이저가 안되면 포탄 공격
