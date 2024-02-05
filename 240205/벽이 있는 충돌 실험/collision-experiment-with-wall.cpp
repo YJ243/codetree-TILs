@@ -37,10 +37,14 @@ void Move(int x, int y, int d){    // (x,y)를 d 방향으로 움직이는 함�
         // 방향을 바꿔서 이동
 
         int next_d = (d+2)%4;
+        next_count[x][y].first++;
+        next_count[x][y].second = next_d;
+        /*
         nx = x+dirs[next_d][0], ny = y+dirs[next_d][1];
         //cout << x << ' ' << y << ' ' << d << ' '<<nx << ' ' << ny << ' ' << next_d << '\n';
         next_count[nx][ny].first++;
         next_count[nx][ny].second = next_d;
+        */
     }
 
 }
@@ -72,8 +76,16 @@ void Simulate(){
             marble[i][j].second = next_count[i][j].second;
         }
     }
+    /*
+    for(int i=0; i<n; i++){
+        for(int j=0; j<n; j++){
+            cout << marble[i][j].first << ' ' ;
 
-
+        }
+        cout << '\n';
+    }
+    cout << '\n';
+    */
 }
 
 int GetDirectionNumber(char d){     // 입력값이 d에 해당하는 방향 정보 넘기기
