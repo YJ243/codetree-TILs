@@ -50,9 +50,8 @@ void Move(int x, int y, int d){    // (x,y)를 d 방향으로 움직이는 함�
 }
 
 void Simulate(){
-    // 0. next_count 배열 초기화
+    // 0. marble배열 초기화하기
     Initialize();
-
     // 1. 구슬이 있다면 이동시키기
     for(int i=0; i<n; i++){
         for(int j=0; j<n; j++){
@@ -100,16 +99,22 @@ int GetDirectionNumber(char d){     // 입력값이 d에 해당하는 방향 정
 
 int main() {
     cin >> T;
-    for(int i=0; i<T; i++){
+    for(int t=0; t<T; t++){
         // 변수 입력받기
         cin >> n >> m;
-        while(m--){     // m개의 구슬 입력받
+        // 0. next_count 배열 초기화
+        for(int i=0; i<n; i++){
+            for(int j=0; j<n; j++){
+                marble[i][j].first = 0, marble[i][j].second = 0;
+            }
+        }
+        while(m--){     // m개의 구슬 입력받기
             int x, y; char d;
             cin >> x >> y >> d;
             marble[x-1][y-1] = make_pair(1, GetDirectionNumber(d));
         }
         // 시뮬레이션 시작
-        int test_cnt = 1000000;
+        int test_cnt = 10000;
         while(test_cnt--)
             Simulate();
         
@@ -118,7 +123,7 @@ int main() {
         int ans = 0;
         for(int i=0; i<n; i++){
             for(int j=0; j<n; j++){
-                if(marble[i][j].first == 1){
+                if(marble[i][j].first){
                     ans++;  // 남아있는 구슬의 개수 세기
                 }
             }
