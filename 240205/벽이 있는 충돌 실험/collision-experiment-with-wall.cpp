@@ -114,7 +114,7 @@ int main() {
             marble[x-1][y-1] = make_pair(1, GetDirectionNumber(d));
         }
         // 시뮬레이션 시작
-        int test_cnt = MAX_N;
+        int test_cnt = MAX_N*MAX_N;
         while(test_cnt--)
             Simulate();
         
