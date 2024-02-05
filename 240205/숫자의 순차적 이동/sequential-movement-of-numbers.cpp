@@ -4,7 +4,7 @@
 using namespace std;
 int n, m;
 int grid[MAX_N][MAX_N];
-pair<int, int> num_loc[MAX_N+1];
+pair<int, int> num_loc[MAX_N*MAX_N+1];
 int dirs[8][2] = {{0,1},{1,0},{0,-1},{-1,0},{-1,-1},{-1,1},{1,-1},{1,1}};
 
 bool InRange(int x, int y){
