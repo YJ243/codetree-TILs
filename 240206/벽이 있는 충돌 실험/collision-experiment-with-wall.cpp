@@ -71,12 +71,18 @@ void Simulate(){
             marble[i][j].first = next_marble[i][j].first, marble[i][j].second = next_marble[i][j].second;
         }
     }
+}
 
+void Initialize_marble(){
+    for(int i=0; i<n; i++)
+        for(int j=0; j<n; j++)
+            marble[i][j].first = 0, marble[i][j].second = 0;
 }
 
 int main() {
     cin >> T;   // 테스트 케이스 수 입력받기
     while(T--){
+        Initialize_marble();
         cin >> n >> m;  // n: 격자 칸수, m: 구슬 개수
         
         for(int i=0; i<m; i++){
