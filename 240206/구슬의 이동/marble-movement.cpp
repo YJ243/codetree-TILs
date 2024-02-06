@@ -49,11 +49,13 @@ void Move(int x, int y){    // (x,y)에 있는 구슬을 옮기기
                 curX = nx, curY = ny;
             }
             else{
-                // 범위 안에 없다면 방향만 바꾸기
+                // 범위 안에 없다면 방향바꾸고 좌표 업데이트하기
+                // 방향을 바꾸는 데에는 시간이 전혀 소요되지 않음
                 d = (d+2) % 4;
+                curX += dirs[d][0]; curY += dirs[d][1];
             }
         }
-       // cout << curX << ' ' << curY << ' ' << id << "속도" << v << '\n';
+        //cout << curX << ' ' << curY << ' ' << id << "속도" << v << '\n';
         next_marble[curX][curY].push_back(make_tuple(v, id, d));
     }
 }
@@ -85,16 +87,6 @@ void Simulate(){
         }
     }
 
-    for(int i=0; i<n; i++){
-        for(int j=0; j<n; j++){
-            if(next_marble[i][j].size() > 1){
-                for(auto a : next_marble[i][j]){
-                    int id;
-                    tie(ignore, id, ignore) = a;
-                }
-            }
-        }
-    }
     // 3. 모두 움직이고 난 후, 사라질 구슬 탐색해서 없애기
     for(int i=0; i<n; i++){
         for(int j=0; j<n; j++){
@@ -116,6 +108,17 @@ void Simulate(){
                 }
         }
     }
+    /*
+    for(int i=0; i<n; i++){
+        for(int j=0; j<n; j++){
+            if(marble[i][j].size() == 0)
+                cout << 0 << ' ';
+            else
+                cout << marble[i][j].size() << ' ';
+        }
+        cout << '\n';
+    }
+    */
 }
 
 int main() {
