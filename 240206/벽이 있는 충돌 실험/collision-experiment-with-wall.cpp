@@ -38,9 +38,8 @@ void Move(int x, int y, int d){     // (x,y)에 있는 구슬을 d 방향으로 
     else{
         // 방향을 바꿔주기
         int next_d = (d+2)%4;   // 반대 방향으로 바꿔주기
-        nx = x+dirs[next_d][0], ny = y+dirs[next_d][1];
-        next_marble[nx][ny].first++;
-        next_marble[nx][ny].second = next_d;
+        next_marble[x][y].first++;
+        next_marble[x][y].second = next_d;
     }
 }
 
