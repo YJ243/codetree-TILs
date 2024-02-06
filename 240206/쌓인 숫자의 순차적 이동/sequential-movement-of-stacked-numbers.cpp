@@ -8,7 +8,7 @@
 using namespace std;
 int n, m;
 vector<int> grid[MAX_N][MAX_N];     // 숫자들이 저장되어 있는 격자판
-pair<int, int> location[MAX_N+1];   // location[i]: i번 숫자의 위치
+pair<int, int> location[MAX_N*MAX_N+1];   // location[i]: i번 숫자의 위치
 int dirs[8][2] = {{-1,0},{0,1},{1,0},{0,-1},{-1,-1},{-1,1},{1,-1},{1,1}};    // 인접한 8개 방향
 
 bool InRange(int x, int y){
@@ -93,20 +93,7 @@ int main() {
     for(int i=0; i<m; i++){
         int curr;
         cin >> curr;
-        Move(curr);
-        /*
-        for(int x=0; x<n; x++){
-            for(int y=0; y<n; y++){
-                if(grid[x][y].size() == 0)
-                    cout << "B" << ' ';
-                else{
-                    for(int idx = 0; idx < (int)grid[x][y].size(); idx++)
-                        cout << "{"<<grid[x][y][idx] << "}";
-                }
-            }
-            cout << '\n';
-        }
-        */
+        Move(curr);  
     }
 
     // 각 위치에 적혀있는 숫자를 출력하기
@@ -124,5 +111,8 @@ int main() {
             }
         }
     }
+    
+    
+    
     return 0;
 }
