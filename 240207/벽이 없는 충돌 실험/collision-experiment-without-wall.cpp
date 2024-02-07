@@ -15,14 +15,14 @@ int T, N;                       // 테스트 케이스 수, 구슬의 수
 vector<marble> marbles;         // (x,y), w, id, d 저장
 vector<marble> next_marbles;    // 이동하면서 구슬 정보를 저장하는 중간 배열
 
-int marble_index[MAX_COORD][MAX_COORD];
+int marble_index[MAX_COORD+2][MAX_COORD+2];
 int dirs[DIR_NUM][2] = {{0,1},{0, -1},{1,0},{-1,0}}; // U, D, R, L
 int direction[ASCII_NUM];
 int elapsed_time;
 int last_collision_time;
 
 bool InRange(int x, int y){
-    return 0 <= x && x < MAX_COORD && 0 <= y && y < MAX_COORD;
+    return 0 <= x && x <= MAX_COORD && 0 <= y && y <= MAX_COORD;
 }
 
 void Collision(int x, int y, marble origin, marble newbi){ // (x,y)에 이미 존재하는 marble origin과 marble newbi의 충돌 처리
@@ -55,7 +55,8 @@ void Collision(int x, int y, marble origin, marble newbi){ // (x,y)에 이미 �
 }
 
 void Move(int x, int y, marble m){      // (x,y) 자리로 marble m을 이동시키는 함수
-    int nx = x, ny = y;
+    int nx = x, ny = y;         
+    //cout << "여기로 옮길란다" << nx << ' ' << ny << ' ' << marble_index[nx][ny] << '\n';
     int cx, cy, w, id, d;
     tie(cx, cy, w, id, d) = m;
 
@@ -87,12 +88,17 @@ void Simulate(){
     while(move_cnt--){
         elapsed_time++;
         // 1. 구슬을 보면서 차례대로 이동시키기 
+        //cout << "&&&&&&" << move_cnt << '\n';
         for(int i=0; i<(int)marbles.size(); i++){
             int x, y, w, id, d;
             tie(x, y, w, id, d) = marbles[i];
+
+            //cout << x << ' ' << y << ' ' << id << '\n';
+
             int nx = x+dirs[d][0], ny = y+dirs[d][1];
             // 만약 다음 움직일 좌표가 범위를 넘어간다면 무시하기
             if(!InRange(nx,ny)) continue;
+            //cout << "나는 범위내에 있지롱" << nx << ' ' << ny << '\n';
             Move(nx, ny, marbles[i]);     // (x,y) 자리로 marbles[i]를 이동시키기
         }
         // next_marbles를 marbles로 옮기기
@@ -103,18 +109,19 @@ void Simulate(){
             marbles.push_back(make_tuple(x, y, w, id, d));
         }
         next_marbles.clear();
+        //cout << last_collision_time << ' ';
     }
 
-
+    /*
     if(move_cnt == MAX_COORD && (int)marbles.size() == N)
         last_collision_time = -1;
-
+    */
 }
 
 void Initialize(){
     // marble_index 배열 초기화하기
-    for(int i=0; i<MAX_COORD; i++){
-        for(int j=0; j<MAX_COORD; j++){
+    for(int i=0; i<=MAX_COORD; i++){
+        for(int j=0; j<=MAX_COORD; j++){
             marble_index[i][j] = BLANK;
         }
     }
