@@ -29,37 +29,52 @@ void Move(){    // 현재 좌표평면에 있는 모든 구슬에 대해서 1초
 }
 
 void CheckOverlapped(){     // 모든 구슬을 보면서 겹치는 것이 있는지 확인, 사라져야 될 구슬은 removed 표시
+
     for(int i=0; i < (int)marble.size(); i++){
         for(int j=i+1; j<(int)marble.size(); j++){
             int w1, id1, d1; double x1, y1; bool removed1;
             int w2, id2, d2; double x2, y2; bool removed2;
             tie(w1, id1, x1, y1, d1, removed1) = marble[i];
             tie(w2, id2, x2, y2, d2, removed2) = marble[j];
+            //cout << "현재는 " << id1<<"번과, " << id2 << "번을 보는 중" << '\n';
             int removed_idx = 0;
             if(removed1 || removed2){   // 만약 둘 중 하나가 삭제되어야 한다면 안봐도 되니까 넘어가기
                 continue;
             }
             if(x1 == x2 && y1 == y2){   // 만약 위치가 겹친다면
+                //cout << w1 << ' ' << w2 << '\n';
                 if(w1 < w2) removed_idx = i;    // 만약 무게가 i가 더 작다면 우선순위가 낮음
-                else if(w1 == w2 && id1 < id2) removed_idx = i;
-                else removed_idx = j;
+                    else if(w1 > w2) removed_idx = j;
+                if(w1 == w2 && id1 < id2) removed_idx = i;
+                    else if(w1 == w2 && id1 > id2) removed_idx = j;
+
                 if(removed_idx == i){   // 만약 지워야할 인덱스가 i라면
-                    //cout << "지워져야 할 인덱스" << id1 << '\n';
+                    //cout << "지워져야 할 인덱스" << id1 << " 남아야 할 인덱스" << id2 << '\n';
                     removed1 = true;
                     marble[i] = make_tuple(w1, id1, x1, y1, d1, removed1);
                 }
                 else{       // j라면
-                    //cout << "지워져야 할 인덱스" << id2 << '\n';
                     removed2 = true;
-                    marble[i] = make_tuple(w2, id2, x2, y2, d2, removed2);
+                    marble[j] = make_tuple(w2, id2, x2, y2, d2, removed2);
+                    //cout << "지워져야 할 인덱스" << id2 << ' ' << removed2 << "남아야 할 인덱스" << id1 << ' ' << removed1 << '\n';
                 }
             }
         }
     }
+
+        for(int i=0; i<(int)marble.size(); i++){
+        int w, id, d; double x, y; bool removed;
+        tie(w, id, x, y, d, removed) = marble[i];
+        //cout << id << "번 구슬" << x << ' ' << y << ' ' << removed << '\n';
+    }
+    
 }
 void RemoveLowPriority(){   // 현재 구슬이 겹치는게 있다면 우선순위가 낮은 구슬을 지우기
+    
+    
     // 1. 모든 구슬에 대해서 서로 겹치는지 확인하기
     CheckOverlapped();
+
 
     // 2. 모든 구슬에 대해서 만약 지워져야 한다면
     for(int i=0; i<(int)marble.size(); i++){
@@ -67,12 +82,14 @@ void RemoveLowPriority(){   // 현재 구슬이 겹치는게 있다면 우선순
         tie(w, id, x, y, d, removed) = marble[i];
         if(!removed){
             // 남아있어야 한다면
+            //cout << id << "번은 남아있어야 함" << "무게는: " << w << "removed:"<<removed << '\n';
             next_marble.push_back(make_tuple(w, id, x, y, d, removed));
             
         }
         else{
             // 만약 지워져야하는게 있다면
             // 이번에 충돌이 일어났다는 의미로 collapsed_time 업데이트
+            //cout << id<<"번은 이제 사라진다" << "무게는"<<w << '\n';
             collapse_time = elapsed_time;
         }
     }
@@ -97,11 +114,7 @@ void Simulate(){
         // 1. 모든 구슬에 대해 1초 움직이기
         Move();
 
-        for(int i=0; i<(int)marble.size(); i++){
-            int w, id, d; double x, y; bool removed;
-            tie(w, id, x, y, d, removed) = marble[i];
-            //cout << id << "번 구슬" << x << ' ' << y << ' ' << d << '\n';
-        }
+
         // 2. 현재 겹치는게 있다면 우선순위 낮은 구슬 지워주기
         RemoveLowPriority();
 
