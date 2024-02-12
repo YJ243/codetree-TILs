@@ -19,8 +19,8 @@ int grid[MAX_N][MAX_N];                         // 격자 상태
  * 절대 지나갈 수 없는 곳: INT_MIN
 */
 // 탐색을 위한 자료구조
-queue<tuple<int, int, int, int> > q;     // (x,y), dist, start_dir
-queue<tuple<int, int, int, int, int> > campQ;    // (basecamp: start_x, start_y), (cur_x, cur_y), dist;
+queue<tuple<int, int, int, int> > q;            // (x,y), dist, start_dir
+queue<tuple<int, int, int, int, int> > campQ;   // (basecamp: start_x, start_y), (cur_x, cur_y), dist;
 int visited[MAX_N][MAX_N];
 int dirs[4][2] = {{-1,0},{0,-1},{0,1},{1,0}};    // 상, 좌, 우, 하 우선순위
 tuple<int, int, bool> people[MAX_M+1];          // 사람들 정보, [(x,y),isArrived]: 위치, 도착 유무 
@@ -39,7 +39,14 @@ void Input(){
         grid[x-1][y-1] = -i;    // 편의점 번호 넣기(-를 취한 값이 각 사람의 번호)
 
     }
-
+    /*
+    for(int i=0; i<n; i++){
+        for(int j=0; j<n; j++){
+            cout << grid[i][j] << ' ';
+        }
+        cout << '\n';
+    }
+    */
 }
 
 void Output(){
@@ -83,11 +90,11 @@ int bfs(int target_x, int target_y){      // 탐색을 통해 해당 목표 지�
         if(curX == target_x && curY == target_y){
             // 만약 도달해야 하는 지점에 도착했다면
             ret = startDir;
-            break;
+            return ret;
         }
         for(int d=0; d<4; d++){
             int nx = curX+dirs[d][0], ny = curY+dirs[d][1];
-            if(InRange(nx,ny) && grid[nx][ny] != INT_MIN){
+            if(InRange(nx,ny) && !visited[nx][ny] && grid[nx][ny] != INT_MIN){
                 // 범위 안에 있고, 지나가지 못하는 자리가 아니라면
                 visited[nx][ny] = true;
                 q.push(make_tuple(nx,ny,curDist+1, startDir));
@@ -145,7 +152,6 @@ void CheckArriveToStore(){
     }
 }
 
-//queue<tuple<int, int, int, int, int> > campQ;    // (basecamp: start_x, start_y), (cur_x, cur_y), dist;
 pair<int, int> bfs_basecamp(){
     int toX, toY;
     while(!campQ.empty()){
@@ -155,11 +161,11 @@ pair<int, int> bfs_basecamp(){
 
         if(grid[curX][curY] == -elapsed_time){
             toX = startX, toY = startY;
-            break;
+            return make_pair(toX, toY);
         }
         for(int d=0; d<4; d++){
             int nx = curX+dirs[d][0], ny = curY+dirs[d][1];
-            if(InRange(nx,ny) && grid[nx][ny] != INT_MIN){
+            if(InRange(nx,ny) && !visited[nx][ny] && grid[nx][ny] != INT_MIN){
                 visited[nx][ny] = true;
                 campQ.push(make_tuple(startX, startY, nx, ny, dist+1));
             }
@@ -225,6 +231,8 @@ int main() {
         if(IsFinish())  // 만약 모든 사람이 탈출에 성공했다면
             break;
         Simulation();
+        //cout << elapsed_time << ' ' ;
+        //if(elapsed_time ==27) break;
     }
     
     // 출력:
