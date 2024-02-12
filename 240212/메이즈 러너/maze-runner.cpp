@@ -114,7 +114,7 @@ void subRotate(int x, int y, int d){    // (x,y)에서 시작해서 한 변의 �
     // 다시 미로에 복원하기
     for(int i=x; i<=x+d; i++){
         for(int j=y; j<=y+d; j++){
-            maze[i][j] = b[i-x+1][j-x+1];
+            maze[i][j] = b[i-x+1][j-y+1];
         }
     }
 }
@@ -159,7 +159,7 @@ void rotate(){ // 출구와 참가자를 포함한 회전
     subRotate(bestRow, bestCol, minDist);
 }
 
-void output(){  // 정답 출력
+void Output(){  // 정답 출력
     cout << moveCnt << '\n';
     auto ex = findExit();
     cout << ex.first << ' ' << ex.second << '\n';
@@ -176,9 +176,6 @@ bool isFinish(){
     return true;
 }
 
-void Output(){
-
-}
 
 int main() {
     // 입력 받기
