@@ -1,7 +1,7 @@
 #include <iostream>
 #include <queue>
-#define MAX_L 40
-#define MAX_N 30
+#define MAX_L 55
+#define MAX_N 55
 using namespace std;
 int l, n, q;        // l: 체스판 크기, n: 기사들 명수, q: 왕 명령 개수    
 int original_map[MAX_L][MAX_L];
@@ -13,7 +13,8 @@ struct Knight{
     int k;      // knight 체력
     int damage; // 입은 데미지
 
-    void fill(int map[MAX_L][MAX_L]){
+    void fill(int map[][MAX_L]){
+        if(k <= 0) return;
         for(int i=r; i<r+h; i++)
             for(int j=c; j<c+w; j++)
                 map[i][j] = idx;
@@ -41,13 +42,11 @@ bool InRange(int x, int y){
 }
 
 void do_Command(int start_id, int d){   // id번 기사를 d번 방향으로 연쇄적으로 미는 함수
-
     // 한 번 명령을 수행할 때마다 새로 기사들 맵 설정
     int knight_map[MAX_L][MAX_L] = {0,};
     for(int i=1; i<=n; i++){
         knights[i].fill(knight_map);    // 기사들 번호로 채우기
     }
-
 
     bool moving[MAX_N+1] = {false,};
     queue<int> q;   // start_id를 포함하여 밀리는 기사를 담는 큐
