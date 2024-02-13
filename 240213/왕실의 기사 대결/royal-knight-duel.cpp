@@ -119,7 +119,7 @@ void Progress(){
         int i, d;
         cin >> i >> d;
         // 체스판에 있는 기사는 명령을 수행
-        if(knights[i].k > knights[i].damage){
+        if(knights[i].k > 0){
             do_Command(i, d);
         }
     }
@@ -128,7 +128,7 @@ void Progress(){
 void Output(){
     int result = 0;
     for(int i=1; i<=n; i++){
-        if(knights[i].k > knights[i].damage){
+        if(knights[i].k > 0){
             result += knights[i].damage;
         }
     }
