@@ -119,9 +119,10 @@ void Progress(){
         int i, d;
         cin >> i >> d;
         // 체스판에 있는 기사는 명령을 수행
-        if(knights[i].k > 0){
-            do_Command(i, d);
+        if(knights[i].k <= 0){
+            continue;
         }
+        do_Command(i, d);
     }
 }
 
