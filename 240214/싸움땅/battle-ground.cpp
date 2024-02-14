@@ -8,8 +8,8 @@ using namespace std;
 int n, m, k;        // n: 격자 크기, m: 플레이어의 수, k: 라운드 수
 vector<int> grid[MAX_N][MAX_N];
 int dirs[4][2] = {{-1,0},{0,1},{1,0},{0,-1}};    // 상,우,하,좌
-tuple<int, int, int, int, int> players[MAX_N];  // (x,y) 위치, d:방향, s: 초기능력, p: 가지고 있는 총의 공격력
-int points[MAX_N];      // 각 플레이어들이 획득한 포인트
+tuple<int, int, int, int, int> players[MAX_M+1];  // (x,y) 위치, d:방향, s: 초기능력, p: 가지고 있는 총의 공격력
+int points[MAX_M+1];      // 각 플레이어들이 획득한 포인트
 
 void Input(){       // 입력값을 받는 함수
     cin >> n >> m >> k;
@@ -77,7 +77,7 @@ void Process_loser(int idx, int cx, int cy){        // idx번 루저 이동시�
     //cout <<cx << ' ' << cy << "에서"<< nx << ' ' << ny << "으로 이동" << '\n';
     // (nx, ny)는 빈칸임
     // 해당 칸에 총이 있다면
-    if((grid[nx][ny].size() == 1 && grid[nx][ny][0] != 0) || grid[nx][ny].size() > 2){
+    if((grid[nx][ny].size() == 1 && grid[nx][ny][0] != 0) || grid[nx][ny].size() >= 2){
         int max_power = 0, max_idx = 0;
         for(int g=0; g<(int)grid[nx][ny].size(); g++){
             // 해당 총을 획득하기
@@ -177,7 +177,7 @@ void Move(int idx){     // idx번 플레이어를 움직이기
     // 이동한 방향에 플레이어가 없다면
     else{
         // 해당 칸에 총이 있다면
-        if((grid[nx][ny].size() == 1 && grid[nx][ny][0] != 0) || grid[nx][ny].size() > 2){
+        if((grid[nx][ny].size() == 1 && grid[nx][ny][0] != 0) || grid[nx][ny].size() >= 2){
             //if(idx == 1){
             //    cout << "hey" << ' ' << p << '\n';
             //}
