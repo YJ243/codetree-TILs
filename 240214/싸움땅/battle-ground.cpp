@@ -77,7 +77,7 @@ void Process_loser(int idx, int cx, int cy){        // idx번 루저 이동시�
     //cout <<cx << ' ' << cy << "에서"<< nx << ' ' << ny << "으로 이동" << '\n';
     // (nx, ny)는 빈칸임
     // 해당 칸에 총이 있다면
-    if(grid[nx][ny].size() > 0 && grid[nx][ny][0] != 0){
+    if((grid[nx][ny].size() == 1 && grid[nx][ny][0] != 0) || grid[nx][ny].size() > 2){
         int max_power = 0, max_idx = 0;
         for(int g=0; g<(int)grid[nx][ny].size(); g++){
             // 해당 총을 획득하기
@@ -100,7 +100,8 @@ void Process_winer(int idx, int cx, int cy){
     int d, s, p;
     tie(ignore, ignore, d, s, p) = players[idx];
     // 승리한 칸에 떨어져 있는 총들과 원래 들고 있던 총 중 가장 공격력이 높은 총을 획득
-    if(grid[cx][cy].size() > 0 && grid[cx][cy][0] != 0){
+    //cout << idx << "가 이겨서 지금 총을 줍고있음" << grid[cx][cy].size() << '\n';
+    if((grid[cx][cy].size() == 1 && grid[cx][cy][0] != 0) || grid[cx][cy].size() >= 2){
         int max_power = 0, max_idx = 0;
         for(int g=0; g<(int)grid[cx][cy].size(); g++){
             if(p < grid[cx][cy][g]){   // 가지고 있는 총보다 공격력이 더 센 총을 만난 경우
@@ -164,18 +165,19 @@ void Move(int idx){     // idx번 플레이어를 움직이기
         d = (d + 2) % 4;// 정반대 방향으로 방향을 바꾸어서 1만큼 이동하기
         nx = x+dirs[d][0], ny = y+dirs[d][1];
     }
+    //cout << nx << ' ' << ny << "로 이동" << '\n';
 
     // 만약 이동한 방향에 플레이어가 있다면
     pair<bool, int> fight_info = IsCollide(idx, nx, ny); 
     if(fight_info.first){
         //cout << "충돌" << '\n';
-        //cout << fight_info.first << ' ' << fight_info.second << '\n';
+        //cout << idx << "와" << fight_info.second << "충돌" << '\n';
         do_fight(idx, fight_info.second, nx, ny);
     }
     // 이동한 방향에 플레이어가 없다면
     else{
         // 해당 칸에 총이 있다면
-        if(grid[nx][ny].size() > 0 && grid[nx][ny][0] != 0){
+        if((grid[nx][ny].size() == 1 && grid[nx][ny][0] != 0) || grid[nx][ny].size() > 2){
             //if(idx == 1){
             //    cout << "hey" << ' ' << p << '\n';
             //}
@@ -205,7 +207,9 @@ void Simulate(){
     // 각 플레이어를 차례로 보면서 움직이기
     for(int i=0; i<m; i++){
         Move(i);    // i번 플레이어 움직이기
-        
+        int x, y, d, s, p;
+        tie(x, y, d, s, p) = players[i];
+        //cout << "움직인 직후:" << i << "번:" << x << ' ' << y << '\n';
         
     }
         for(int j=0; j<m; j++){
