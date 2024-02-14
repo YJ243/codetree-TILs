@@ -56,17 +56,12 @@ void Process_loser(int idx, int cx, int cy){        // idx번 루저 이동시�
     // 해당 플레이어가 원래 가지고 있던 방향대로 한 칸 이동
     int nx = cx+dirs[d][0], ny = cy+dirs[d][1];
     while(true){
-        //cout << nx << ' ' << ny << "는 확인중" << '\n';
-        if(!InRange(nx,ny)){
-            d = (d+1)%4;    // 범위 안에 없다면 오른쪽으로 90도 회전
+        // 2-1. 다음 위치가 범위를 벗어나거나, 범위 안에 있어도 다른 플레이어가 있다면 회전
+        if(!InRange(nx,ny) || (InRange(nx,ny) && IsCollide(idx, nx, ny).first)){    
+            d = (d+1)%4;        // 오른쪽으로 90도 회전
             nx = cx+dirs[d][0], ny = cy+dirs[d][1];
         }
-        else if(InRange(nx,ny) && IsCollide(idx, nx, ny).first){
-            //cout << nx << ' ' << ny << "2번째"<<IsCollide(idx, nx, ny).second << '\n';
-            d = (d+1)%4;    // 범위 안에 있지만 다른 플레이어가 있다면 오른쪽으로 90도 회전
-            nx = cx+dirs[d][0], ny = cy+dirs[d][1];
-        }
-        else if(InRange(nx,ny) && !IsCollide(idx, nx, ny).first){
+        else{
             //범위 안에 있고 다른 플레이어가 없다면
             //cout << nx << ' ' << ny << "3번째"<<'\n';
             break;
