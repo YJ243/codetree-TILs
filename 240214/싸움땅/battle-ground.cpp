@@ -48,15 +48,13 @@ pair<bool, int> IsCollide(int idx, int x, int y){  // (idx)번 플레이어가 (
 void Process_loser(int idx, int cx, int cy){        // idx번 루저 이동시키기
     int d, s, p;
     tie(ignore, ignore, d, s, p) = players[idx];
-    //if(idx == 2){
-    //    cout << "I'm loser" << d << ' ' << s << ' ' << p << '\n';
-    //}
     // 본인이 가지고 있는 총을 해당 격자에 내려놓기
-    grid[cx][cy].push_back(p);
-    p = 0;
+    if(p != 0){
+        grid[cx][cy].push_back(p);
+        p = 0;
+    }
     // 해당 플레이어가 원래 가지고 있던 방향대로 한 칸 이동
     int nx = cx+dirs[d][0], ny = cy+dirs[d][1];
-    
     while(true){
         //cout << nx << ' ' << ny << "는 확인중" << '\n';
         if(!InRange(nx,ny)){
@@ -172,6 +170,7 @@ void Move(int idx){     // idx번 플레이어를 움직이기
     if(fight_info.first){
         //cout << "충돌" << '\n';
         //cout << idx << "와" << fight_info.second << "충돌" << '\n';
+        players[idx] = make_tuple(nx, ny, d, s, p);
         do_fight(idx, fight_info.second, nx, ny);
     }
     // 이동한 방향에 플레이어가 없다면
@@ -206,6 +205,7 @@ void Move(int idx){     // idx번 플레이어를 움직이기
 void Simulate(){
     // 각 플레이어를 차례로 보면서 움직이기
     for(int i=0; i<m; i++){
+        //cout << "Move:" << i << '\n';
         Move(i);    // i번 플레이어 움직이기
         int x, y, d, s, p;
         tie(x, y, d, s, p) = players[i];
