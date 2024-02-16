@@ -14,16 +14,16 @@ pair<int, int> seeker;      // 술래 위치
 int seeker_dir;             // 술래가 바라보는 방향
 int moving_dist=1;            // 술래가 현재 가야할 칸 수
 int cur_dist;               // 술래가 moving_dist 안에서 움직인 횟수
-
+bool IsDecreasing;          // 술래 방향이 -1씩 감소하는지 그리고 개수도 감소하는지 
 int dirs[4][2] = {{-1,0},{0,1},{1,0},{0,-1}};   // 상,우,하,좌 순으로
 
 
 int total_score;    // 술래가 얻게 되는 총 점수
 
 void Input(){       // 입력을 받는 함수
-    cin >> n >> m >> h >> k;
+    cin >> n >> m >> h >> k; // n: 격자 크기, m: 도망자 수, h: 나무 개수, k: 반복 턴수
     for(int i=0; i<m; i++){
-        int x, y, d;        // n: 격자 크기, m: 도망자 수, h: 나무 개수, k: 반복 턴수
+        int x, y, d;        
         cin >> x >> y >> d; // (x,y)에서 d방향으로 서있음(d가 1이면 좌우로, 2면 상하로 움직임)
         int d_idx;          // 1이면 오른쪽, 2면 아래쪽으로 집어넣기
         if(d == 1) d_idx = 1;
@@ -69,18 +69,38 @@ void MoveSeeker(){      // 술래를 바라보고 있는 방향으로 한 칸 �
         // 만약 양 끝에 해당하는 위치에 도달하게 된다면 방향 틀어줘야함
         seeker_dir = (seeker_dir + 2)%4;    // 방향 반대로 틀어주기
         cur_dist = 0;
-    }
-    seeker = make_pair(nx, ny);
-
-    if(cur_dist == moving_dist){
-        // 현재 해당 방향대로 움직여야 되는 횟수만큼 움직였다면
-        seeker_dir = (seeker_dir + 1)%4;        // 방향 바꿔주기
-        cur_dist = 0;
-        if(seeker_dir % 2 == 0){
-            // 그런데 다음 방향이 위아래 중 하나라면
-            moving_dist++;
+        if(!IsDecreasing) {
+            moving_dist = n-1;
+            IsDecreasing = true;
+        }
+        else {
+            moving_dist = 1;
+            IsDecreasing = false;
         }
     }
+    seeker = make_pair(nx, ny);
+    if(cur_dist == moving_dist){
+        // 현재 해당 방향대로 움직여야 되는 횟수만큼 움직였다면
+        if(!IsDecreasing){
+            seeker_dir = (seeker_dir + 1)%4;        // 방향 바꿔주기
+            cur_dist = 0;
+            if(seeker_dir % 2 == 0){
+                // 그런데 다음 방향이 위아래 중 하나라면
+                moving_dist++;
+            }
+        }
+        else{
+            //cout << "감소하는데, 첫번째로 방향을 바꿔야 함" << nx << ' ' << ny << ' ' << cur_dist << ' ' << moving_dist << '\n';
+            seeker_dir = (seeker_dir-1 + 4) % 4;
+            cur_dist = 0;
+            if(seeker_dir % 2 == 1){
+                moving_dist--;
+            }
+            if(nx == n-1 && ny == 0)
+                moving_dist++;
+        }
+    }
+
 }
 
 void Simulate(int turn){
@@ -138,6 +158,7 @@ int main() {
 
     for(int i=1; i<=k; i++){
         Simulate(i);
+        //cout << seeker.first << ' ' << seeker.second << '\n';
     }
     // 출력:
     cout << total_score << '\n';
