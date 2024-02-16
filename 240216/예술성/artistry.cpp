@@ -3,34 +3,32 @@
 #include <tuple>
 #include <queue>
 #define MAX_N 29
+
 using namespace std;
 
-int n;
-int grid[MAX_N][MAX_N];     // 현재 격자
-int tmp[MAX_N][MAX_N];      // 회전을 위한 격자
-int visited[MAX_N][MAX_N];
-queue<pair<int, int> > bfs_q;
+int n;                          // 격자 크기
+int grid[MAX_N][MAX_N];         // 현재 격자
+int tmp[MAX_N][MAX_N];          // 회전을 위한 격자
+int visited[MAX_N][MAX_N];      // 방문 확인을 위한 배열
+queue<pair<int, int> > bfs_q;   // 붙어있는 변의 수를 확인하기 위한 큐
 int dirs[4][2] = {{-1,0},{0,1},{1,0},{0,-1}};     // 상, 우, 하, 좌
 
 
-
-vector<tuple<int, int, int, int> > groups; // (그룹의 구성 숫자, 그룹 구성 칸수, 처음 시작점) 저장
-int cur_num, cnt_in_group;      // 탐색에 필요한 변수, 그룹 구성 숫자, 그룹 구성 칸수
-int curr_harmony, adjacent_side;
-vector<int> selected_groups;    // 조합에 선택된 그룹 번호 (구성 숫자)
-
+vector<tuple<int, int, int, int> > groups;  // (그룹의 구성 숫자, 그룹 구성 칸수, 처음 시작점) 저장
+int cur_num, cnt_in_group;                  // 탐색에 필요한 변수, 그룹 구성 숫자, 그룹 구성 칸수
+int curr_harmony, adjacent_side;            // 현재 조합에 대한 조화로움 값, 현재 조합에서 붙어있는 변의 개수
+vector<int> selected_groups;                // 조합에 선택된 그룹 번호 (구성 숫자, 백트래킹)
 int total_beauty;               // 정답
 
 
-void Input(){
+void Input(){       // 입력값을 받는 함수
     cin >> n;
     for(int i=0; i<n; i++)
         for(int j=0; j<n; j++)
             cin >> grid[i][j];
-    
 }
 
-void Initialize_before_search(){    // dfs 탐색 전 초기화하는 함수
+void Initialize_before_search(){    // 탐색 전 방문 배열을 초기화하는 함수
     // 방문 배열 초기화
     for(int i=0; i<n; i++)
         for(int j=0; j<n; j++)
@@ -51,7 +49,7 @@ void dfs(int x, int y){                     // (x,y)와 같은 숫자를 가진 
         int nx = x+dirs[d][0], ny = y+dirs[d][1];   // (x,y)에서 다음으로 이동할 좌표
         if(CanGo(nx, ny, grid[x][y])){
             visited[nx][ny] = true;
-            cnt_in_group++;
+            cnt_in_group++;         // 현재 그룹에 포함되는 값의 카운트 증가
             dfs(nx,ny);
         }
     }
@@ -67,8 +65,8 @@ void DivideGroup(){         // 동일한 숫자가 인접해있는 그룹을 찾
             if(!visited[i][j]){
                 visited[i][j] = true;
                 cur_num = grid[i][j];
-                cnt_in_group = 1;
-                dfs(i,j);       // 해당 격자를 시작으로 탐색 진행하기
+                cnt_in_group = 1;   // 그룹 내 처음 숫자 만남, 1로 초기화하기
+                dfs(i,j);           // 해당 격자를 시작으로 탐색 진행하기
                 groups.push_back(make_tuple(cur_num, cnt_in_group, i, j));
             }
         }
@@ -79,14 +77,14 @@ void bfs(int value){        // value 값이랑 붙어있는 숫자를 탐색
     while(!bfs_q.empty()){
         pair<int, int> curr = bfs_q.front();
         bfs_q.pop();
-        //cout << "bfs:" << curr.first << ' ' <<curr.second << '\n';
         for(int d=0; d<4; d++){
             int nx = curr.first + dirs[d][0], ny = curr.second + dirs[d][1];
-            if(CanGo(nx,ny, grid[curr.first][curr.second])){
+            if(CanGo(nx,ny, grid[curr.first][curr.second])){    // 같은 그룹 내 격자
                 visited[nx][ny] = true;
                 bfs_q.push({nx,ny});
-                for(int k=0; k<4; k++){
+                for(int k=0; k<4; k++){     // 그 격자와 인접해있는 4방향을 확인하면서 다른 그룹의 숫자와 같다면 증가
                     int checkX = nx+dirs[k][0], checkY = ny+dirs[k][1];
+                    //visited[checkX][checkY]는 그 이전에 dfs 탐색을 한 번 더 돌아서 체크하는 다른 그룹을 표시했었음
                     if(InRange(checkX, checkY) && grid[checkX][checkY] == value && visited[checkX][checkY]){
                         adjacent_side++;
                     }
@@ -101,13 +99,14 @@ void Get_harmony_score(){   // 조화로움 값을 찾고, 0이 아니면 예술
     tie(num1, cnt1, x1, y1) = groups[selected_groups[0]];
     int num2, cnt2, x2, y2;
     tie(num2, cnt2, x2, y2) = groups[selected_groups[1]];
-    if(num1 == num2) return;
+    if(num1 == num2) return;    // 만약 숫자가 같은데 다른 그룹이라면 붙어있는 변의 개수가 0이니 바로 리턴
+
     // (x1,y1)에서 탐색을 진행하는데,
     curr_harmony = 0, adjacent_side = 0;
 
-    Initialize_before_search();
+    Initialize_before_search();             // 탐색 전 방문 배열 초기화
 
-    // 그룹 두번째 dfs 탐색 먼저 해놓기
+    // 그룹 두번째 dfs 탐색 먼저 해놓기, 그래야 나중에 인접한 변 개수를 찾을 수 있음 
     visited[x2][y2] = true;
     dfs(x2,y2); 
 
@@ -121,23 +120,16 @@ void Get_harmony_score(){   // 조화로움 값을 찾고, 0이 아니면 예술
             adjacent_side++;
         }
     }
-    //cout << "first adjacent: " << adjacent_side << '\n';
     bfs(num2);
-    //cout << "now adjacent: " << adjacent_side << '\n';
     curr_harmony = (cnt1 + cnt2) * num1 * num2 * adjacent_side;
-    //cout << "selected_groups" << cnt1 << ' ' << cnt2 << ' ' <<num1 << ' ' <<num2 << ' ' <<adjacent_side << '\n';
-    //cout << "selected groups" << num1 << ' ' << cnt1 << ' ' << num2 << ' ' << cnt2 <<'\n';
-    //cout << adjacent_side << '\n';
-    //cout << "CURR_HARMONY" << curr_harmony << '\n';
     
-    if(curr_harmony != 0)
+    if(curr_harmony != 0)   // 0이 아닐 때만 업데이트
         total_beauty += curr_harmony;
     
 }
 
-void Choose(int num){       // num번째 그룹 번호를 고르는 함수
+void Choose(int num){       // num번째 그룹 번호 조합을 고르는 함수
     if(selected_groups.size() == 2){
-
         Get_harmony_score();
         return;
     }
@@ -154,17 +146,6 @@ void EvaluateArtistic(){     // grid 격자의 예술성을 평가하는 함수
     Initialize_before_search();
     // 1. 격자내에서 동일한 숫자가 상하좌우로 인접해있는 그룹을 찾기
     DivideGroup();
-    for(int i=0; i<(int)groups.size(); i++){
-        int num, cnt, x, y;
-        tie(num, cnt, x, y) = groups[i];
-        //cout << num << ' ' << cnt << ' ' << x << ' ' << y << '\n';
-    }
-    for(int i=0; i<(int)groups.size(); i++){
-        int num, cnt, x, y;
-        tie(num, cnt, x, y) = groups[i];
-        
-        //cout << num << ' ' << cnt << ' ' << x << ' ' << y << '\n';
-    }
     // 2. 그룹 쌍 간의 조화로움 값이 0보다 큰 조합을 찾아서 전부 더하기
     // 2-1. 그룹 조합을 선택하기
     Choose(0);      // 0번째 그룹 숫자 선택
@@ -239,11 +220,8 @@ int main() {
     Input();    
     // 1. 초기 예술성 평가하기
     EvaluateArtistic();
-    //cout << "total" << total_beauty << '\n';
-    //cout << total_beauty << '\n';
     for(int i=0; i<3; i++){
         Rotate();                           // 회전하기
-
         EvaluateArtistic(); // 예술 점수 구하기
     }
 
