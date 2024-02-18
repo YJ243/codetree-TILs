@@ -1,5 +1,8 @@
 #include <iostream>
 #include <vector>
+#include <queue>
+#include <tuple>
+
 #define MAX_N 20
 #define MAX_M 5
 
@@ -102,6 +105,29 @@ void Swich_head_and_tail(int team_num){
     
 }
 
+queue<tuple<int, int, int> > q;
+
+void find_dist(){
+    while(!q.empty()){
+        int x, y, dist;
+        tie(x, y, dist) = q.front();
+        q.pop();
+        if(grid[x][y] == 1){
+            loc_dist = dist;
+            return;
+        }
+        for(int d=0; d<4; d++){
+            int nx = x+dirs[d][0], ny = y+dirs[d][1];
+            if(InRange(nx, ny) && !visited[nx][ny] && (grid[nx][ny] != 0 && grid[nx][ny] != 4) && team[x][y] == team[nx][ny]){
+                visited[nx][ny] = true;
+                //cout << "이제 여기 탐색: " << nx << ' ' << ny << ' ' << cur_dist << '\n';
+                q.push(make_tuple(nx, ny, dist+1));
+            }
+        }
+    }
+}
+
+/*
 void find_dist_from_head(int x, int y){
     for(int d=0; d<4; d++){
         int nx = x + dirs[d][0], ny = y + dirs[d][1];
@@ -117,15 +143,15 @@ void find_dist_from_head(int x, int y){
         }
     }
 }
-
+*/
 
 
 void UpdateScore(int x, int y){     // 공과 최초로 만난 (x,y) 위치의 사람이 들어간 팀의 점수를 업데이트하기
     // (x,y) 위치의 사람으로부터 머리까지 몇번 가야하는지 탐색하기
     cur_dist = 1, loc_dist = 1;
     Initialize();
+    while(!q.empty())   q.pop();
     visited[x][y] = true;
-    //cout << "업데이트할 위치: " << x << ' ' << y << '\n';
     /*
     for(int i=0; i<n; i++){
         for(int j=0; j<n; j++){
@@ -133,9 +159,15 @@ void UpdateScore(int x, int y){     // 공과 최초로 만난 (x,y) 위치의 �
         }
         cout << '\n';
     }
+    
+    cout << "************\n";
     */
-    //cout << "************\n";
-    find_dist_from_head(x, y);
+    q.push(make_tuple(x, y, cur_dist));
+    
+    
+    //cout << "업데이트할 위치: " << x << ' ' << y << ' ' << cur_dist << '\n';
+    find_dist();
+    //find_dist_from_head(x, y);
     //cout << "위치:" << loc_dist << '\n';
     total_score += loc_dist * loc_dist;
 
