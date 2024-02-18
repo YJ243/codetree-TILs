@@ -105,7 +105,9 @@ void Swich_head_and_tail(int team_num){
 void find_dist_from_head(int x, int y){
     for(int d=0; d<4; d++){
         int nx = x + dirs[d][0], ny = y + dirs[d][1];
-        if(CanGo(nx,ny) && team[x][y] == team[nx][ny]){
+        //    return InRange(x, y) && !visited[x][y] && grid[x][y] != 0; 
+        // 범위 안에 있고, 방문하지 않았으면서 team이 같으면
+        if(CanGo(nx,ny) && (grid[nx][ny] == 2 || grid[nx][ny] == 1) && team[x][y] == team[nx][ny]){
             //cout << "다음 위치: " << nx << ' ' << ny << '\n';
             visited[nx][ny] = true;
             cur_dist++;
@@ -123,7 +125,16 @@ void UpdateScore(int x, int y){     // 공과 최초로 만난 (x,y) 위치의 �
     cur_dist = 1, loc_dist = 1;
     Initialize();
     visited[x][y] = true;
-    // << "업데이트할 위치: " << x << ' ' << y << '\n';
+    //cout << "업데이트할 위치: " << x << ' ' << y << '\n';
+    /*
+    for(int i=0; i<n; i++){
+        for(int j=0; j<n; j++){
+            cout << grid[i][j] << ' ';
+        }
+        cout << '\n';
+    }
+    */
+    //cout << "************\n";
     find_dist_from_head(x, y);
     //cout << "위치:" << loc_dist << '\n';
     total_score += loc_dist * loc_dist;
@@ -160,7 +171,7 @@ void ThrowBall(int group_num, int idx){
         }
     }
     else{   // group_num == 3
-        for(int i=0; i<n-1;i++){
+        for(int i=0; i<n;i++){
             if(IsPerson(grid[i][n-1-idx])){
                 UpdateScore(i, n-1-idx);
                 break;
