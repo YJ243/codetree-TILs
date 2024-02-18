@@ -14,11 +14,10 @@ int dirs[4][2] = {{-1,0},{0,1},{1,0},{0,-1}};
 int team_number = -1;
 int total_score;
 
-
 int team[MAX_N][MAX_N];     // 각 팀의 정보 
 pair<int, int> team_head[MAX_N];    // 각 팀의 머리 좌표
 pair<int, int> team_tail[MAX_M];    // 각 팀의 꼬리 좌표
-int cur_dist, loc_dist;
+int loc_dist;
 
 void Input(){
     cin >> n >> m >> k;
@@ -27,7 +26,7 @@ void Input(){
             cin >> grid[i][j];
 }
 
-void Initialize(){
+void Initialize_visited(){
     for(int i=0; i<n; i++){
         for(int j=0; j<n; j++){
             visited[i][j] = false;  // 방문 배열 초기화
@@ -87,8 +86,6 @@ void MoveTeam(){
             }
         }
     }
-
-
 }
 
 bool IsPerson(int x){
@@ -120,43 +117,26 @@ void find_dist(int toX, int toY){
             int nx = x+dirs[d][0], ny = y+dirs[d][1];
             if(InRange(nx, ny) && !visited[nx][ny] && (grid[nx][ny] != 0 && grid[nx][ny] != 4) && team[x][y] == team[nx][ny]){
                 visited[nx][ny] = true;
-                //cout << "이제 여기 탐색: " << nx << ' ' << ny << ' ' << cur_dist << '\n';
                 q.push(make_tuple(nx, ny, dist+1));
             }
         }
     }
 }
 
-/*
-void find_dist_from_head(int x, int y, int toX, int toY){
-    for(int d=0; d<4; d++){
-        int nx = x + dirs[d][0], ny = y + dirs[d][1];
-        //    return InRange(x, y) && !visited[x][y] && grid[x][y] != 0; 
-        // 범위 안에 있고, 방문하지 않았으면서 team이 같으면
-        if(InRange(nx, ny) && !visited[nx][ny] && (grid[nx][ny] != 0 && grid[nx][ny] != 4) && team[x][y] == team[nx][ny]){
-            //cout << "다음 위치: " << nx << ' ' << ny << '\n';
-            visited[nx][ny] = true;
-            cur_dist++;
-            if(grid[nx][ny] == 1)
-                loc_dist = cur_dist;
-            find_dist_from_head(nx, ny);
-        }
-    }
-}
-
-*/
 void UpdateScore(int x, int y){     // 공과 최초로 만난 (x,y) 위치의 사람이 들어간 팀의 점수를 업데이트하기
-    // (x,y) 위치의 사람으로부터 머리까지 몇번 가야하는지 탐색하기
-    cur_dist = 1, loc_dist = 1;
-    Initialize();
-    while(!q.empty())   q.pop();
+    loc_dist = 1;
+    // 머리에서 (x,y) 위치의 사람까지 몇번 가야하는지 탐색하기
+    Initialize_visited();           // 방문 배열 초기화
+    while(!q.empty())   q.pop();    // 큐 비우기
+
     // (x,y)가 속해있는 그룹의 머리를 찾아서 bfs탐색 수행
-    int curr_group_num = team[x][y];
+    int curr_group_num = team[x][y];    // 현재 위치가 속해있는 그룹 번호
     int hX = team_head[curr_group_num].first, hY = team_head[curr_group_num].second;
-    visited[hX][hY] = true;
+    visited[hX][hY] = true;     // 머리 부분 방문처리
     for(int d=0; d<4; d++){
         int nx = hX+dirs[d][0], ny = hY+dirs[d][1];
         if(InRange(nx, ny) && !visited[nx][ny] && grid[nx][ny] == 2 && team[nx][ny] == team[x][y]){
+            // 머리와 붙어있는 2가 있는 곳으로 탐색 시작하기
             visited[nx][ny] = true;
             q.push(make_tuple(nx, ny, 2));
             find_dist(x, y);
@@ -164,22 +144,6 @@ void UpdateScore(int x, int y){     // 공과 최초로 만난 (x,y) 위치의 �
         }
     }
 
-    /*
-    for(int i=0; i<n; i++){
-        for(int j=0; j<n; j++){
-            cout << grid[i][j] << ' ';
-        }
-        cout << '\n';
-    }
-    
-    cout << "************\n";
-    */
-    //q.push(make_tuple(hX, hY, cur_dist));
-    
-    
-    //cout << "업데이트할 위치: " << x << ' ' << y << ' ' << cur_dist << '\n';
-            //find_dist_from_head(x, y, nX, nY);
-    //cout << "위치:" << loc_dist << '\n';
     total_score += loc_dist * loc_dist;
 
     // 머리와 꼬리 바꾸기
@@ -187,7 +151,7 @@ void UpdateScore(int x, int y){     // 공과 최초로 만난 (x,y) 위치의 �
 
 }
 
-void ThrowBall(int group_num, int idx){
+void ThrowBall(int group_num, int idx){     // grou_num번째 묶음의 idx번째 줄에서 공을 던지는 함수
     if(group_num == 0){
         // 위에서부터 idx번
         for(int j=0; j<n; j++){
@@ -226,45 +190,20 @@ void ThrowBall(int group_num, int idx){
 
 
 void Simulate(int round){        // 시뮬레이션을 진행하는 함수
-    // 0. 탐색 전 초기화
-    Initialize();
+    // Step 0. 탐색 전 방문 배열 초기화
+    Initialize_visited();
 
-
-
-    // 2. 각 팀 한 칸씩 이동하기
-    //cout << "round: "<<round << "번째 먼저 이동후\n";
+    // 1. 각 팀 한 칸씩 이동하기
     MoveTeam();
-    /*
-    for(int i=0; i<n; i++){
-        for(int j=0; j<n; j++){
-            cout << grid[i][j] << ' ';
-        }
-        cout << '\n';
-    }
-    cout << '\n';
-    */
-    // 3. 공이 던져지고, 해당 선에 최초로 만나는 사람 점수 추가하기
-    // round에 따라 공 던지기
+
+    // 2. 공이 던져지는 선에 최초로 만나는 사람 점수 추가하기
     int group_num = (round / n)%4;
     int start_idx = round % n;
-    //cout << "던질 볼의 위치 : " << group_num << ' ' << start_idx << '\n';
+    // round에 따라 공 던지기
     ThrowBall(group_num, start_idx);
-/*
-    cout << "머리 꼬리도 바뀐 뒤:"<<'\n';
-    for(int i=0; i<n; i++){
-        for(int j=0; j<n; j++){
-            cout << grid[i][j] << ' ';
-        }
-        cout << '\n';
-    }
-    cout << '\n';
-*/
 }
 
-int main() {
-    // 입력 받기:
-    Input();    
-    // 1. 연결되어 있는 팀의 머리와 꼬리 찾기
+void MakeTeamNumberGrid(){      // 맨 처음에 어떤 팀으로 이루어졌는지 나타내는 team 격자 초기화하기
     for(int i=0; i<n; i++){
         for(int j=0; j<n; j++){
             team[i][j] = -1;
@@ -283,20 +222,17 @@ int main() {
             }
         }
     }
+}
+
+int main() {
+    // 입력 받기:
+    Input();    
+    // 연결되어 있는 팀의 머리와 꼬리 찾기
+    MakeTeamNumberGrid();
 
     // k번의 턴에 대해 시뮬레이션 진행
     for(int cur_turn=0; cur_turn < k; cur_turn++){
-
         Simulate(cur_turn);
-        /*
-        cout << "현재 점수: "<< total_score << '\n';
-        for(int i=0; i<n; i++){
-            for(int j=0; j<n; j++){
-                cout << grid[i][j] << ' ';
-            }
-            cout << '\n';
-        }
-*/
     }
 
     // 출력:
