@@ -45,7 +45,7 @@ void Move_dice(){
     // 2. 주사위 위치 업데이트
     int x = dice_loc.first, y = dice_loc.second;
     dice_loc = make_pair(x+dirs[cur_d][0], y+dirs[cur_d][1]);
-
+    //cout << "Moved loc:" << dice_loc.first << ' ' << dice_loc.second << '\n';
 }
 
 void Decide_direction(){
@@ -58,7 +58,7 @@ void Decide_direction(){
     }
     else if(bottom < cur_num){
         // 90도 반시계 방향으로 돌리기
-        cur_d = (cur_d - 1) % 4;
+        cur_d = (cur_d - 1 + 4) % 4;
     }
 
     if(!InRange(dice_loc.first + dirs[cur_d][0], dice_loc.second + dirs[cur_d][1])){
@@ -97,7 +97,7 @@ void dfs(int x, int y){
 
 void Simulate(int turn){
     // Step 1. 현재 주사위가 이동할 방향 정해서 한칸 이동하기
-    if(turn == 0)
+    if(turn == 0)   // 처음에는 항상 오른쪽 방향으로 움직이기
         Move_dice();
     else
         Decide_direction();
