@@ -228,7 +228,7 @@ void Simulate(int turn){
     TryCopyMonster();
     // Step 2. 몬스터 이동
     // 2-1. temp 초기화
-    //Initialize_temp();
+    Initialize_temp();
     // 2-2. Monster 이동 
     for(int i=0; i<MAX_N; i++){
         for(int j=0; j<MAX_N; j++){
