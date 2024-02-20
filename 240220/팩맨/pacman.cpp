@@ -16,7 +16,7 @@ int dirs[8][2] = {{-1,0},{-1,-1},{0,-1},{1,-1},{1,0},{1,1},{0,1},{-1,1}};
 int direction[4][2] = {{-1,0},{0,-1},{1,0},{0,1}};   // 상, 좌, 하, 우 우선순위
 vector<int> selected_direction;         // 팩맨이 이동할 위치 찾아갈 때 쓰는 배열
 vector<int> final_direction;            // 팩맨이 이동할 최종 위치
-int MaxMonster = 0;
+int MaxMonster;
 
 void Input(){       // 입력을 받는 함수
     cin >> m >> t;                  // 몬스터 마리수와 턴의 수
@@ -131,7 +131,7 @@ void CheckRoute(){
 void Initialize_before_PacManMove(){
     selected_direction.clear();
     final_direction.clear();
-    MaxMonster = 0;
+    MaxMonster = -1;
 }
 
 void FindDirectionforPacMan(int idx){
@@ -149,9 +149,11 @@ void FindDirectionforPacMan(int idx){
 void UpdatePacMan(int turn){
     int x = pacMan.first, y = pacMan.second;
     for(int k=0; k<3; k++){
+        //cout << final_direction[k] << '\n';
         int nx = x + direction[final_direction[k]][0];
         int ny = y + direction[final_direction[k]][1];
-
+        //cout << nx << ' ' << ny << '\n';
+    
         if(temp[nx][ny].size() > 0){
             // 만약 몬스터가 있다면
             for(int l=0; l<(int)temp[nx][ny].size(); l++){
@@ -160,6 +162,7 @@ void UpdatePacMan(int turn){
             temp[nx][ny].clear();       // 현재 위치에 있는 몬스터 없애기
         }
         x = nx, y = ny;         // 위치 업데이트
+    
     }
 
     pacMan = make_pair(x, y);
@@ -170,6 +173,7 @@ void MovePacMan(int turn){      // 팩맨을 총 3칸 이동시키는 함수, �
     //cout << "pacman 초기 위치: " << pacMan.first << ' ' << pacMan.second << '\n';
     Initialize_before_PacManMove();
     FindDirectionforPacMan(0);
+    //cout << final_direction.size() << '\n';
     //for(int i=0; i<(int)final_direction.size(); i++){
     //    cout << final_direction[i] << ' ';
     //}
@@ -224,7 +228,7 @@ void Simulate(int turn){
     TryCopyMonster();
     // Step 2. 몬스터 이동
     // 2-1. temp 초기화
-    Initialize_temp();
+    //Initialize_temp();
     // 2-2. Monster 이동 
     for(int i=0; i<MAX_N; i++){
         for(int j=0; j<MAX_N; j++){
