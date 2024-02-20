@@ -89,6 +89,7 @@ void MoveMonster(int x, int y){        // (x,y)에 있는 몬스터 이동
 }
 
 void CheckRoute(){
+
     int curr = 0;
     int x = pacMan.first, y = pacMan.second;
     bool visited[MAX_N][MAX_N] = {false,};
@@ -105,14 +106,25 @@ void CheckRoute(){
         x = nx, y = ny;         // 위치 업데이트
     }
     if(MaxMonster < curr){
+        /*
+        for(int i=0; i<MAX_N; i++){
+            for(int j=0; j<MAX_N; j++){
+                cout << temp[i][j].size() << ' ';
+            }
+            cout << '\n';
+        }
+        cout << '\n';
+        */
         // 만약 현재 먹은 몬스터가 제일 많다면 위치 업데이트
         final_direction = selected_direction;
         MaxMonster = curr;
-        //cout << "지금 현재 최대 몬스터 양" << curr << '\n';
-        //for(int k=0; k<3; k++){
-        //    cout << selected_direction[k] << ' ';
-        //}
-        //cout << "옆의 방향대로 이동함" << '\n';
+        /*
+        cout << "지금 현재 최대 몬스터 양" << curr << '\n';
+        for(int k=0; k<3; k++){
+            cout << selected_direction[k] << ' ';
+        }
+        cout << "옆의 방향대로 이동함" << '\n';
+        */
     }
 }
 
@@ -155,7 +167,7 @@ void UpdatePacMan(int turn){
 
 void MovePacMan(int turn){      // 팩맨을 총 3칸 이동시키는 함수, 몬스터를 가장 많이 먹을 수 있는 방향으로 이동시키기
     // Step 1. 먼저 팩맨이 이동할 방향 정하기
-    // << "pacman 초기 위치: " << pacMan.first << ' ' << pacMan.second << '\n';
+    //cout << "pacman 초기 위치: " << pacMan.first << ' ' << pacMan.second << '\n';
     Initialize_before_PacManMove();
     FindDirectionforPacMan(0);
     //for(int i=0; i<(int)final_direction.size(); i++){
@@ -176,7 +188,7 @@ void DestroyDead(int turn){
                 //cout << "사체있음:" << i << ' ' << j << '\n';
                 for(int k=0; k<(int)dead[i][j].size(); k++){
                     //cout << k << ' ' << dead[i][j][k] << "<= " << turn << '\n';
-                    if(dead[i][j][k] >= turn){  // 아직 소멸되지 않는 사체라면
+                    if(dead[i][j][k] > turn){  // 아직 소멸되지 않는 사체라면
                         temp_dead[i][j].push_back(dead[i][j][k]);
                     }
                 }
@@ -207,6 +219,7 @@ void DoCopyMonster(){
 }
 
 void Simulate(int turn){
+    //cout << "현재 턴: " << turn << '\n';
     // Step 1. 몬스터 복제 시도
     TryCopyMonster();
     // Step 2. 몬스터 이동
