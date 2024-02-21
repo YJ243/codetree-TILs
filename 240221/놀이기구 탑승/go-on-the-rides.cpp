@@ -9,7 +9,7 @@ int n;
 int grid[MAX_N][MAX_N];
 int dirs[4][2] = {{-1,0},{0,1},{1,0},{0,-1}};
 vector<int> turn;
-vector<int> like[MAX_N+1];
+vector<int> like[MAX_N*MAX_N+1];
 int max_friend, max_vacant;
 
 int score[5] = {0, 1, 10, 100, 1000};
