@@ -29,20 +29,19 @@ void Initialize_temp(){
 
 }
 
-/*
-bool InRange(int x, int y){     // (x,y)가 범위 안에 있는지 확인하는 함수
-    return 0 <= x && x < n && 0 <= y && y < n;
-}
-*/
+
 
 void Move(int x, int y){        // (x,y) 칸에 있는 구슬을 모두 옮기기
     for(int k=0; k<(int)grid[x][y].size(); k++){
         int m, s, d;
         tie(m, s, d) = grid[x][y][k];
+        if(m == 0) continue;
         // s만큼 d방향으로 움직이기
-        int nx = (x + dirs[d][0]*s + n*MAX_S)%n;
-        int ny = (y + dirs[d][1]*s + n*MAX_S)%n;
-
+        int nx = x, ny = y;
+        for(int i=1; i<=s; i++){
+            nx = (nx + dirs[d][0] + n*MAX_S)%n;
+            ny = (ny + dirs[d][1] + n*MAX_S)%n;
+        }
         temp[nx][ny].push_back(make_tuple(m, s, d));
     }
 
@@ -62,16 +61,17 @@ void Compound_marble(int x, int y){     // temp 배열에서 (x,y) 자리에 있
     }
     next_m = total_m/5;
     next_s = total_s/(int)temp[x][y].size();
-
+    //cout << "다음 질량: " << next_m << ' ' << "다음 속력: " << next_s << '\n';
+    //cout << isDir1 << ' ' << isDir2 << '\n';
     temp[x][y].clear();         // 일단 먼저 해당 칸 비워놓고
     if(next_m == 0) return;     // 만약 질량이 0이라면 사라지는 것이니 바로 리턴
 
     int start_d;
-    if(isDir1 * isDir2)   // 만약 상하좌우, 대각선 방향이 둘다 있다면 대각선 방향
-        start_d = 0;
-    else
+    if(isDir1 == true && isDir2 == true)   // 만약 상하좌우, 대각선 방향이 둘다 있다면 대각선 방향
         start_d = 1;
-    
+    else
+        start_d = 0;
+    //cout << "start_d" << start_d << '\n';
     for(int i=start_d; i<8; i += 2)
             temp[x][y].push_back(make_tuple(next_m, next_s, i)); 
 
@@ -102,8 +102,6 @@ void Simulate(){
                 grid[i][j] = temp[i][j];
             }
         }
-
-
 }
 
 void Output(){
