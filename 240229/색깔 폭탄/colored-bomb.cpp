@@ -33,7 +33,7 @@ bool InRange(int x, int y){
 }
 
 bool CanGo(int x, int y, int val){
-    return InRange(x, y) && ((!visited[x][y] && grid[x][y] == val) || grid[x][y] == 0);
+    return InRange(x, y) && !visited[x][y] && (grid[x][y] == val || grid[x][y] == 0);
 }
 
 tuple<int, int, int, int> bfs(int val){
@@ -42,12 +42,13 @@ tuple<int, int, int, int> bfs(int val){
         pair<int, int> curr = q.front();
         q.pop();
         int x = curr.first, y = curr.second;
-        if(grid[x][y] > 0){
+        //cout << x << ' ' << y << '\n';
+        if(grid[x][y] > 0){         // 기준점인지 확인하기
             if(x > std_point.first || ( x == std_point.first && y < std_point.second))
                 std_point = make_pair(x, y);
         }
         for(int d=0; d<4; d++){
-            int nx = curr.first + dirs[d][0], ny = curr.second + dirs[d][1];
+            int nx = x + dirs[d][0], ny = y + dirs[d][1];
             if(CanGo(nx, ny, val)){
                 visited[nx][ny] = true;
                 cur_cnt++;
@@ -57,7 +58,7 @@ tuple<int, int, int, int> bfs(int val){
             }
         }
     }
-    
+    //cout << '\n';
     return make_tuple(cur_cnt, -red_cnt, std_point.first, -std_point.second);
 }
 
@@ -66,6 +67,7 @@ void FindMaxSizeBomb(){
     for(int i=0; i<n; i++){
         for(int j=0; j<n; j++){
             if(grid[i][j] > 0 && !visited[i][j]){
+                Initialize();
                 cur_cnt = 1;
                 red_cnt = 0;
                 visited[i][j] = true;
@@ -155,6 +157,7 @@ bool Simulate(){
 
     // 1. 크기가 가장 큰 폭탄 묶음 찾기
     FindMaxSizeBomb();
+    
     int cur_total;
     tie(cur_total, ignore, ignore, ignore) = MaxBomb;
     if(cur_total <= 1)
