@@ -119,7 +119,7 @@ void DoGravity(){
         for(int i=n-1; i >= 0; i--){
             if(grid[i][j] == -2)
                 continue;
-            else if(grid[i][j] > 0)
+            else if(grid[i][j] >= 0)
                 after.push_back(grid[i][j]);
             else if(grid[i][j] == -1){
                 int start_idx=i;
@@ -133,6 +133,11 @@ void DoGravity(){
         for(int k=0; k<(int)after.size(); k++)
             temp[nextIdx--][j] = after[k];
     }
+    for(int i=0; i<n; i++){
+        for(int j=0; j<n; j++){
+            grid[i][j] = temp[i][j];
+        }
+    }
     
 }
 
@@ -140,7 +145,7 @@ void RotateCounterClockwise(){
     int temp[n][n];
     for(int i=0; i<n; i++){
         for(int j=0; j<n; j++){
-            temp[j][i] = grid[i][j];
+            temp[n-1-j][i] = grid[i][j];
         }
     }
 
@@ -164,10 +169,10 @@ bool Simulate(){
         return true;
     // 2. 선택한 묶음 내 폭탄 제거하기
     DeleteBomb();
-
+    
     // 3. 중력 작용시키기
     DoGravity();
-
+    
     // 4. 반시계방향으로 90도 회전시키기
     RotateCounterClockwise();
 
@@ -186,6 +191,7 @@ int main() {
         bool IsFinish = Simulate();
         if(IsFinish)
             break;
+        //cout << total_score<<'\n';
     }
 
     cout << total_score;
