@@ -52,8 +52,6 @@ void bfs(){
     while(!q.empty()){
         pair<int, int> curr = q.front();
         q.pop();
-
-
         for(int d=0; d<4; d++){
             int nx = curr.first + dirs[d][0], ny = curr.second + dirs[d][1];
             if(CanGo(nx, ny)){
@@ -84,7 +82,8 @@ pair<int, int> FindNearestPassenger(){
             }
         }
     }
-    //cout << passenger[targetX][targetY] << '\n';
+    if(dist[targetX][targetY] == -1)
+        return make_pair(-1, -1);
     return make_pair(targetX, targetY);
 }
 
@@ -113,29 +112,29 @@ int FindNearestDest(int person){
     dist[tX][tY] = 0;
     q.push(make_pair(tX,tY));
     int minD = bfs_dest();
-    //cout << "리턴 값: " << minD << '\n';
     return minD;
 }
 
 bool MoveCar(pair<int, int> target){
     // 1. 현재 연료와 target까지의 최단거리 비교
-    
     int targetDist = dist[target.first][target.second];
+    cout << "움직여야 할 거리: " << targetDist << '\n';
     if(c <= targetDist)
         return false;
     // 2. 현재 가지고 있는 연료로 이동할 수 있다면 target으로 이동하기
     carX = target.first, carY = target.second;
     c -= targetDist;
-
+    cout << c << '\n';
     // 3. target 위치에서 목적지까지 최단거리 찾기
     int person = passenger[target.first][target.second];
     int minDist = FindNearestDest(person);
 
-    if(c < minDist)
+    if(c < minDist || minDist == -1)
         return false;
     int x = dest[person].first, y = dest[person].second;
     carX = x, carY = y;
     c += minDist;
+    cout << "after " << c << '\n';
     passenger[target.first][target.second] = 0;
    
     return true;
@@ -145,7 +144,8 @@ bool MoveCar(pair<int, int> target){
 bool Simulate(){
     // Step 1. 현재 (carX, carY)에서 가장 가까운 승객 찾기
     pair<int, int> target = FindNearestPassenger();
-
+    if(target.first == -1)
+        return false;
     // Step 2. 차량을 이동시키기
     bool IsMovable = MoveCar(target);
     if(!IsMovable)
