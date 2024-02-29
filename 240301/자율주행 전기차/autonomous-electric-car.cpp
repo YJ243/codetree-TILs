@@ -118,13 +118,13 @@ int FindNearestDest(int person){
 bool MoveCar(pair<int, int> target){
     // 1. 현재 연료와 target까지의 최단거리 비교
     int targetDist = dist[target.first][target.second];
-    cout << "움직여야 할 거리: " << targetDist << '\n';
+    //cout << "움직여야 할 거리: " << targetDist << '\n';
     if(c <= targetDist)
         return false;
     // 2. 현재 가지고 있는 연료로 이동할 수 있다면 target으로 이동하기
     carX = target.first, carY = target.second;
     c -= targetDist;
-    cout << c << '\n';
+    //cout << c << '\n';
     // 3. target 위치에서 목적지까지 최단거리 찾기
     int person = passenger[target.first][target.second];
     int minDist = FindNearestDest(person);
@@ -134,7 +134,7 @@ bool MoveCar(pair<int, int> target){
     int x = dest[person].first, y = dest[person].second;
     carX = x, carY = y;
     c += minDist;
-    cout << "after " << c << '\n';
+    //cout << "after " << c << '\n';
     passenger[target.first][target.second] = 0;
    
     return true;
