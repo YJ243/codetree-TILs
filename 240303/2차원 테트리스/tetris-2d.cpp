@@ -106,7 +106,6 @@ void ProcessLight(){
                 }
             }
         }
-        if(c == 1)
         
         while(existCnt){
             DownOneRow(c, n-1);
