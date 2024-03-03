@@ -1,299 +1,161 @@
 #include <iostream>
-
+#define MAX_N 6
+#define MAX_M 4
+#define TILE_NUM 3
+#define COLOR_CNT 2
 using namespace std;
 
 int k;
+int n = MAX_N, m = MAX_M;
+int grid[COLOR_CNT][MAX_N][MAX_M];  // 0: 노란색, 1: 빨간색
+int tile[TILE_NUM+1][2][2] = {
+    {},
+    {{1,0},     // 1x1 타일
+     {0,0}},
+    {{1,1},     // 1x2 타일
+     {0,0}},
+    {{1,0},     // 2x1 타일
+     {1,0}}
+};
+
 int total_score;
 int total_block;
-int red[4][6];
-int yellow[6][4];
-int nextBlock[4][4];
 
-int ToRed(int t, int x){
-    int ny=5;
-    if(t <= 2){     // 1x1, 1x2 블록
-        // x행의 nY를 찾기
-        for(int j=0; j<=5; j++){
-            if(red[x][j] == 1){
-                ny = j-1;
-                break;
-            }
-        }
-        if(t == 1)
-            red[x][ny] = 1;     
-        else
-            red[x][ny] = red[x][ny-1] = 1;
-    }
-    else{            // 2x1 블록
-        for(int j=0; j<=5; j++){
-            if(red[x][j] == 1 || red[x+1][j] == 1){
-                ny = j-1;
-                break;
-            }
-        }
-        red[x][ny] = red[x+1][ny] = 1;
-    }
-    return ny;
+bool InRange(int x, int y){
+    return 0 <= x && x < n && 0 <= y && y < m;
 }
 
-int ToYellow(int t, int y){
-    int nx = 5;     // 일단 제일 끝에 들어간다고 가정하기
-    if(t == 1 || t == 3){           // 1x1, 2x1 블록
-        for(int i=0; i<=5; i++){
-            if(yellow[i][y] == 1){
-                // 1을 만나면
-                nx = i-1;
-                break;
-            }
-        }
-
-        if(t == 1){
-            yellow[nx][y] = 1;
-        }
-        else{
-            yellow[nx][y] = yellow[nx-1][y] = 1;
-        }
-    }
-    else{           // 1x2 블록
-        for(int i=0; i<=5; i++){
-            if(yellow[i][y] == 1 || yellow[i][y+1] == 1){
-                nx = i-1;
-                break;
-            }
-        }
-        yellow[nx][y] = yellow[nx][y+1] = 1;
-    }
-    return nx;
+bool CanGo(int x, int y, int c){
+    return InRange(x, y) && !grid[c][x][y];     // 범위 안에 있고, 타일이 없어야 함
 }
 
-void InitializeNext(){
-    for(int i=0; i<4; i++)
-        for(int j=0; j<4; j++)
-            nextBlock[i][j] = 0;
+void Put(int t, int c, int x, int y){           // t번 타일을 c컬러 블록에 (x,y)에서 시작해서 놓기
+    for(int dx = 0; dx < 2; dx++){
+        for(int dy = 0; dy < 2; dy++){
+            if(tile[t][dx][dy]){
+                int nx = x + dx, ny = y + dy;
+                grid[c][nx][ny] = 1;
+            }
+        }
+    }
+
 }
 
-void DeleteFullRed(){
-    // step 0. 먼저 다음 배열 초기화하기
-    InitializeNext();
-    bool ExistFull = false;
-    // step 1. 꽉찬 열이 있다면 지워주기
-    for(int j=2; j<=5; j++){
-        bool IsFull = true;
-        for(int i=0; i<4; i++){
-            if(red[i][j] == 0) // 만약 빈 칸이 하나라도 있다면 그 열은 꽉 차지 않음
-                IsFull = false;
-        }
-        if(IsFull){     // 열이 꽉 찼다면
-            // 해당 열 지워주기
-            ExistFull = true;
-            for(int i=0; i<4; i++)
-                red[i][j] = 0;
-            total_score++;
-        }
-    }
-
-    if(!ExistFull)
-        return;
-
-    // step 2. 빈 열이 있다면 오른쪽으로 밀어서 없애주기
-    int curY = 3;
-    for(int j=5; j>=2; j--){
-        bool existBlock = false;        // 현재 확인하는 행에 블럭이 존재하는가?
-        for(int i=0; i<4; i++){
-            if(red[i][j] == 1)       // 블럭이 하나라도 존재한다면 true
-                existBlock = true;
-        }
-        if(existBlock){             // 블럭이 존재하는 줄을 next로 옮기기
-            for(int i=0; i<4; i++){
-                nextBlock[i][curY] = red[i][j];
+void PutTile(int t, int c, int y){      // t번 타일을 c번 컬러 블록의 y번 열에 두는 함수
+    for(int i=1; i<=n; i++){                     // 위에서부터 차례대로 보기 시작, 현재 보고 있는 좌상단은 (i,y)
+        for(int dx = 0; dx < 2; dx++){
+            for(int dy = 0; dy < 2; dy++){
+                if(tile[t][dx][dy]){
+                    // 만약 타일이 존재한다면
+                    int nx = i+dx, ny = y+dy;
+                    if(!CanGo(nx, ny, c)){    // (nx, ny) 자리에 놓을 수 없다면
+                        // 이전 줄에 놓고 break;
+                        Put(t, c, i-1, y);
+                        return;
+                    }
+                }
             }
-            curY--;
-        }
-    }
-
-    // step 3. next를 원래 블럭으로 옮겨주기
-    for(int i=0; i<4; i++){
-        for(int j=0; j<4; j++){
-            red[i][j+2] = nextBlock[i][j];
         }
     }
 }
 
-void DeleteFullYellow(){
-    // step 0. 먼저 다음 배열 초기화하기
-    InitializeNext();
-    bool ExistFull = false;
-    // step 1. 꽉찬 행이 있다면 지워주기
-    for(int i=2; i<=5; i++){
-        bool IsFull = true;
-        for(int j=0; j<4; j++){
-            if(yellow[i][j] == 0) // 만약 빈 칸이 하나라도 있다면 그 행은 꽉 차지 않음
-                IsFull = false;
-        }
-        if(IsFull){     // 행이 꽉 찼다면
-            // 해당 행 지워주기
-            ExistFull = true;
-            for(int j=0; j<4; j++)
-                yellow[i][j] = 0;
-            total_score++;
-        }
+bool IsFilled(int c, int x){        // c컬러 블록의 x행이 꽉차있는지 확인하기
+    bool IsFilled = true;
+    for(int j=0; j<m; j++){
+        if(grid[c][x][j] == 0)
+            IsFilled = false;
     }
+    return IsFilled;
+}
 
-    if(!ExistFull)
-        return;
-
-    // step 2. 빈 행이 있다면 아래로으로 밀어서 없애주기
-    int curX = 3;
-    for(int i=5; i>=2; i--){
-        bool existBlock = false;        // 현재 확인하는 행에 블럭이 존재하는가?
-        for(int j=0; j<4; j++){
-            if(yellow[i][j] == 1)       // 블럭이 하나라도 존재한다면 true
-                existBlock = true;
-        }
-        if(existBlock){             // 블럭이 존재하는 줄을 next로 옮기기
-            for(int j=0; j<4; j++){
-                nextBlock[curX][j] = yellow[i][j];
-            }
-            curX--;
-        }
-    }
-
-    // step 3. next를 원래 블럭으로 옮겨주기
-    for(int i=0; i<4; i++){
-        for(int j=0; j<4; j++){
-            yellow[i+2][j] = nextBlock[i][j];
+void DownOneRow(int c, int start_x){
+    for(int i=start_x; i >= 1; i--){
+        for(int j=0; j<m; j++){
+            grid[c][i][j] = grid[c][i-1][j];
         }
     }
 }
 
-void ProcessLightRed(int t, int px, int ny){    // t번 블럭이 (px, ny)에 놓였을 때 처리 
-    if(t == 1 || t == 3){      // 1x1, 2x1 블럭의 경우 오른쪽으로 1열 밀어야 함
-        // 2~4 열을 3~5로 밀기
-        for(int j=4; j >= 2; j--){
-            for(int i=0; i<4; i++){
-                red[i][j+1] = red[i][j];
+void ProcessDark(){
+    // 모두 채워져 있는 행이 있는지 확인하기
+    for(int c=0; c<2; c++){     // 노란색, 빨간색 차례대로 확인하기
+        int i = n-1;
+        while(i >= 2){          // 진한 부분만 확인하기
+            if(IsFilled(c, i)){
+                // 만약 채워져 있다면
+                total_score++;      // 점수 증가시키고
+                DownOneRow(c, i);   // 한칸씩 내리기
             }
-        }
-        // 2열을 모두 0으로
-        for(int i=0; i<4; i++)
-            red[i][2] = 0;
-        // 2열에 블럭 놓기
-        if(t == 1){
-            red[px][ny+1] = 1;
-            red[px][ny] = 0;
-        }
-        else{
-            red[px][ny+1] = red[px+1][ny+1] = 1;
-            red[px][ny] = red[px+1][ny] = 0;
-        }
-    }
-    else{      // 1x2 블럭의 경우 오른쪽으로 2열 밀어야 함    
-        // 2,3열을 3,4로 밀기
-        for(int j=3; j >= 2; j--){
-            for(int i=0; i<4; i++){
-                red[i][j+2] = red[i][j];
+            else{
+                i--;                // 해당 행은 꽉차있지 않으니 위로 인덱스 올리기
             }
-        }
-        // 2,3 열을 모두 0으로
-        for(int i=0; i<4; i++){
-            for(int j=2; j<=3; j++)
-                red[i][j] = 0;
         }
 
-        // 2,3열에 블럭 놓기
-        red[px][2] = red[px][3] = 1;
-        red[px][0] = red[px][1] = 0;
     }
 }
 
-void ProcessLightYellow(int t, int nx, int py){ // t번 블럭이 (nx, py)에 놓였을 때 처리
-
-    if(t == 1 || t == 2){      // 1x1, 1x2 블럭의 경우 아래쪽으로 1열 밀어야 함
-        // 2~4 행을 3~5로 밀기
-        for(int i=4; i >= 2; i--){
-            for(int j=0; j<4; j++){
-                yellow[i+1][j] = yellow[i][j];
+void ProcessLight(){
+    // 밝은색 부분에 타일이 있는지 확인
+    for(int c=0; c<2; c++){
+        int existCnt = 0;
+        for(int i=0; i<2; i++){
+            for(int j=0; j<m; j++){
+                if(grid[c][i][j]){
+                    existCnt++;
+                    break;
+                }
             }
         }
-        // 2행을 모두 0으로
-        for(int j=0; j<4; j++)
-            yellow[2][j] = 0;
-        // 2행에 블럭 놓기
-        if(t == 1){
-            yellow[nx+1][py] = 1;
-            yellow[nx][py] = 0;
+        if(c == 1)
+        
+        while(existCnt){
+            DownOneRow(c, n-1);
+            existCnt--;
         }
-        else{
-            yellow[nx+1][py] = yellow[nx+1][py+1] = 1;
-            yellow[nx][py] = yellow[nx][py+1] = 0;
-        }
-    }
-    else{      // 2x1 블럭의 경우 아래쪽으로 2열 밀어야 함    
-        // 2,3행을 3,4로 밀기
-        for(int i=3; i >= 2; i--){
-            for(int j=0; j<4; j++){
-                yellow[i+2][j] = yellow[i][j];
+        for(int i=0; i<2; i++){
+            for(int j=0; j<m; j++){
+                grid[c][i][j] = 0;
             }
         }
-        // 2,3 행을 모두 0으로
-        for(int j=0; j<4; j++){
-            for(int i=2; i<=3; i++)
-                yellow[i][j] = 0;
-        }
-
-        // 2,3행에 블럭 놓기
-        yellow[2][py] = yellow[3][py] = 1;
-        yellow[0][py] = yellow[0][1] = 0;
     }
 }
 
-void Move(int t, int x, int y){     // (x,y)에 놓인 t번 블록을 이동시키기
-    // Step 1. 먼저 주어진 타일 이동시키기
-    int ny = ToRed(t, x);
-    int nx = ToYellow(t, y);   
-    // Step 2. 진한 영역에 채워진 줄이 있다면 처리하기
-    DeleteFullRed();
-
-    DeleteFullYellow();
-    // Step 3. 연한 영역 처리하기
-    if(ny <= 1)
-        ProcessLightRed(t, x, ny);
-    if(nx <= 1)
-        ProcessLightYellow(t, nx, y);
-
-}
-
-void Simulate(){
-    cin >> k;
-
-    while(k--){
-        int t, x, y;
-        cin >> t >> x >> y;
-        Move(t, x, y);
-
-    }
+void Simulate(int t, int x, int y){     // t번 타일이 (x,y)에 주어졌을 때 타일 위치시키기
+    // Step 1. 노란색 블록에 이동시키기
+    PutTile(t, 0, y);
+    // Step 2. 빨간색 블록에 이동시키기
+    if(t == 1)
+        PutTile(t, 1, m-1-x);
+    else if(t == 2)
+        PutTile(t+1, 1, m-1-x);
+    else
+        PutTile(t-1, 1, m-1-x-1);
+    
+    // Step 3. 진한 부분 처리하기
+    ProcessDark();
+    // Step 4. 연한 부분 처리하기   
+    ProcessLight();
 }
 
 void Output(){
-    // red 블록 합
-    for(int i=0; i<4; i++){
-        for(int j=2; j<=5; j++){
-            total_block += red[i][j];
-        }
-    }
-    for(int i=2; i<=5; i++){
-        for(int j=0; j<4; j++){
-            total_block += yellow[i][j];
-        }
-    }
     cout << total_score << '\n';
+    for(int c=0; c<2; c++){
+        for(int i=0; i<n; i++){
+            for(int j=0; j<m; j++){
+                total_block += grid[c][i][j];
+            }
+        }
+    }
     cout << total_block << '\n';
 }
 
 int main() {
-    // 시뮬레이션 진행하기
-    Simulate();
-    
+    cin >> k;
+    while(k--){
+        int t, x, y;
+        cin >> t >> x >> y;
+        Simulate(t, x, y);
+    }    
     // 출력하기
     Output();
     return 0;
