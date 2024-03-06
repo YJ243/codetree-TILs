@@ -34,35 +34,35 @@ bool InRange(int x, int y){
 }
 
 void EraseSameNumber(){
-    bool tempGrid[MAX_NM+1][MAX_NM];
+    bool SameNumber[MAX_NM+1][MAX_NM];
     for(int i=1; i<=n; i++)
         for(int j=0; j<m; j++)
-            tempGrid[i][j] = false;
+            SameNumber[i][j] = false;
     
     for(int i=1; i <= n; i++){
         for(int j=0; j<m; j++){
             for(int d=0; d<4; d++){
                 int nx = i + dirs[d][0];
-                int ny = j + dirs[d][1];
+                int ny = (j + dirs[d][1]+m) % m;
                 if(!InRange(nx, ny)) continue;
                 if(grid[i][j] == grid[nx][ny] && grid[i][j] != 0){     // 만약 같은 숫자가 존재한다면
                     IsErased = true;                // 해당 턴에서 지워지는 숫자 있다고 표시
-                    tempGrid[i][j] = true;          // 기준 숫자 같다고 표시
-                    tempGrid[nx][ny] = true;        // 주변 숫자 같다고 표시
+                    SameNumber[i][j] = true;          // 기준 숫자 같다고 표시
+                    SameNumber[nx][ny] = true;        // 주변 숫자 같다고 표시
                 }
             }
         }
     }
     for(int i=1; i<=n; i++){
         for(int j=0; j<m; j++){
-            if(tempGrid[i][j]){
+            if(SameNumber[i][j]){
                 grid[i][j] = 0;
             }
         }
     }
 }
 
-void Normalize(){
+void Normalize(){                       // 정규화시키는 함수
     int cnt = 0, numSum = 0;
     for(int i=1; i<=n; i++){
         for(int j=0; j<m; j++){
@@ -90,10 +90,12 @@ void Simulate(){
         // d방향으로 k칸 회전시키기
         Rotate(i);
     }
+
     // Step 2. 전체 원판을 보면서 인접한 곳에 같은 수가 있는지 확인하기
     // 2-1. 있다면 지워주기
     IsErased = false;
     EraseSameNumber();
+
     // 2-2. 없다면 정규화 시켜주기
     if(!IsErased)
         Normalize();
