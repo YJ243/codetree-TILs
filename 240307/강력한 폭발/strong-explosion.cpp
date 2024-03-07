@@ -61,6 +61,10 @@ void UnDoBomb(){
             }
         }
     }
+    for(int i=0; i<bomb_cnt; i++){
+        int x = bomb[i].first, y = bomb[i].second;
+        grid[x][y] = 1;
+    }
 }
 
 void Choose(int idx){   // 폭탄 idx번째 선택하는 함수
