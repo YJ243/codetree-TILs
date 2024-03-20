@@ -22,18 +22,23 @@ bool InRange(int x, int y){
     return 0 <= x && x < n && 0 <= y && y < n;
 }
 
-void Verify(){
-    // step 1. 먼저 해당 bomb 위치에 선택한 폭탄 놓기
+void updateArr(int v){
     for(int i=0; i<(int)bomb_loc.size(); i++){
         int x = bomb_loc[i].first, y = bomb_loc[i].second;
         int num = selected[i];
         for(int j=0; j<4; j++){
             int nx = x + bomb[num][j][0], ny = y + bomb[num][j][1];
             if(InRange(nx, ny)){
-                arr[nx][ny]++; 
+                arr[nx][ny] += v; 
             }
         }
     }
+}
+
+void Verify(){
+    // step 1. 먼저 해당 bomb 위치에 선택한 폭탄 놓기
+    updateArr(1);
+
     // step 2. 계산하기
     int bombed = 0;
     for(int i=0; i<n; i++){
@@ -43,17 +48,9 @@ void Verify(){
         }
     }
     ans = max(ans, bombed);
+    
     // step 3. 다시 원래대로 돌려놓기
-    for(int i=0; i<(int)bomb_loc.size(); i++){
-        int x = bomb_loc[i].first, y = bomb_loc[i].second;
-        int num = selected[i];
-        for(int j=0; j<4; j++){
-            int nx = x + bomb[num][j][0], ny = y + bomb[num][j][1];
-            if(InRange(nx,ny)){
-                arr[nx][ny]--;
-            }
-        }
-    }
+    updateArr(-1);
 }
 
 void Choose(int idx){
