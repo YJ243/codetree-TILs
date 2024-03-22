@@ -1,13 +1,14 @@
 #include <iostream>
 #include <string>
 #include <algorithm>
+#include <climits>
 #define MAX_N 200
 #define CHAR_CNT 6
 using namespace std;
 
 int mapping[CHAR_CNT]; // 0:a, 1:b, 2:c, ..., 5: f
 string s;
-int ans;
+int ans = INT_MIN;
 void Cal(){
     int curr = mapping[s[0]-'a'];
     for(int i=1; i<s.size(); i++){
