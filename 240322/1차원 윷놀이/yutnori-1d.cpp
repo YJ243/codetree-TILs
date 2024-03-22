@@ -2,44 +2,34 @@
 #include <vector>
 #include <algorithm>
 #define MAX_N 12
-
+#define MAX_K 4
 using namespace std;
 int ans;
 int k, n, m;    // k개의 말, n번의 턴, m개 숫자
 int turns[MAX_N];
-int selected[MAX_N];
-int result[4];
+int result[MAX_K];
 
 int Calc(){
-    // Step 1. start 0으로 초기화하기
-    for(int i=0; i<4; i++)
-        result[i] = 0;
-
-    // Step 2. selected 보면서 turns만큼 이동시키기
-    for(int i=0; i<n; i++){
-        int cur_knight = selected[i];   // 현재 선택한 말
-        if(result[cur_knight] < m-1)
-            result[cur_knight] += turns[i]; // 그 해당 말을 문제에서 주어진 숫자만큼 이동시키기
-    }
-
-    // Step 3. k개의 말을 보면서 점수 계산하기 
+    // k개의 말을 보면서 점수 계산하기 
     int ret = 0;
     for(int i=0; i<k; i++){
-        if(result[i] >= m-1)
-            ret++;
+        ret += (result[i] >= m-1);
     }
     return ret;
 }
 
 void Choose(int idx){
-    if(idx  ==  n){
-        ans = max(ans, Calc());
+    ans = max(ans, Calc());
+    if(idx == n){
         return;
     }
 
     for(int i=0; i<k; i++){
-        selected[idx]=i;       // idx번째 턴에 i번 말 움직이기
-        Choose(idx+1);      // idx+1번째 선택하러 가기
+        if(result[i] >= m-1)
+            continue;
+        result[i] += turns[idx];    // idx번째 턴에 i번 말 움직이기
+        Choose(idx+1);              // idx+1번째 선택하러 가기
+        result[i] -= turns[idx];
     }
 }
 
