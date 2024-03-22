@@ -23,6 +23,21 @@ void Choose(int idx){
         }
     }
 }
+
+/*
+ * 해설에서 backtracking 함수
+void FindMin(int idx, int cnt){
+    // 마지막 위치를 넘었을 때 그 중 최소 이동 횟수를 갱신한다
+    if(idx >= n-1){
+        ans = min(ans, cnt);
+        return;
+    }
+    for(int dist = 1; dist <= num[idx]; dist++){
+        FindMin(idx+dist, cnt+1);
+    }
+}
+
+*/
 int main() {
     cin >> n;
     for(int i=0; i<n; i++)
