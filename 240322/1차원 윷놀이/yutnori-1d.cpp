@@ -18,11 +18,12 @@ int Calc(){
     // Step 2. selected 보면서 turns만큼 이동시키기
     for(int i=0; i<n; i++){
         int cur_knight = selected[i];   // 현재 선택한 말
-        result[cur_knight] += turns[i];
+        result[cur_knight] += turns[i]; // 그 해당 말을 문제에서 주어진 숫자만큼 이동시키기
     }
 
+    // Step 3. k개의 말을 보면서 점수 계산하기 
     int ret = 0;
-    for(int i=0; i<4; i++){
+    for(int i=0; i<k; i++){
         if(result[i] >= m-1)
             ret++;
     }
