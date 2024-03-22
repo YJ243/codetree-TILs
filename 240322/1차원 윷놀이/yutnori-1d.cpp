@@ -1,56 +1,55 @@
 #include <iostream>
+#include <vector>
 #include <algorithm>
-
 #define MAX_N 12
-#define MAX_K 4
 
 using namespace std;
-
-int n, m, k;
-int nums[MAX_N], pieces[MAX_K];
-
 int ans;
+int k, n, m;    // k개의 말, n번의 턴, m개 숫자
+int turns[MAX_N];
+int selected[MAX_N];
+int result[4];
 
-// 점수를 계산합니다.
-int Calc() {
-	int score = 0;
-	for(int i = 0; i < k; i++)
-		score += (pieces[i] >= m);
-    
-	return score;
+int Calc(){
+    // Step 1. start 0으로 초기화하기
+    for(int i=0; i<4; i++)
+        result[i] = 0;
+
+    // Step 2. selected 보면서 turns만큼 이동시키기
+    for(int i=0; i<n; i++){
+        int cur_knight = selected[i];   // 현재 선택한 말
+        if(result[cur_knight] < m-1)
+            result[cur_knight] += turns[i]; // 그 해당 말을 문제에서 주어진 숫자만큼 이동시키기
+    }
+
+    // Step 3. k개의 말을 보면서 점수 계산하기 
+    int ret = 0;
+    for(int i=0; i<k; i++){
+        if(result[i] >= m-1)
+            ret++;
+    }
+    return ret;
 }
 
-void FindMax(int cnt) {
-    // 말을 직접 n번 움직이지 않아도
-    // 최대가 될 수 있으므로 항상 답을 갱신합니다.
-    ans = max(ans, Calc());
-    
-    // 더 이상 움직일 수 없으면 종료합니다.
-	if(cnt == n) 
-		return;
-	
-	for(int i = 0; i < k; i++) {
-        // 움직여서 더 이득이 되지 않는
-        // 말은 더 이상 움직이지 않습니다.
-        if(pieces[i] >= m)
-            continue;
-        
-		pieces[i] += nums[cnt];
-		FindMax(cnt + 1);
-		pieces[i] -= nums[cnt];
-	}
+void Choose(int idx){
+    if(idx  ==  n){
+        ans = max(ans, Calc());
+        return;
+    }
+
+    for(int i=0; i<k; i++){
+        selected[idx]=i;       // idx번째 턴에 i번 말 움직이기
+        Choose(idx+1);      // idx+1번째 선택하러 가기
+    }
 }
 
 int main() {
-	cin >> n >> m >> k;
-	for(int i = 0; i < n; i++)
-		cin >> nums[i];
-	
-	for(int i = 0; i < k; i++)
-		pieces[i] = 1;
-	
-	FindMax(0);
-	
-	cout << ans;
-	return 0;
+    // 입력 받기
+    cin >> n >> m >> k;
+    for(int i=0; i<n; i++)
+        cin >> turns[i];
+    
+    Choose(0);  // 0번째 턴에 움직일 말의 수 선택
+    cout << ans;
+    return 0;
 }
