@@ -4,9 +4,9 @@
 using namespace std;
 int n;
 vector<int> nums;
-vector<int> ans;
 
 bool IsPossible(){
+    //cout << "A" << '\n';
     for(int i=1; i<=n/2; i++){      // 길이는 i만큼 보기
         for(int j=0; j<=n-2*i; j++){
             // j부터 시작
@@ -37,9 +37,11 @@ void Choose(int idx){
     }
 
     for(int i=4; i<=6; i++){
-        nums.push_back(i);
-        Choose(idx+1);
-        nums.pop_back();
+        if(idx == 0 || nums.back() != i){
+            nums.push_back(i);
+            Choose(idx+1);
+            nums.pop_back();
+        }
     }
 }
 
