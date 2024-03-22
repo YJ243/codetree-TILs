@@ -19,8 +19,8 @@ int Calc(){
 }
 
 void Choose(int idx){
-    if(idx == n){
     ans = max(ans, Calc());
+    if(idx == n){
         return;
     }
 
