@@ -14,12 +14,15 @@ void Print(){
     cout << '\n';
 }
 
+// idx번째 숫자를 선택하고, 계속 탐색을 이어서 진행하는 함수
 void Choose(int idx){
+    // 모든 원소를 선택했을 때, 해당 순열을 출력한다.
     if(idx == n){
         Print();
         return;
     }
 
+    // 뒤에서부터 하나씩 원소를 선택한다.
     for(int i=n; i >= 1; i--){
         if(visited[i])
             continue;
