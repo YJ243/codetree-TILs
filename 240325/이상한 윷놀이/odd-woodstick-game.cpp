@@ -1,0 +1,116 @@
+#include <iostream>
+#include <vector>
+#include <tuple>
+#include <algorithm>
+
+#define MAX_N 12
+#define MAX_K 10
+
+using namespace std;
+int n, k;
+int color[MAX_N][MAX_N];
+vector<pair<int, int> > grid[MAX_N][MAX_N];   // grid[i][j]: [i][j]에 있는 (말의 번호, 그 말의 방향)
+int dirs[4][2] = {{0, 1},{0, -1},{-1, 0},{1,0}};    // 우, 좌, 상, 하
+
+void Input(){       // 입력을 받는 함수
+    cin >> n >> k;
+    for(int i=0; i<n; i++)
+        for(int j=0; j<n; j++)
+            cin >> color[i][j];
+    for(int i=0; i<k; i++){
+        int x, y, d;
+        cin >> x >> y >> d;
+        grid[x-1][y-1].push_back(make_pair(i, d-1));
+    }
+
+}
+
+bool IsFinish(){    // 게임이 종료되었는지 확인하는 함수
+    for(int i=0; i<n; i++){
+        for(int j=0; j<n; j++){
+            if(grid[i][j].size() >= 4)  // 만약 말이 4개 이상 겹쳐지는 경우가 생긴다면
+                return true;            // 게임이 끝났다는 의미로 true 반환
+        }
+    }
+    return false;       // 그렇지 않으면 아직 게임이 끝나지 않음
+}
+
+tuple<int, int, int> GetPiece(int num){     // num번째 말의 위치와 방향을 구해주는 함수
+    for(int i=0; i<n; i++){
+        for(int j=0; j<n; j++){
+            for(int l=0; l<(int)grid[i][j].size(); l++){
+                if(grid[i][j][l].first == num){
+                    return make_tuple(i, j, grid[i][j][l].second);
+                }
+            }
+        }
+    }
+}
+
+bool InRange(int x, int y){                 // (x,y)가 범위 안에 있는지 확인하는 함수
+    return 0 <= x && x < n && 0 <= y && y < n;
+}
+
+void Move(int x, int y, vector<pair<int, int> > tmp, bool reversed){
+    // 만약 뒤집어야 한다면 뒤집기
+    if(reversed)
+        reverse(tmp.begin(), tmp.end());
+    grid[x][y].insert(grid[x][y].end(), tmp.begin(), tmp.end());
+
+}
+
+bool Simulate(){    // 0번 ~ k-1번의 말을 차례대로 이동시키는 함수, 만약 더이상 이동할 수 없다면 false 반환
+    for(int i=0; i<k; i++){
+        int x, y, d;
+        bool needToReverse = false;
+        tie(x, y, d) = GetPiece(i);    // i번 말의 위치와 방향을 가져오기
+        int nx = x + dirs[d][0], ny = y + dirs[d][1];
+        if(!InRange(nx, ny) || color[nx][ny] == 2){     // 다음 이동할 곳이 범위 밖이거나 파란색이라면
+            d = (d % 2 == 0) ? d+1 : d-1;               // 방향 바꾸기
+            nx = x + dirs[d][0], ny = y + dirs[d][1];   // 다시 위치 확인하기
+            for(int l=0; l<(int)grid[x][y].size(); l++){
+                if(grid[x][y][l].first == i)
+                    grid[x][y][l].second = d;       // 방향만 반대로 바꾸고 움직이지 않기
+            }
+            if(color[nx][ny] == 1){    // 만약 이동할 곳이 빨간색이라면 
+                needToReverse = true;       // 방향 전환해야 함
+            }
+
+        }
+        else if(color[nx][ny] == 1){
+            needToReverse = true;
+        }
+        if(color[nx][ny] != 2){
+            vector<pair<int, int> > tmp; //= assign(grid[x][y].begin() + )
+            int a;
+            for(a=0; a<(int)grid[x][y].size(); a++){
+                if(grid[x][y][a].first == i){
+                    tmp.assign(grid[x][y].begin() + a, grid[x][y].end());
+                    break;
+                }
+            }
+            grid[x][y].erase(grid[x][y].begin() + a, grid[x][y].end());
+            Move(nx, ny, tmp, needToReverse);
+            // 이제 i가 들어있는 (x, y)칸에서 i번째 포함 그 위에 있는 말 가져오기
+        }
+        if(IsFinish())
+            return false;
+    }    
+    return true;
+}
+
+int main() {
+    // 입력 받기:
+    Input();    
+    
+    // 시뮬레이션
+    int ans = -1;
+    for(int turn = 1; turn <= 1000; turn++){
+        if(!Simulate()){    // 게임이 종료됐다면
+            ans = turn;     // 종료되는 순간의 턴의 번호
+            break;
+        }
+    }
+    cout << ans;
+    return 0;
+}
