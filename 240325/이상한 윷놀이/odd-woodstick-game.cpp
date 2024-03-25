@@ -28,7 +28,7 @@ void Input(){       // 입력을 받는 함수
 bool IsFinish(){    // 게임이 종료되었는지 확인하는 함수
     for(int i=0; i<n; i++){
         for(int j=0; j<n; j++){
-            if(grid[i][j].size() >= 4)  // 만약 말이 4개 이상 겹쳐지는 경우가 생긴다면
+            if((int)grid[i][j].size() >= 4)  // 만약 말이 4개 이상 겹쳐지는 경우가 생긴다면
                 return true;            // 게임이 끝났다는 의미로 true 반환
         }
     }
@@ -56,7 +56,6 @@ void Move(int x, int y, vector<pair<int, int> > tmp, bool reversed){
     if(reversed)
         reverse(tmp.begin(), tmp.end());
     grid[x][y].insert(grid[x][y].end(), tmp.begin(), tmp.end());
-
 }
 
 bool Simulate(){    // 0번 ~ k-1번의 말을 차례대로 이동시키는 함수, 만약 더이상 이동할 수 없다면 false 반환
@@ -65,14 +64,14 @@ bool Simulate(){    // 0번 ~ k-1번의 말을 차례대로 이동시키는 함�
         bool needToReverse = false;
         tie(x, y, d) = GetPiece(i);    // i번 말의 위치와 방향을 가져오기
         int nx = x + dirs[d][0], ny = y + dirs[d][1];
+        
         if(!InRange(nx, ny) || color[nx][ny] == 2){     // 다음 이동할 곳이 범위 밖이거나 파란색이라면
             d = (d % 2 == 0) ? d+1 : d-1;               // 방향 바꾸기
             nx = x + dirs[d][0], ny = y + dirs[d][1];   // 다시 위치 확인하기
-            for(int l=0; l<(int)grid[x][y].size(); l++){
-                if(grid[x][y][l].first == i)
-                    grid[x][y][l].second = d;       // 방향만 반대로 바꾸고 움직이지 않기
-            }
-            if(color[nx][ny] == 1){    // 만약 이동할 곳이 빨간색이라면 
+            
+            if(!InRange(nx, ny) || color[nx][ny] == 2)
+                nx = x, ny = y;
+            else if(color[nx][ny] == 1){    // 만약 이동할 곳이 빨간색이라면 
                 needToReverse = true;       // 방향 전환해야 함
             }
 
@@ -80,19 +79,20 @@ bool Simulate(){    // 0번 ~ k-1번의 말을 차례대로 이동시키는 함�
         else if(color[nx][ny] == 1){
             needToReverse = true;
         }
-        if(color[nx][ny] != 2){
-            vector<pair<int, int> > tmp; //= assign(grid[x][y].begin() + )
-            int a;
-            for(a=0; a<(int)grid[x][y].size(); a++){
-                if(grid[x][y][a].first == i){
-                    tmp.assign(grid[x][y].begin() + a, grid[x][y].end());
-                    break;
-                }
+
+        vector<pair<int, int> > tmp; //= assign(grid[x][y].begin() + )
+        int a;
+        for(a=0; a<(int)grid[x][y].size(); a++){
+            if(grid[x][y][a].first == i){
+                tmp.assign(grid[x][y].begin() + a, grid[x][y].end());
+                break;
             }
-            grid[x][y].erase(grid[x][y].begin() + a, grid[x][y].end());
-            Move(nx, ny, tmp, needToReverse);
-            // 이제 i가 들어있는 (x, y)칸에서 i번째 포함 그 위에 있는 말 가져오기
         }
+        tmp[0] = make_pair(i, d);
+        grid[x][y].erase(grid[x][y].begin() + a, grid[x][y].end());
+        Move(nx, ny, tmp, needToReverse);
+
+        
         if(IsFinish())
             return false;
     }    
