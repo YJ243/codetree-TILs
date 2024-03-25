@@ -1,144 +1,98 @@
 #include <iostream>
-#include <climits>
 #include <algorithm>
+#include <climits>
 
 #define MAX_N 20
+#define DIR_NUM 4
+#define TRIBE_NUM 5
+
 using namespace std;
 
 int n;
 int grid[MAX_N][MAX_N];
-int ans = INT_MAX;
-int dirs[4][2] = {{-1,1},{-1,-1},{1,-1},{1,1}};     // 1, 2, 3, 4 방향
-int tribe[MAX_N][MAX_N];
-int tribe_sum[6];
-void Input(){       // 입력을 받는 함수
-    cin >> n;
-    for(int i=0; i<n; i++)
-        for(int j=0; j<n; j++)
-            cin >> grid[i][j];
-}
 
-bool InRange(int x, int y){         // (x,y)가 범위 안에 있는지 확인하는 함수
+bool border[MAX_N][MAX_N];
+
+int total_sum;
+
+bool InRange(int x, int y) {
     return 0 <= x && x < n && 0 <= y && y < n;
 }
 
-bool Possible(int x, int y, int a, int b){      // (x,y)에서 시작해서 13은 a, 24는 b만큼 움직여서 기울어진 직사각형을 만들 수 있는지 확인하는 함수
-    int cx = x, cy = y, cl = 0;
-    for(int d=0; d<4; d++){
-        if(d % 2 == 0) cl = a;
-        else           cl = b;
-        for(int i=1; i<=cl; i++){
-            int nx = cx + dirs[d][0], ny = cy + dirs[d][1];
-            if(!InRange(nx, ny))
-                return false;
-            cx = nx, cy = ny;
-        }
-    }
-    return true;
+// 가장 아래 지접을 제외한 3개의 꼭짓점이 전부
+// 격자 안에 들어오는 경우에만 해당 직사각형을 그릴 수 있다.
+bool PossibleToDraw(int x, int y, int k, int l){
+    return InRange(x-k, y+k) && InRange(x-k-l, y+k-l)
+        && InRange(x-l, y-l);
 }
 
-void Initialize_tribe(){
+void DrawSlantedRectBorder(int x, int y, int k, int l){
+    int dx[DIR_NUM] = {-1, -1, 1, 1};
+    int dy[DIR_NUM] = {1, -1, -1, 1};
+    int move_num[DIR_NUM] = {k, l, k, l};
+
+    // 먼저 border값을 전부 false로 초기화한다.
     for(int i=0; i<n; i++)
         for(int j=0; j<n; j++)
-            tribe[i][j] = 0;
-    for(int i=0; i<6; i++)
-        tribe_sum[i] = 0;
+            border[i][j] = false;
+    // 기울어진 직사각형의 경계를 쭉 따라가보기
+    for(int d=0; d<DIR_NUM; d++)
+        for(int q=0; q<move_num[d]; q++){
+            x += dx[d]; y += dy[d];
+            border[x][y] = true;
+        }
 }
 
-int Calc(int x, int y, int a, int b){
-    Initialize_tribe();
+int GetScore(int x, int y, int k, int l){
+    int population[TRIBE_NUM] = {};
 
-    pair<int, int> dots[4];
-    // 1번 부족 채우기
-    int cx = x, cy = y, cl = 0, cv = 1;
-    dots[0] = make_pair(cx, cy);
-    tribe[cx][cy] = cv;
-    for(int d=0; d<4; d++){
-        if(d % 2 == 0) cl = a;
-        else           cl = b;
-        for(int i=1; i<=cl; i++){
-            int nx = cx + dirs[d][0], ny = cy + dirs[d][1];
-            tribe[nx][ny] = cv;
-            cx = nx, cy = ny;
-        }
-        if(d <= 2)
-            dots[d+1] = make_pair(cx,cy);
-    }
+    // 경계를 표시한다.
+    DrawSlantedRectBorder(x, y, k, l);
+
+    // 좌측 상단구역
+    for(int i=0; i < x-l; i++)
+        for(int j=0; j <= y+k-l && !border[i][j]; j++)
+            population[0] += grid[i][j];
+
+    // 좌측 하단 구역
+    for(int i=x-l; i < n; i++)
+        for(int j=0; j < y && !border[i][j]; j++)
+            population[1] += grid[i][j];
+
+    // 우측 상단 구역
+    for(int i=0; i <= x-k; i++)
+        for(int j=n-1; j >= y+k-l+1 && !border[i][j]; j--)
+            population[2] += grid[i][j];
     
-    // 2번 부족 채우기
-    for(int i=0; i<dots[3].first; i++){
-        for(int j=0; j <= dots[2].second; j++){
-            if(tribe[i][j] == 1)
-                break;
-            tribe[i][j] = 2;
-        }
-    }
-    // 3번 부족 채우기
-    for(int i=dots[1].first; i>=0; i--){
-        for(int j=n-1; j > dots[2].second; j--){
-            if(tribe[i][j] == 1)
-                break;
-            tribe[i][j] = 3;
-        }
-    }
-    // 4번 부족 채우기
-    for(int i=dots[3].first; i < n; i++){
-        for(int j=0; j<dots[0].second; j++){
-            if(tribe[i][j] == 1)
-                break;
-            tribe[i][j] = 4;
-        }
-    }
-    // 5번 부족 채우기
-    for(int i=n-1; i > dots[1].first; i--){
-        for(int j=n-1; j >= dots[0].second; j--){
-            if(tribe[i][j] == 1)
-                break;
-            tribe[i][j] = 5;
-        }
-    }
+    // 우측 하단 구역
+    for(int i=x-k+1; i < n; i++)
+        for(int j=n-1; j >= y && !border[i][j]; j--)
+            population[3] += grid[i][j];
+    population[4] = total_sum - population[0] - population[1] - population[2] - population[3];
 
-    for(int i=0; i<n; i++){
-        for(int j=0; j<n; j++){
-            if(tribe[i][j] == 0) tribe_sum[1] += grid[i][j];
-            for(int k=1; k<=5; k++){
-                if(tribe[i][j] == k)
-                    tribe_sum[k] += grid[i][j];
-            }
-        }
-    }
-
-    int minS = INT_MAX, maxS = INT_MIN;
-    for(int i=1; i<=5; i++){
-        minS = min(minS, tribe_sum[i]);
-        maxS = max(maxS, tribe_sum[i]);
-    }
-    
-    return maxS - minS;
+    return *max_element(population, population + TRIBE_NUM) - *min_element(population, population + TRIBE_NUM);
 }
 
-void FindMinDiff(){
-    for(int i=0; i<n; i++){
+int main(){
+    cin >> n;
+
+    for(int i=0; i<n; i++)
         for(int j=0; j<n; j++){
-            // (i,j)는 기울어진 직사각형의 시작점
-            for(int k=1; k<n; k++){
-                for(int l=1; l<n; l++){
-                    if(Possible(i,j,k,l)){
-                        ans = min(ans, Calc(i, j, k, l));
-                    }
-                }
-            }
+            cin >> grid[i][j];
+            total_sum += grid[i][j];
         }
-    }
-}
+    int ans = INT_MAX;
 
-int main() {
-    // 입력:
-    Input();
-
-    FindMinDiff();
-
-    // 출력:
+    // (i, j)를 시작으로 1, 2, 3, 4 방향 순서대로
+    // 길이 [k, l, k, l]만큼 이동하면 그려지는
+    // 기울어진 직사각형을 잡아보는 완전탐색을 진행한다.
+    for(int i=0; i<n; i++)
+        for(int j=0; j<n; j++)
+            for(int k=1; k < n; k++)
+                for(int l=1; l<n; l++)
+                    // 직사각형을 그릴 수 있는 경우에만 답을 갱신한다.
+                    if(PossibleToDraw(i, j, k, l))
+                        ans = min(ans, GetScore(i, j, k, l));
     cout << ans;
     return 0;
 }
