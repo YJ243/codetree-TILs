@@ -79,26 +79,36 @@ int Calc(){
     int ret = 0;
     for(int i=0; i<n; i++){
         for(int j=0; j<n; j++){
-            ret = max(ret, spreadSec[i][j]);
+            if(grid[i][j] == 0)
+                ret = max(ret, spreadSec[i][j]);
         }
     }
     return ret;
 }
-
-
+/*
+void Print(){
+    for(int i=0; i<n; i++){
+        for(int j=0; j<n; j++){
+            cout << spreadSec[i][j] << ' ';
+        }
+        cout << '\n';
+    }
+    cout << '\n';
+}
+*/
 void SpreadVaccine(){
     // 1. 백신 시간과 방문 배열 초기화
     Initialize_before_spread();
 
     // 2. 큐에 집어넣기
     for(int i=0; i<(int)selected.size(); i++){
-        int x = hospitals[i].first, y = hospitals[i].second;
-        q.push(hospitals[i]);
+        int x = hospitals[selected[i]].first, y = hospitals[selected[i]].second;
+        q.push(hospitals[selected[i]]);
         visited[x][y] = true;
     }
     // 3.  탐색 시작
     bfs();
-
+    //Print();
     int total_sec = 0;
     // 4. 바이러스가 사라지는데 총 몇 초가 걸리는지 계산하기
     if(DestroyAllVirus()){
