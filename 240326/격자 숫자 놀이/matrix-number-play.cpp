@@ -139,12 +139,12 @@ int main() {
         for(int j=0; j<3; j++)
             cin >> grid[i][j];
     int ans = -1;
-    for(int i=1; i<=100; i++){
-        Simulate();
+    for(int i=0; i<=100; i++){
         if(grid[r][c] == k){
             ans = i;
             break;
         }
+        Simulate();
     }
 
     cout << ans;
