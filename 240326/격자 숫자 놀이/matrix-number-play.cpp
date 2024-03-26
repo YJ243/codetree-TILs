@@ -1,152 +1,124 @@
 #include <iostream>
-#include <unordered_set>
-#include <unordered_map>
-#include <algorithm>
 #include <vector>
+#include <tuple>
+#include <algorithm>
 
 #define MAX_N 100
+#define MAX_NUM 100
 
 using namespace std;
+
+int n = 3, m = 3;
 int r, c, k;
-int grid[MAX_N][MAX_N];
-int xLen, yLen;
 
-void FindLength(){
-    for(int i=0; i<MAX_N; i++){
-        for(int j=0; j<MAX_N; j++){
-            if(grid[i][j] > 0)
-                xLen = max(xLen, i+1);
-            if(grid[i][j] > 0)
-                yLen = max(yLen, j+1);
-        }
+int grid[2 * MAX_N + 1][2 * MAX_N + 1];
+
+// row 행에 대해 숫자 놀이를 진행합니다.
+int RowPlay(int row) {
+    // 각 숫자에 대해 빈도수를 구해줍니다.
+    // 정렬시 빈도수, 숫자 순으로 오름차순 정렬이 되도록
+    // (빈도수, 숫자) 형태로 저장해줍니다.
+    vector<pair<int, int> > pairs;
+    for(int num = 1; num <= MAX_NUM; num++) {
+        int frequency = 0;
+        for(int col = 1; col <= m; col++)
+            if(grid[row][col] == num)
+                frequency++;
+        
+        if(frequency)
+            pairs.push_back(make_pair(frequency, num));
     }
+    
+    // 숫자를 새로 적어줘야 하므로,
+    // 그 전에 기존 row 행에 있던 숫자들을 전부 0으로 바꿔줍니다.
+    for(int col = 1; col <= m; col++)
+        grid[row][col] = 0;
+    
+    sort(pairs.begin(), pairs.end());
+    
+    // row 행에 새로운 숫자를 차례대로 적어줍니다.
+    for(int i = 0; i < (int) pairs.size(); i++) {
+        int frequency, num;
+        tie(frequency, num) = pairs[i];
+        grid[row][i * 2 + 1] = num;
+        grid[row][i * 2 + 2] = frequency;
+    }
+
+    return (int) pairs.size() * 2;
 }
 
-bool InRange(int x, int y){         // 범위 안에 있는지 확인하는 함수
-    return 0 <= x && x < MAX_N && 0 <= y && y < MAX_N;
+// col 열에 대해 숫자 놀이를 진행합니다.
+int ColPlay(int col) {    
+    // 각 숫자에 대해 빈도수를 구해줍니다.
+    // 정렬시 빈도수, 숫자 순으로 오름차순 정렬이 되도록
+    // (빈도수, 숫자) 형태로 저장해줍니다.
+    vector<pair<int, int> > pairs;
+    for(int num = 1; num <= MAX_NUM; num++) {
+        int frequency = 0;
+        for(int row = 1; row <= m; row++)
+            if(grid[row][col] == num)
+                frequency++;
+        
+        if(frequency)
+            pairs.push_back(make_pair(frequency, num));
+    }
+    
+    // 숫자를 새로 적어줘야 하므로,
+    // 그 전에 기존 col 열에 있던 숫자들을 전부 0으로 바꿔줍니다.
+    for(int row = 1; row <= m; row++)
+        grid[row][col] = 0;
+    
+    sort(pairs.begin(), pairs.end());
+    
+    // col 열에 새로운 숫자를 차례대로 적어줍니다.
+    for(int i = 0; i < (int) pairs.size(); i++) {
+        int frequency, num;
+        tie(frequency, num) = pairs[i];
+        grid[i * 2 + 1][col] = num;
+        grid[i * 2 + 2][col] = frequency;
+    }
+
+    return (int) pairs.size() * 2;
 }
 
-void PlayRow(){         // 행 단위로 놀이를 수행하는 함수
-    int tmp[MAX_N][MAX_N] = {};            // 놀이 수행하고 난 뒤의 격자판
-
-    for(int i=0; i<xLen; i++){
-        //cout << i << "번째 줄 " << '\n';
-        int numberCnt[MAX_N+1] = {};        // idx번 숫자가 몇개 들어있는지?
-        vector<pair<int, int> > numbers;
-        for(int j=0; j<yLen; j++){
-            int num = grid[i][j];
-            if(num == 0) continue;
-            bool IsExist = false;
-            for(int k=0; k<(int)numbers.size(); k++){
-                if(num == numbers[k].second){   // 만약 숫자가 있다면
-                    numbers[k] = make_pair(numbers[k].first+1, num);
-                    IsExist = true;
-                }
-            }
-            if(!IsExist)
-                numbers.push_back(make_pair(1, num));
-        }
-        sort(numbers.begin(), numbers.end());
-        for(int j=0; j < (int)numbers.size() * 2 && j < MAX_N; j += 2){
-            tmp[i][j] = numbers[j/2].second;
-            tmp[i][j+1] = numbers[j/2].first; 
-        }
-        /*
-        for(int j=0; j<(int)numbers.size()*2; j++){
-            cout << tmp[i][j] << ' ';
-        }
-        cout << '\n';
-        */
+void Simulate() {
+    // 행의 개수가 열의 개수와 일치하거나 더 많다면
+    // 행 단위로 진행 후, 최대로 긴 열의 크기를 구합니다.
+    if(n >= m) {
+        int max_col = 0;
+        for(int row = 1; row <= n; row++)
+            max_col = max(max_col, RowPlay(row));
+        m = max_col;
     }
-
-    // tmp에서 grid로 옮기기
-    for(int i=0; i<MAX_N; i++){
-        for(int j=0; j<MAX_N; j++){
-            grid[i][j] = tmp[i][j];
-        }
+    // 열의 개수가 더 많다면
+    // 열 단위로 진행 후, 최대로 긴 행의 크기를 구합니다.
+    else {
+        int max_row = 0;
+        for(int col = 1; col <= m; col++)
+            max_row = max(max_row, ColPlay(col));
+        n = max_row;
     }
-
-}
-
-void PlayColumn(){      // 열 단위로 놀이를 수행하는 함수
-    int tmp[MAX_N][MAX_N] = {};            // 놀이 수행하고 난 뒤의 격자판
-
-    for(int j=0; j<yLen; j++){
-        //cout << j << "번째 줄 " << '\n';
-        int numberCnt[MAX_N+1] = {};        // idx번 숫자가 몇개 들어있는지?
-        vector<pair<int, int> > numbers;
-        for(int i=0; i<xLen; i++){
-            int num = grid[i][j];
-            if(num == 0) continue;
-            bool IsExist = false;
-            for(int k=0; k<(int)numbers.size(); k++){
-                if(num == numbers[k].second){   // 만약 숫자가 있다면
-                    numbers[k] = make_pair(numbers[k].first+1, num);
-                    IsExist = true;
-                }
-            }
-            if(!IsExist)
-                numbers.push_back(make_pair(1, num));
-        }
-        sort(numbers.begin(), numbers.end());
-        for(int i=0; i < (int)numbers.size() * 2 && i < 100; i += 2){
-            tmp[i][j] = numbers[i/2].second;
-            tmp[i+1][j] = numbers[i/2].first; 
-        }
-        /*
-        for(int i=0; i<(int)numbers.size()*2; i++){
-            cout << tmp[i][j] << ' ';
-        }
-        cout << '\n';
-        */
-    }
-
-    // tmp에서 grid로 옮기기
-    for(int i=0; i<MAX_N; i++){
-        for(int j=0; j<MAX_N; j++){
-            grid[i][j] = tmp[i][j];
-        }
-    }
-}
-
-void Simulate(){
-    // Step 1. 행의 개수와 열의 개수 찾기
-    FindLength();
-    //cout << xLen << ' ' << yLen << "XY길이" << '\n';
-    // Step 2. 연산 수행하기
-    if(xLen >= yLen){
-        PlayRow();      // 행 단위로 놀이 수행
-    }
-    else{
-        PlayColumn();   // 열 단위로 놀이 수행
-    }
-    /*
-    for(int i=0; i<6; i++){
-        for(int j=0; j<6; j++){
-            cout << grid[i][j] << ' ';
-        }
-        cout << '\n';
-    }
-    */
-
 }
 
 int main() {
-    // 입력 받기:
     cin >> r >> c >> k;
-    r--; c--;
-    for(int i=0; i<3; i++)
-        for(int j=0; j<3; j++)
+    
+    for(int i = 1; i <= n; i++)
+        for(int j = 1; j <= m; j++)
             cin >> grid[i][j];
+    
     int ans = -1;
-    for(int i=0; i<=100; i++){
-        if(grid[r][c] == k){
-            ans = i;
+    
+    // 최대 100초 동안 시뮬레이션을 진행합니다.
+    for(int t = 0; t <= 100; t++) {
+        if(grid[r][c] == k) {
+            ans = t;
             break;
         }
+    
         Simulate();
     }
-
+    
     cout << ans;
     return 0;
 }
