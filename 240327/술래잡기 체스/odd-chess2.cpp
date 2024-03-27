@@ -1,159 +1,139 @@
 #include <iostream>
-#include <tuple>
 #include <algorithm>
+#include <tuple>
 
-#define DIR_NUM 8
 #define MAX_N 4
-#define TAGGER make_pair(-2, -2)
-#define BLANK make_pair(-1, -1)
+#define MAX_DIR 8
+#define EMPTY make_pair(-1,-1)
+#define TAGGER make_pair(-2,-2) 
 
 using namespace std;
 
 int n = 4;
-
-pair<int, int> board[MAX_N][MAX_N];
-
-// 문제에서 주어진 순서대로
-// 방향을 정의합니다.
-// ↑, ↖, ←, ↙, ↓, ↘, →, ↗ 
-int dx[DIR_NUM] = {-1, -1,  0,  1, 1, 1, 0, -1};
-int dy[DIR_NUM] = { 0, -1, -1, -1, 0, 1, 1,  1};
+pair<int, int> grid[MAX_N][MAX_N];
+int dirs[MAX_DIR][2] = {{-1,0},{-1,-1},{0,-1},{1,-1},{1,0},{1,1},{0,1},{-1,1}};   // 상부터 반시계방향으로
 
 int max_score;
 
-bool InRange(int x, int y) {
+void Input(){
+    for(int i=0; i<n; i++){
+        for(int j=0; j<n; j++){
+            int num, d;
+            cin >> num >> d;
+            grid[i][j] = make_pair(num, d-1);
+        }
+    }
+}
+
+bool InRange(int x, int y){
     return 0 <= x && x < n && 0 <= y && y < n;
 }
 
-// 도둑말이 이동할 수 있는 곳인지를 판단합니다.
-// 격자 안이면서, 술래가 없어야 합니다.
-bool ThiefCanGo(int x, int y) {
-    return InRange(x, y) && board[x][y] != TAGGER;
+bool TaggerCanGo(int x, int y){
+    return InRange(x, y) && grid[x][y] != EMPTY;
 }
 
-// 술래가 이동할 수 있는 곳인지를 판단합니다.
-// 격자 안이면서, 도둑말이 있어야만 합니다.
-bool TaggerCanGo(int x, int y) {
-    return InRange(x, y) && board[x][y] != BLANK;
-}
-
-bool Done(int x, int y, int d) {
-    // 현재 위치에도 한 곳이라도 갈 수 있는지 확인합니다.
-    // 존재한다면, 아직 게임은 끝나지 않았습니다.
-    for(int dist = 1; dist <= n; dist++) {
-        int nx = x + dx[d] * dist, ny = y + dy[d] * dist;
-        if(TaggerCanGo(nx, ny))
+bool IsFinish(int x, int y, int d){
+    for(int i=1; i<n; i++){
+        int nx = x + dirs[d][0]*i, ny = y + dirs[d][1]*i;
+        if(TaggerCanGo(nx, ny))     // 만약 술래가 갈 수 있는 곳이 남아 있다면
             return false;
     }
-    
     return true;
 }
 
-tuple<int, int, int> GetNext(int x, int y, int move_dir) {
-    // 45'씩 8번 회전해보면서 최초로 이동 가능한 곳으로 움직입니다.
-    for(int rotate_num = 0; rotate_num < 8; rotate_num++) {
-        int adjusted_dir = (move_dir + rotate_num) % 8;
-        int next_x = x + dx[adjusted_dir];
-        int next_y = y + dy[adjusted_dir];
-        if(ThiefCanGo(next_x, next_y))
-            return make_tuple(next_x, next_y, adjusted_dir);
-    }
-    // 이동이 불가능하다면 현재 위치, 현재 방향 그대로 유지되어야합니다.
-    return make_tuple(x, y, move_dir);
+bool ThiefCanGo(int x, int y){      // 도둑이 (x,y)로 갈 수 있는지 확인
+    return InRange(x, y) && grid[x][y] != TAGGER;
 }
 
-void Swap(int x, int y, int next_x, int next_y) {
-    pair<int, int> temp_piece = board[x][y];
-    board[x][y] = board[next_x][next_y];
-    board[next_x][next_y] = temp_piece;
-}
-
-void Move(int target_num) {
-    for(int x = 0; x < n; x++)
-        for(int y = 0; y < n; y++) {
-            int piece_num, move_dir;
-            tie(piece_num, move_dir) = board[x][y];
-            if(piece_num == target_num) {
-                int next_x, next_y, next_dir;
-                // 이동해야할 위치와 바라보게 될 방향을 구합니다.
-                tie(next_x, next_y, next_dir) = GetNext(x, y, move_dir);
-                // 현재 말의 방향을 바꿔준 뒤, 두 말의 위치를 교환합니다.
-                board[x][y] = make_pair(piece_num, next_dir);
-                Swap(x, y, next_x, next_y);
-                return;
-            }
+pair<int, int> ThiefNextLoc(int x, int y, int d){       // 현재 (x,y)에서 d방향을 가지고 있는 도둑이 다음으로 이동할 위치 반환
+    int cx = x, cy = y, cd = d;
+    for(int i=0; i<8; i++){
+        int nx = cx + dirs[(cd+i)%MAX_DIR][0], ny = cy + dirs[(cd+i)%MAX_DIR][1];
+        if(ThiefCanGo(nx, ny)){
+            cx = nx, cy = ny, cd = (cd+i)%MAX_DIR;
+            break;
         }
+    }
+    grid[x][y] = make_pair(grid[x][y].first, cd);
+    return make_pair(cx, cy);
 }
 
-// 모든 도둑말들을 한번씩 움직입니다.
-void MoveAll() {
-    for(int i = 1; i <= n * n; i++)
-        Move(i);
+void Swap(int x, int y, int nx, int ny){        // (x,y)와 (nx,ny)에 있는 도둑 각각 바꾸기
+    pair<int, int> temp = grid[x][y];
+    grid[x][y] = grid[nx][ny];
+    grid[nx][ny] = temp;
 }
 
-// 현재 술래말의 위치가 (x, y), 
-// 바라보고 있는 방향이 d이고
-// 지금까지 얻은 점수가 score일때
-// 탐색을 계속 진행하는 함수입니다.
-void SearchMaxScore(int x, int y, int d, int score) {
-    // 더 이상 움직일 곳이 없다면
-    // 답을 갱신하고 퇴각합니다.
-    if(Done(x, y, d))  {
+void MoveThief(){
+    for(int num=1; num<=16; num++){
+        bool IsMoved = false;
+        for(int i=0; i<n; i++){
+            for(int j=0; j<n; j++){
+                int cur_num, cur_dir;
+                tie(cur_num, cur_dir) = grid[i][j];     // 현재 보고 있는 칸에서의 번호와 방향
+                if(cur_num == num){     // 만약 현재 이동하려는 번호를 찾았다면
+                    int next_x, next_y;
+                    tie(next_x, next_y) = ThiefNextLoc(i, j, cur_dir);
+                    //out << num << ' ' << next_x << ' ' << next_y << '\n';
+                    Swap(i, j, next_x, next_y);
+                    IsMoved = true;
+                    break;
+                }
+            }
+            if(IsMoved)
+                break;
+        }
+    }
+}
+
+void FindNextLoc(int x, int y, int d, int score){
+    if(IsFinish(x, y, d)){
         max_score = max(max_score, score);
         return;
     }
-    
-    // 현재 턴에 움직일 수 있는 곳을 전부 탐색합니다.
-    for(int dist = 1; dist < n; dist++) {
-        int nx = x + dx[d] * dist, ny = y + dy[d] * dist;
-        // 술래가 이동 할 수 없는 위치라면, 패스합니다.
-        if(!TaggerCanGo(nx, ny))
-            continue;
-        
-        // 더 탐색을 진행한 이후, 초기 상태로 다시 만들기 위해
-        // temp 배열에 현재 board 상태를 저장해놓습니다.
-        pair<int, int> temp[MAX_N][MAX_N];
-        
-        for(int i = 0; i < n; i++)
-            for(int j = 0; j < n; j++)
-                temp[i][j] = board[i][j];
-        
-        // 해당 위치의 도둑말을 잡고
-        int extra_score, next_dir;
-        tie(extra_score, next_dir) = board[nx][ny];
-        board[nx][ny] = TAGGER;
-        board[x][y] = BLANK;
-        
-        // 모든 도둑말을 움직입니다.
-        MoveAll();
-        
-        // 그 다음 탐색을 진행합니다. 
-        SearchMaxScore(nx, ny, next_dir, score + extra_score);
-        
-        // 퇴각시 다시 이전 board의 값을 넣어줍니다.
-        for(int i = 0; i < n; i++)
-            for(int j = 0; j < n; j++)
-                board[i][j] = temp[i][j];
+
+    for(int i=1; i<n; i++){     // 현재 술래가 바라보는 방향으로 움직일 수 있는 곳 찾기
+        int nx = x + dirs[d][0]*i, ny = y + dirs[d][1]*i;
+        if(!TaggerCanGo(nx, ny)) continue;
+
+        // backtracking 전 이전 정보 저장해두기
+        pair<int, int> tmp[MAX_N][MAX_N];
+        for(int i=0; i<n; i++)
+            for(int j=0; j<n; j++)
+                tmp[i][j] = grid[i][j];
+
+        // (nx, ny)로 술래 이동하기
+        int plus_score, next_dir;
+        tie(plus_score, next_dir) = grid[nx][ny];
+        grid[nx][ny] = TAGGER;
+
+        // 도둑들 차례대로 이동하기
+        MoveThief();
+
+        // 술래 다음 위치 찾기
+        FindNextLoc(nx, ny, next_dir, score+plus_score);
+
+        // 돌아와서는 이전 정보 다시 복구하기
+        for(int i=0; i<n; i++)
+            for(int j=0; j<n; j++)
+                grid[i][j] = tmp[i][j];
     }
 }
 
 int main() {
-    for(int i = 0; i < n; i++)
-        for(int j = 0; j < n; j++) {
-            int p, d;
-            cin >> p >> d;
-            board[i][j] = make_pair(p, d - 1);
-        }
-    
-    // 처음 (0, 0) 도둑말을 잡고, 모든 도둑말이 이동한 다음에 시작합니다.
-    int init_score, init_dir;
-    tie(init_score, init_dir) = board[0][0]; 
-    board[0][0] = TAGGER;
-    
-    MoveAll();
-    
-    SearchMaxScore(0, 0, init_dir, init_score);
+    // 입력 받기:
+    Input();
+
+    // 1. 초기에 (0,0) 에 있는 도둑말 잡기 
+    int plus_score, next_dir;
+    tie(plus_score, next_dir) = grid[0][0];
+    grid[0][0] = TAGGER;
+    // 2. 도둑말 차례대로 이동하기
+    MoveThief();
+
+    // 3. 술래가 다음으로 이동할 위치 찾기
+    FindNextLoc(0, 0, next_dir, plus_score);        // (0,0)에서 next_dir방향을 가진 술래가 다음 이동할 위치를 탐색
     cout << max_score;
-    
     return 0;
 }
