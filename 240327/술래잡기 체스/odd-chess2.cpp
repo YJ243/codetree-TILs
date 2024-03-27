@@ -92,7 +92,7 @@ void FindNextLoc(int x, int y, int d, int score){
         max_score = max(max_score, score);
         return;
     }
-
+    
     for(int i=1; i<n; i++){     // 현재 술래가 바라보는 방향으로 움직일 수 있는 곳 찾기
         int nx = x + dirs[d][0]*i, ny = y + dirs[d][1]*i;
         if(!TaggerCanGo(nx, ny)) continue;
@@ -107,6 +107,7 @@ void FindNextLoc(int x, int y, int d, int score){
         int plus_score, next_dir;
         tie(plus_score, next_dir) = grid[nx][ny];
         grid[nx][ny] = TAGGER;
+        grid[x][y] = EMPTY;
 
         // 도둑들 차례대로 이동하기
         MoveThief();
@@ -119,6 +120,7 @@ void FindNextLoc(int x, int y, int d, int score){
             for(int j=0; j<n; j++)
                 grid[i][j] = tmp[i][j];
     }
+    
 }
 
 int main() {
