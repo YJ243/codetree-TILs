@@ -1,17 +1,18 @@
 #include <iostream>
 #include <algorithm>
 
-#define NUM_MOVEMENTS 10
-#define PIECE_NUM 4
-#define MAX_POS 45
+#define MAX_TURN 10
+#define PIECE_CNT 4
+#define BOARD_WIDTH 45
 #define START 0
-#define END 36
-
+#define END 20
 using namespace std;
+int arr[MAX_TURN];
+int piece_loc[PIECE_CNT];
 
-int move_nums[NUM_MOVEMENTS];
-int curr_pos[PIECE_NUM];
-int point[MAX_POS] = {
+int n = MAX_TURN;
+int max_score;
+int board[BOARD_WIDTH] = {
     0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 0,
     13, 16, 19, 0, 0,
     22, 24, 0, 0, 0,
@@ -20,87 +21,67 @@ int point[MAX_POS] = {
     25, 30, 35, 40
 };
 
-int max_score;
-
-bool IsBlue(int curr_pos) {
-    return curr_pos != START && curr_pos % 5 == 0;
+bool IsBlue(int idx){       // idx번이 파란색인지 확인하기
+    return idx != START && idx % 5 == 0;
 }
 
-int GetNextPos(int curr_pos, int move_num) {
-    // 도착점에 도달하면 바로 종료합니다.
-    if(curr_pos == END)
-        return END;
-
-    // 전부 이동했을 경우 해당 위치를 반환합니다.
-    if(move_num == 0)
-        return curr_pos;
+int GetLoc(int idx, int cnt){   // idx번에서 cnt만큼 이동했을 때 도착하는 위치를 반환하는 함수
+    if(idx == END)      // 도착 칸으로 이동했으면 이동 마침
+        return idx;
+    if(cnt == 0)        // 이동을 다 했으면 마침
+        return idx;
     
-    int next_pos = curr_pos + 1;
-    
-    if(curr_pos == 23 || curr_pos == 27 || curr_pos == 33)
-        next_pos = 41;
-    else if(curr_pos == 19)
-        next_pos = 44;
-    else if(curr_pos == 44)
-        next_pos = END;
-    
-    return GetNextPos(next_pos, move_num - 1);
+    int next_idx = idx+1;   // 한칸 이동
+    if(idx == 23 || idx == 27 || idx == 33)
+        next_idx = 41;
+    else if(idx == 19)
+        next_idx = 44;
+    else if(idx == 44)
+        next_idx = END;
+    return GetLoc(next_idx, cnt-1);
 }
 
-bool IsOverlapped() {
-    for(int i = 0; i < PIECE_NUM; i++)
-        for(int j = i + 1; j < PIECE_NUM; j++)
-            if(curr_pos[i] == curr_pos[j] &&
-               curr_pos[i] != START &&
-               curr_pos[i] != END)
+bool IsOverlapped(){
+    for(int i=0; i<PIECE_CNT; i++)
+        for(int j=i+1; j < PIECE_CNT; j++){
+            if(piece_loc[i] == piece_loc[j] && piece_loc[i] != START && piece_loc[i] != END)
                 return true;
+        }
     return false;
 }
 
-// 지금까지 cnt번 움직였고,
-// 지금까지 얻은 점수가 score일때
-// 탐색을 계속 진행하는 함수입니다.
-void SearchMaxScore(int cnt, int score) {
-    // 모든 턴에 대해 전부 움직였다면
-    // 점수를 갱신합니다.
-    if(cnt == NUM_MOVEMENTS)  {
+void FindMaxScore(int idx, int score){      // idx번째 이동할 말을 고르는 함수, 현재까지 점수는 score
+    if(idx == MAX_TURN){
         max_score = max(max_score, score);
         return;
     }
-    
-    // 현재 턴에 움직일 말을 선택합니다.
-    for(int i = 0; i < PIECE_NUM; i++) {
-        // 도착 위치에 있는 말은 움직일 수 없습니다.
-        if(curr_pos[i] == END)
+
+    for(int i=0; i<PIECE_CNT; i++){
+        if(piece_loc[i] == END)     // 도착칸에 도착하지 않은 말을 골라야 함
             continue;
         
-        // backtrack시 위치 복구를 위해 현재 위치를 temp에 저장해놓습니다.
-        int temp = curr_pos[i];
+        int temp = piece_loc[i];    // backtracking 전 위치를 저장해두기
+        if(IsBlue(piece_loc[i]))    // 파란색 칸에서 이동을 시작한다면 빨간색 화살표를 따라가도록 바꿔주기
+            piece_loc[i] = GetLoc(piece_loc[i]+16, arr[idx]-1);
+        else                        // 파란색 칸이 아니라면 계속 검은색 화살표를 따라서 가기
+            piece_loc[i] = GetLoc(piece_loc[i], arr[idx]);
         
-        // i번째 말을 움직인 후, 그 다음 턴을 진행합니다.
-        // Case 1. 말을 움직일 때, 해당 위치가 
-        // 파란색 칸이라면 빨간색 화살표를 이용합니다.
-        if(IsBlue(curr_pos[i]))
-            curr_pos[i] = GetNextPos(curr_pos[i] + 16, move_nums[cnt] - 1);
-        // Case 2. 파란색 칸이 아니라면, 검은색 길을 이용합니다.
-        else
-            curr_pos[i] = GetNextPos(curr_pos[i], move_nums[cnt]);
+        if(!IsOverlapped()){     // 도달하게 되는 위치에 다른 말이 없을 경우에만 이동 가능
+            //cout << i << "번이 " << piece_loc[i] << "로 이동함" << '\n';
+            FindMaxScore(idx+1, score + board[piece_loc[i]]);
+        }
         
-        // 말 끼리 서로 겹치지지 않을 경우에만 진행이 가능합니다.
-        if(!IsOverlapped()) 
-            SearchMaxScore(cnt + 1, score + point[curr_pos[i]]);
+        piece_loc[i] = temp;
         
-        // 턴을 전부 진행한 이후에는 다시 이전 위치의 값을 넣어줍니다.
-        curr_pos[i] = temp;
     }
 }
 
 int main() {
-    for(int i = 0; i < NUM_MOVEMENTS; i++)
-        cin >> move_nums[i];
-    
-    SearchMaxScore(0, 0);
+    // 입력 받기:
+    for(int i=0; i<n; i++)
+        cin >> arr[i];
+    FindMaxScore(0, 0);
+
     cout << max_score;
-    
     return 0;
 }
