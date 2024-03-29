@@ -28,6 +28,7 @@ void Initialize_before_search(){
     for(int i=0; i<n; i++)
         for(int j=0; j<n; j++){
             visited[i][j] = false;
+            next_grid[i][j] = -1;
         }
 }
 
@@ -39,7 +40,6 @@ void Initialize_cur_visited(){
 
 void Push(int x, int y){
     visited[x][y] = true;
-    curVisited[x][y] = true;
     q.push(make_pair(x, y));
 }
 
@@ -50,7 +50,7 @@ bool InRange(int x, int y){
 bool CanGo(int x, int y, int prior_value){      // (x,y)로 갈 수 있는지 확인하는 함수
     // 이전 계란틀에 있는 계란의 양과 차이가 L이상 R이하일 때 갈 수 있음
     int diff = abs(grid[x][y] - prior_value);
-    return InRange(x, y) && !curVisited[x][y] && (L <= diff && diff <= R); 
+    return InRange(x, y) && !visited[x][y] && (L <= diff && diff <= R); 
 }
 
 void bfs(){
@@ -76,7 +76,7 @@ void MakeNextEgg(){
     int val = total_sum / total_cnt;
     for(int i=0; i<n; i++){
         for(int j=0; j<n; j++){
-            if(curVisited[i][j])
+            if(next_grid[i][j] == -1 && visited[i][j])
                 next_grid[i][j] = val;
         }
     }
@@ -91,7 +91,6 @@ void Simulate(){        // 계란 이동 시뮬레이션 함수
     for(int i=0; i<n; i++){
         for(int j=0; j<n; j++){
             if(visited[i][j]) continue;     // 만약 이미 탐색을 진행한 곳이라면 넘어가기
-            Initialize_cur_visited();
             Push(i, j);
             total_cnt = 1;
             total_sum = grid[i][j];
