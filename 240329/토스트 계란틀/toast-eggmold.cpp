@@ -96,7 +96,6 @@ void Simulate(){        // 계란 이동 시뮬레이션 함수
             total_cnt = 1;
             total_sum = grid[i][j];
             bfs();
-            //cout << '\n';
             MakeNextEgg();
 
         }
@@ -106,11 +105,8 @@ void Simulate(){        // 계란 이동 시뮬레이션 함수
     for(int i=0; i<n; i++){
         for(int j=0; j<n; j++){
             grid[i][j] = next_grid[i][j];
-            //cout << grid[i][j] << ' ';
         }
-        //cout << '\n';
     }
-    //cout << '\n';
 }
 
 int main() {
