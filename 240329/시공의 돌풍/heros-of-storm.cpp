@@ -1,155 +1,148 @@
 #include <iostream>
 #include <vector>
-#define MAX_NM 50
+
+#define MAX_NUM 50
+#define DIR_NUM 4
+#define WINDBLAST -1
 
 using namespace std;
 
 int n, m, t;
-int grid[MAX_NM][MAX_NM];
-int spread[MAX_NM][MAX_NM];
-vector<pair<int, int> > vaccum;
-int dirs[4][2] = {{-1,0},{0,1},{1,0},{0,-1}};
-void Input(){
-    cin >> n >> m >> t;     // n, m: 방의 크기, t: 시간
-    for(int i=0; i<n; i++){
-        for(int j=0; j<m; j++){
-            cin >> grid[i][j];
-            if(grid[i][j] == -1)
-                vaccum.push_back(make_pair(i, j));
-        }
-    }
-}
 
-void Initialize_Spread(){
-    for(int i=0; i<n; i++){
-        for(int j=0; j<m; j++){
-            spread[i][j] = 0;
-        }
-    }
-}
+int dust[MAX_NUM][MAX_NUM];
+int next_dust[MAX_NUM][MAX_NUM];
 
-bool InRange(int x, int y){
+bool InRange(int x, int y) {
     return 0 <= x && x < n && 0 <= y && y < m;
 }
 
-bool CanGo(int x, int y){
-    return InRange(x, y) && grid[x][y] != -1;
-}
-void SpreadDust(){
-    // 1. 먼저 확산될 먼지 양 초기화하기
-    Initialize_Spread();
-
-    // 2. 격자를 하나씩 보면서 먼지의 +-양 구하기
-    for(int i=0; i<n; i++){
-        for(int j=0; j<m; j++){
-            int dust_cnt = grid[i][j];
-            int can_go_cnt = 0;
-            for(int d=0; d<4; d++){
-                int nx = i + dirs[d][0], ny = j + dirs[d][1];
-                if(CanGo(nx, ny)){
-                    can_go_cnt++;
-                    spread[nx][ny] += dust_cnt/5;
-                }
-            }
-            spread[i][j] -= (dust_cnt/5) * can_go_cnt;
-        }
-    }
-
-    // 3. 모든 먼지가 확산을 끝난 다음 해당 칸에 반영해주기
-    for(int i=0; i<n; i++){
-        for(int j=0; j<m; j++){
-            grid[i][j] += spread[i][j];
-        }
-    }
-
+bool CanSpread(int x, int y) {
+    return InRange(x, y) && dust[x][y] != WINDBLAST;
 }
 
-void CleanDust(){
-    for(int i=0; i<2; i++){
-        // 먼저 첫번째 방향 밀어주기
-        int vx = vaccum[i].first, vy = vaccum[i].second;
-        int tmp = grid[vx][m-1];
-        for(int j=m-1; j > 1; j--){
-            grid[vx][j] = grid[vx][j-1];
-        }
-        grid[vx][1] = 0;
-
-        // 두번째 방향 밀어주기
-        int tmp2;
-        if(i == 0){
-            tmp2 = grid[0][m-1];      // 맨 위의 값 저장하기
-            for(int x=0; x < vx-1; x++){
-                grid[x][m-1] = grid[x+1][m-1];
-            }
-            grid[vx-1][m-1] = tmp;
-        }
-        else{
-            tmp2 = grid[n-1][m-1];
-            for(int x=n-1; x > vx+1; x--){
-                grid[x][m-1] = grid[x-1][m-1];
-            }
-            grid[vx+1][m-1] = tmp;
-        }
-
-        // 세 번째 방향 밀어주기
-        if(i == 0){
-            tmp = grid[0][0];            
-            for(int j=0; j<m-2; j++){
-                grid[0][j] = grid[0][j+1];
-            }
-            grid[0][m-2] = tmp2;
-        }
-        else{
-            tmp = grid[n-1][0];
-            for(int j=0; j<m-2; j++){
-                grid[n-1][j] = grid[n-1][j+1];
-            }
-            grid[n-1][m-2] = tmp2;
-        }
-
-        // 네 번째 방향 밀어주기
-        if(i == 0){
-            for(int x=vx-1; x > 1; x--)
-                grid[x][0] = grid[x-1][0];
-            grid[1][0] = tmp;
-        }
-        else{
-            for(int x=vx+1; x <n-2; x++)
-                grid[x][0] = grid[x+1][0];
-            grid[n-2][0] = tmp;
-        }
-
-    }
-
-}
-
-void Simulate(){
-    // 1. 먼저 먼지 확산하기
-    SpreadDust();
-
-    // 2. 시공의 돌풍 청소하기
-    CleanDust();
-}
-
-void Output(){
-    int ans = 0;
-    for(int i=0; i<n; i++){
-        for(int j=0; j<m; j++){
-            if(grid[i][j] >=0)
-                ans += grid[i][j];
+// (x, y)에서 인접한 4방향으로 확산이 일어납니다.
+void Spread(int x, int y) {
+    int dx[DIR_NUM] = {-1, 1, 0, 0};
+    int dy[DIR_NUM] = {0, 0, -1, 1};
+    
+    int curr_dust = dust[x][y];
+    
+    // 인접한 4방향으로 확산이 일어납니다.
+    for(int i = 0; i < DIR_NUM; i++) {
+        int nx = x + dx[i], ny = y + dy[i];
+        // 격자 안이면서, 시공의 돌풍이 없는 곳으로만 확산이 가능합니다.
+        if(CanSpread(nx, ny)) {
+            next_dust[nx][ny] += curr_dust / 5;
+            dust[x][y] -= curr_dust / 5;
         }
     }
-    cout << ans;
+}
+
+void Diffusion() {
+    // next_dust 값을 0으로 초기화합니다.
+    for(int i = 0; i < n; i++)
+        for(int j = 0; j < m; j++)
+            next_dust[i][j] = 0;
+    
+    // 시공의 돌풍을 제외한 위치에서만 확산이 일어납니다.
+    for(int i = 0; i < n; i++)
+        for(int j = 0; j < m; j++)
+            if(dust[i][j] != WINDBLAST)
+                Spread(i, j);
+    
+    // next_dust값을 확산 후 남은 dust에 더해줍니다.
+    for(int i = 0; i < n; i++)
+        for(int j = 0; j < m; j++)
+            dust[i][j] += next_dust[i][j];
+}
+
+void CounterClockwiseRotation(int start_row, int start_col, int end_row, int end_col) {
+    // Step1-1. 직사각형 가장 왼쪽 위 모서리 값을 temp에 저장합니다.
+    int temp = dust[start_row][start_col];
+
+    // Step1-2. 직사각형 가장 위 행을 왼쪽으로 한 칸씩 shift 합니다.
+    for(int col = start_col; col < end_col; col++)
+        dust[start_row][col] = dust[start_row][col + 1];
+    
+    // Step1-3. 직사각형 가장 오른쪽 열을 위로 한 칸씩 shift 합니다.
+    for(int row = start_row; row < end_row; row++)
+        dust[row][end_col] = dust[row + 1][end_col];
+    
+    // Step1-4. 직사각형 가장 아래 행을 오른쪽으로 한 칸씩 shift 합니다.
+    for(int col = end_col; col > start_col; col--)
+        dust[end_row][col] = dust[end_row][col - 1];
+    
+    // Step1-5. 직사각형 가장 왼쪽 열을 아래로 한 칸씩 shift 합니다.
+    for(int row = end_row; row > start_row; row--)
+        dust[row][start_col] = dust[row - 1][start_col];
+
+    // Step1-6. temp를 가장 왼쪽 위 모서리를 기준으로 바로 아래 칸에 넣습니다. 
+    dust[start_row + 1][start_col] = temp;
+}
+
+void ClockwiseRotation(int start_row, int start_col, int end_row, int end_col) {
+    // Step1-1. 직사각형 가장 왼쪽 위 모서리 값을 temp에 저장합니다.
+    int temp = dust[start_row][start_col];
+
+    // Step1-2. 직사각형 가장 왼쪽 열을 위로 한 칸씩 shift 합니다.
+    for(int row = start_row; row < end_row; row++)
+        dust[row][start_col] = dust[row + 1][start_col];
+    
+    // Step1-3. 직사각형 가장 아래 행을 왼쪽으로 한 칸씩 shift 합니다.
+    for(int col = start_col; col < end_col; col++)
+        dust[end_row][col] = dust[end_row][col + 1];
+
+    // Step1-4. 직사각형 가장 오른쪽 열을 아래로 한 칸씩 shift 합니다.
+    for(int row = end_row; row > start_row; row--)
+        dust[row][end_col] = dust[row - 1][end_col];
+    
+    // Step1-5. 직사각형 가장 위 행을 오른쪽으로 한 칸씩 shift 합니다.
+    for(int col = end_col; col > start_col; col--)
+        dust[start_row][col] = dust[start_row][col - 1];
+
+    // Step1-6. temp를 가장 왼쪽 위 모서리를 기준으로 바로 오른쪽 칸에 넣습니다. 
+    dust[start_row][start_col + 1] = temp;
+}
+
+void Cleaning() {
+    vector<int> windblast_rows;
+    for(int i = 0; i < n; i++)
+        if(dust[i][0] == WINDBLAST)
+            windblast_rows.push_back(i);
+            
+    CounterClockwiseRotation(0, 0, windblast_rows[0], m - 1);
+    ClockwiseRotation(windblast_rows[1], 0, n - 1, m - 1);
+    
+    // 돌풍 보정
+    dust[windblast_rows[0]][0] = dust[windblast_rows[1]][0] = -1;
+    dust[windblast_rows[0]][1] = dust[windblast_rows[1]][1] = 0;
+}
+
+void Simulate() {
+    // 확산이 일어납니다.
+    Diffusion();
+    
+    // 시공의 돌풍이 청소를 진행합니다.
+    Cleaning();
 }
 
 int main() {
-    // 입력 받기:
-    Input();
+    cin >> n >> m >> t;
+    
+    for(int i = 0; i < n; i++)
+        for(int j = 0; j < m; j++)
+            cin >> dust[i][j];
 
-    while(t--){
+    // 총 t번 시뮬레이션을 진행합니다.
+    while(t--)
         Simulate();
-    }    
-    // 출력 하기:
-    Output();
+    
+    int ans = 0;
+    for(int i = 0; i < n; i++)
+        for(int j = 0; j < m; j++)
+            if(dust[i][j] != WINDBLAST)
+                ans += dust[i][j];
+    
+    cout << ans;
     return 0;
 }
