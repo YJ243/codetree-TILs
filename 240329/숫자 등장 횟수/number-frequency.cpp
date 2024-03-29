@@ -10,12 +10,18 @@ int main() {
     for(int i=0; i<n; i++){
         int x;
         cin >> x;
-        num_to_cnt[x]++;
+        if(num_to_cnt.find(x) == num_to_cnt.end())
+            num_to_cnt[x] = 1;
+        else
+            num_to_cnt[x]++;
     }
     for(int i=0; i<m; i++){
         int x;
         cin >> x;
-        cout << num_to_cnt[x] << ' ';
+        if(num_to_cnt.find(x) == num_to_cnt.end())
+            cout << 0 << ' ';
+        else
+            cout << num_to_cnt[x] << ' ';
     }
     return 0;
 }
