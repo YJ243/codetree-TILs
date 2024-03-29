@@ -47,7 +47,8 @@ bool InRange(int x, int y){
     return 0 <= x && x < n && 0 <= y && y < n;
 }
 
-bool CanGo(int x, int y, int prior_value){
+bool CanGo(int x, int y, int prior_value){      // (x,y)로 갈 수 있는지 확인하는 함수
+    // 이전 계란틀에 있는 계란의 양과 차이가 L이상 R이하일 때 갈 수 있음
     int diff = abs(grid[x][y] - prior_value);
     return InRange(x, y) && !curVisited[x][y] && (L <= diff && diff <= R); 
 }
@@ -63,6 +64,7 @@ void bfs(){
             if(CanGo(nx, ny, grid[x][y])){
                 Push(nx, ny);
                 total_cnt++;
+                total_sum += grid[nx][ny];
             }
         }
     }
@@ -101,9 +103,14 @@ void Simulate(){        // 계란 이동 시뮬레이션 함수
     }
 
     // 3. next_grid에서 grid로 옮기기
-    for(int i=0; i<n; i++)
-        for(int j=0; j<n; j++)
+    for(int i=0; i<n; i++){
+        for(int j=0; j<n; j++){
             grid[i][j] = next_grid[i][j];
+            //cout << grid[i][j] << ' ';
+        }
+        //cout << '\n';
+    }
+    //cout << '\n';
 }
 
 int main() {
