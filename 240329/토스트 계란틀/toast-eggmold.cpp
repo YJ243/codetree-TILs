@@ -1,19 +1,20 @@
 #include <iostream>
 #include <queue>
 #include <cmath>
-
+#include <vector>
 #define MAX_N 50
 
 using namespace std;
 int n, L, R;
 int grid[MAX_N][MAX_N];
 int next_grid[MAX_N][MAX_N];
-
+int count_num = -1;
 queue<pair<int, int> > q;
 bool visited[MAX_N][MAX_N];
 bool curVisited[MAX_N][MAX_N];
 int total_cnt;
 int total_sum;
+vector<int> numbers;
 int dirs[4][2] = {{-1,0},{0,1},{1,0},{0,-1}};
 bool IsMoved = false;
 void Input(){
@@ -30,6 +31,7 @@ void Initialize_before_search(){
             visited[i][j] = false;
             next_grid[i][j] = -1;
         }
+    numbers.clear();
 }
 
 void Initialize_cur_visited(){
@@ -40,6 +42,7 @@ void Initialize_cur_visited(){
 
 void Push(int x, int y){
     visited[x][y] = true;
+    next_grid[x][y] = count_num;
     q.push(make_pair(x, y));
 }
 
@@ -71,16 +74,12 @@ void bfs(){
 }
 
 void MakeNextEgg(){
-    if(total_cnt > 1)   
-        IsMoved = true;
-    int val = total_sum / total_cnt;
     for(int i=0; i<n; i++){
         for(int j=0; j<n; j++){
-            if(next_grid[i][j] == -1 && visited[i][j])
-                next_grid[i][j] = val;
+            int idx = next_grid[i][j];
+            grid[i][j] = numbers[idx];
         }
     }
-
 }
 
 void Simulate(){        // 계란 이동 시뮬레이션 함수
@@ -88,24 +87,24 @@ void Simulate(){        // 계란 이동 시뮬레이션 함수
     Initialize_before_search();
 
     // 2. 매 칸마다 확인하면서 탐색 진행
+    count_num = -1;
     for(int i=0; i<n; i++){
         for(int j=0; j<n; j++){
             if(visited[i][j]) continue;     // 만약 이미 탐색을 진행한 곳이라면 넘어가기
+            count_num++;
             Push(i, j);
             total_cnt = 1;
             total_sum = grid[i][j];
             bfs();
-            MakeNextEgg();
+            numbers.push_back(total_sum / total_cnt);
 
+            if(total_cnt > 1)   
+                IsMoved = true;
         }
     }
 
-    // 3. next_grid에서 grid로 옮기기
-    for(int i=0; i<n; i++){
-        for(int j=0; j<n; j++){
-            grid[i][j] = next_grid[i][j];
-        }
-    }
+    MakeNextEgg();
+
 }
 
 int main() {
