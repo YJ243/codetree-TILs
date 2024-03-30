@@ -114,7 +114,7 @@ void Bump(int idx, int dir, int RudolfMove, int turn){     // idx번 산타가 �
     }
     else{
         if(grid[firstX][firstY] != 0){
-            //if(firstX != sx || firstY != sy)
+            if(firstX != sx || firstY != sy)
                 Bump(grid[firstX][firstY], cur_dir, 2, turn);
         }
         grid[sx][sy] = 0;
