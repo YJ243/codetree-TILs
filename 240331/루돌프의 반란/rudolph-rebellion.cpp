@@ -82,7 +82,7 @@ void Bump(int arrive_x, int arrive_y, int direction, int diff, int turn){   // t
         
         int sx = santa_loc[i].first, sy = santa_loc[i].second;
         if(arrive_x == sx && arrive_y == sy){
-
+            //cout << i << "번 산타 이동해야 함 " << arrive_x << ' ' << arrive_y << '\n';
             // 그럼 (sx, sy) 산타는 (nx, ny)로 이동해야 함        
             int nx = arrive_x + dirs[direction][0]*diff, ny = arrive_y + dirs[direction][1]*diff;
             Bump(nx, ny, direction, 1, turn);        // (nx, ny) 자리 비워주기
@@ -90,7 +90,9 @@ void Bump(int arrive_x, int arrive_y, int direction, int diff, int turn){   // t
             // 이제 비워졌으니 (nx, ny) 위치로 i번 산타 옮기기
             santa_loc[i] = make_pair(nx, ny);
 
-            if(rudolf.first == arrive_x, rudolf.second == arrive_y){
+            if(rudolf.first == arrive_x && rudolf.second == arrive_y){
+                //cout << "점수 plus 되는 인덱스: " << i << '\n';
+                //cout << rudolf.first << ' ' << rudolf.second << ' ' << arrive_x << ' ' <<arrive_y << '\n';
                 faint[i] = turn+1;
                 score[i] += diff;
             }
@@ -182,7 +184,12 @@ int main() {
     for(int i=1; i<=m; i++){
         //cout << i << ' ';
         bool IsFinish = Simulate(i);
-
+        //cout << "Rudolf: " << rudolf.first << ' ' << rudolf.second << '\n';
+        //cout << i << "번 시뮬레이션 진행 후 산타 위치" << '\n';
+        //for(int i=1; i<=p; i++){
+            //cout << i<<"번: ";
+            //cout << santa_loc[i].first << ' ' <<santa_loc[i].second << '\n';
+        //}
         if(IsFinish)
             break;
     }
