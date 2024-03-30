@@ -82,42 +82,48 @@ tuple<int, int, int> GetNextRudolfLocation(int near_santa){
     return make_tuple(minX, minY, minDir);
 }
 
-void Bump(int x, int y, int dir, bool RudolfMove, int diff, int idx){     // (x,y) 자리에서 dir방향으로 이동해와서 충돌, 루돌프or산타가 움직였는지 고려해 처리
-    int curD, santaIdx;
-    if(RudolfMove){         // 루돌프가 움직인 경우
-        curD = dir;
-        santaIdx = idx;
-    }
-    else{                   // 산타가 움직인 경우
-        if(dir % 4 <= 1)
-            curD = dir + 2;
-        else
-            curD = dir - 2;
-        santaIdx = idx;
-    }
-    int nx = x + dirs[curD][0]*diff, ny = y + dirs[curD][1]*diff;
-    //cout << "탈락: " << santaIdx << ' ' << x << ' ' << y << "에서 " << curD << "방향으로 갈 것임 " << nx << ' ' << ny << '\n';
-    if(!InRange(nx, ny)){       // 산타가 이동할 곳이 범위를 벗어난다면 탈락시키기
-        grid[santa_loc[santaIdx].first][santa_loc[santaIdx].second] = 0;         // 원래 산타가 있던 곳 빈 곳으로 만들기 
-        santa_loc[santaIdx] = LOSE;         // 산타 탈락했다고 위치 표시
-        return;
-    }
-    else{       // 범위 안에 있다면
-        if(grid[nx][ny] != 0){              // 이동할 칸에 다른 산타가 있다면 비워주기
-            Bump(nx, ny, dir, 0, 1, grid[nx][ny]);          // 상호작용
+void Bump(int idx, int dir, int RudolfMove, int turn){     // idx번 산타가 있는 곳으로 dir 방향왔을 때 충돌이 남
+    int sx = santa_loc[idx].first, sy = santa_loc[idx].second;
+    int cur_dir, dist, plus_score;
 
-            grid[nx][ny] = santaIdx;
-        grid[santa_loc[santaIdx].first][santa_loc[santaIdx].second] = 0;    // 원래 있던 자리 0으로
-        santa_loc[santaIdx] = make_pair(nx, ny);
-        }
-        // 그리고 넣어주기
-        else{
-        grid[nx][ny] = santaIdx;
-        grid[santa_loc[santaIdx].first][santa_loc[santaIdx].second] = 0;    // 원래 있던 자리 0으로
-        santa_loc[santaIdx] = make_pair(nx, ny);
-        }
-        //cout << "인덱스: " << santaIdx << '\n';
+    if(RudolfMove == 1){
+        cur_dir = dir;
+        dist = c;
+        plus_score = c;
+        faint[idx] = turn+1;
     }
+    else if(RudolfMove == 0){
+        //cout << dir << "방향으로 옴 " <<'\n';
+        if(dir % 4 <= 1) cur_dir = dir + 2;
+        else cur_dir = dir - 2;
+        dist = d - 1;
+        plus_score = d;
+        faint[idx] = turn+1;
+        //cout << cur_dir << "방향으로 가야 함" << '\n';
+    }
+    else{
+        cur_dir = dir;
+        dist = 1;
+        plus_score = 0;
+    }
+    int firstX = sx + dirs[cur_dir][0]*dist, firstY = sy + dirs[cur_dir][1]*dist;
+    if(!InRange(firstX, firstY)){
+        faint[idx] = INT_MAX;
+        santa_loc[idx] = LOSE;
+        grid[sx][sy] = 0;
+    }
+    else{
+        if(grid[firstX][firstY] != 0){
+            //if(firstX != sx || firstY != sy)
+                Bump(grid[firstX][firstY], cur_dir, 2, turn);
+        }
+        grid[sx][sy] = 0;
+        santa_loc[idx] = make_pair(firstX, firstY);
+        grid[firstX][firstY] = idx;
+    }
+
+    score[idx] += plus_score;
+    return;
 }
 
 void MoveRudolf(int turn){          // 루돌프를 움직이는 함수
@@ -130,14 +136,16 @@ void MoveRudolf(int turn){          // 루돌프를 움직이는 함수
     tie(nx, ny, nd) = next_rudolf_loc;
     
     // Step 3. 충돌 여부 확인하기
+    int idx = 0;
     if(grid[nx][ny] != 0){      // 만약 루돌프가 움직이려는 칸에 산타가 있다면 충돌 처리
-        score[grid[nx][ny]] += c;
-        faint[grid[nx][ny]] = turn+1;
-        Bump(nx, ny, nd, 1, c,grid[nx][ny]);    // (nx, ny) 자리로 루돌프가 nd방향으로 이동해와서 충돌함
+        idx = grid[nx][ny];
+        //faint[grid[nx][ny]] = turn+1;
+        Bump(grid[nx][ny], nd, 1, turn);    // (nx, ny) 자리로 루돌프가 nd방향으로 이동해와서 충돌함
     }
     
-    grid[nx][ny] = -1;                          // 새로운 자리에 루돌프 표시
+    //faint[grid[nx][ny]] = turn+1;
     grid[rudolf.first][rudolf.second] = 0;      // 원래 있던 자리 0으로 만들기
+    grid[nx][ny] = -1;                          // 새로운 자리에 루돌프 표시
     rudolf = make_pair(nx, ny);                 // 루돌프 위치 업데이트
 }
 
@@ -166,37 +174,47 @@ void MoveSanta(int idx, int turn){      // idx번 산타를 turn번째에 이동
     
     if(grid[nx][ny] == -1){
         // 만약 이동하려는 자리에 산타가 있다면
-        score[idx] += d;
+        //score[idx] += d;
+        //Bump(int idx, int dir, int RudolfMove, int turn)
+        //cout << nx << ' ' << ny << ' ' << nd << "부딪힘" << '\n';
+        Bump(idx, nd, 0, idx);
         faint[idx] = turn+1;
-        //cout << nd << "방향으로: " << '\n';
-        Bump(nx, ny, nd, 0, d, idx);
     }
     else{
-        grid[nx][ny] = idx;
         grid[sx][sy] = 0;
         santa_loc[idx] = make_pair(nx, ny);
+        grid[nx][ny] = idx;
     } 
 }
 
 void Simulate(int turn){
     // 1. 루돌프 이동
     MoveRudolf(turn);
-
-    // 2. 산타 이동
-    for(int i=1; i<=p; i++){
-        if(santa_loc[i] == LOSE) continue;      // 이미 게임에서 탈락한 산타는 제외시키기
-        if(faint[i] >= turn) continue;          // 기절해서 현재 턴까지도 움직일 수 없다면 제외시키기
-        MoveSanta(i, turn);                     // i번 산타를 turn번째 턴에서 이동시키기 
-        //cout << turn << "번째에 " << i << "번 산타 움직임" << '\n';
     /*
+    cout << "Rudolf 이동" << '\n';
     for(int i=0; i<n; i++){
         for(int j=0; j<n; j++){
             cout << grid[i][j] << ' ';
         }
         cout << '\n';
     }
-    cout << '\n';
     */
+    // 2. 산타 이동
+    for(int i=1; i<=p; i++){
+        if(santa_loc[i] == LOSE) continue;      // 이미 게임에서 탈락한 산타는 제외시키기
+        if(faint[i] >= turn) continue;          // 기절해서 현재 턴까지도 움직일 수 없다면 제외시키기
+        MoveSanta(i, turn);                     // i번 산타를 turn번째 턴에서 이동시키기 
+        /*
+        cout << i<<"번 산타 이동 " << '\n';
+        for(int i=0; i<n; i++){
+        for(int j=0; j<n; j++){
+            cout << grid[i][j] << ' ';
+        }
+        cout << '\n';
+        }
+        */
+        
+
     }
     // 3. 점수 업데이트
     for(int i=1; i<=p; i++){
@@ -209,6 +227,7 @@ void Simulate(int turn){
 void Output(){      // 각 산타가 얻은 최종 점수를 출력하는 함수
     for(int i=1; i<=p; i++)
         cout << score[i] << ' ';
+    cout << '\n';
 }
 
 int main() {
@@ -220,6 +239,7 @@ int main() {
         if(IsFinish())
             break;
         Simulate(i);
+        //Output();
     }  
 
     // 출력하기:
