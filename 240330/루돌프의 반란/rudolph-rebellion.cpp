@@ -123,7 +123,6 @@ void Bump(int idx, int dir, int RudolfMove, int turn){     // idx번 산타가 �
     }
 
     score[idx] += plus_score;
-    return;
 }
 
 void MoveRudolf(int turn){          // 루돌프를 움직이는 함수
