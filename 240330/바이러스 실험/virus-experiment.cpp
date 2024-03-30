@@ -1,163 +1,124 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+
 #define MAX_N 10
+#define DIR_NUM 8
 
 using namespace std;
 
-int n, m, k;        // n: 배지 크기, m: 바이러스 개수, k: 총 사이클 수
-vector<int> virus[MAX_N][MAX_N];        // virus[i][j]: (i, j) 칸에 있는 바이러스의 나이
-int nutrient[MAX_N][MAX_N];             // 현재 영양분
-int plus_nutrient[MAX_N][MAX_N];        // 추가되는 영양분
+int n, m, k;
 
-void Init(){
-    cin >> n >> m >> k;                 // n: 격자 칸, m: 바이러스 개수, k: 총 사이클 수
-    for(int i=0; i<n; i++){
-        for(int j=0; j<n; j++){
-            cin >> plus_nutrient[i][j]; // 한 사이클이 지나고 추가되는 영양분 수
-        }
-    }
-    for(int i=0; i<m; i++){             // 해당 칸의 바이러스 수
-        int r, c, a;
-        cin >> r >> c >> a;
-        virus[r-1][c-1].push_back(a);
-    }
+vector<int> virus[MAX_N][MAX_N];
+vector<int> next_virus[MAX_N][MAX_N];
 
-    for(int i=0; i<n; i++){             // 초기 양분 저장
-        for(int j=0; j<n; j++){
-            nutrient[i][j] = 5;
-        }
-    }
+int food[MAX_N][MAX_N];
+int next_food[MAX_N][MAX_N];
 
-}
+int delta[MAX_N][MAX_N];
 
-void DoIntake(int x, int y){        // (x, y)에 있는 바이러스가 영양분 섭취하기
-    int dead_age = 0;
-    for(int i=0; i<(int)virus[x][y].size(); i++){
-        int age = virus[x][y][i];
-        if(age <= 0) continue;
-
-        if(age <= nutrient[x][y]){
-            nutrient[x][y] -= age;      // 본인의 나이만큼 영양분 섭취
-            virus[x][y][i]++;           // 나이가 1 증가
-        }
-        else{
-            dead_age += (age)/2;  
-            virus[x][y][i] = 0;
-        }
-    }
-    vector<int> tmp;
-    for(int i=0; i<(int)virus[x][y].size(); i++){
-        if(virus[x][y][i] != 0){
-            //cout << virus[x][y][i] << ' ';
-            tmp.push_back(virus[x][y][i]);
-        }
-    }
-
-    virus[x][y] = tmp;
-    nutrient[x][y] += dead_age;
-}
-
-bool ExistVirus(int x, int y){
-    sort(virus[x][y].begin(), virus[x][y].end());
-    return (int)virus[x][y].size() >= 1 && virus[x][y][0] != 0;
-}
-
-void IntakeNutrient(){
-    for(int i=0; i<n; i++){
-        for(int j=0; j<n; j++){
-            if(ExistVirus(i, j)){
-                DoIntake(i, j);
-                //cout << virus[i][j][0] << ' ';
-            }
-        }
-    }
-
-}
-
-bool InRange(int x, int y){
+bool InRange(int x, int y) {
     return 0 <= x && x < n && 0 <= y && y < n;
 }
 
-void ReproduceVirus(){
-    // 1. temp에 현재 바이러스 복사해놓기
-    vector<int> temp[n][n];
-
-    for(int i=0; i<n; i++){
-        for(int j=0; j<n; j++){
-            temp[i][j] = virus[i][j];
-        }
+// (x, y)를 기준으로 8방향으로 번식을 진행합니다.
+void Breed(int x, int y) {
+    int dx[DIR_NUM] = {-1, -1, -1,  0, 0,  1, 1, 1};
+    int dy[DIR_NUM] = {-1,  0,  1, -1, 1, -1, 0, 1};
+    for(int i = 0; i < DIR_NUM; i++) {
+        int nx = x + dx[i], ny = y + dy[i];
+        // 격자 안이라면 나이가 1인 바이러스를 추가합니다.
+        if(InRange(nx, ny))
+            next_virus[nx][ny].push_back(1);
     }
+}
 
-    // 2. 모든 칸을 보면서 5의 배수의 나이를 가진 바이러스가 있는지 확인하고 바이러스 번식하기
-    int dirs[8][2] = {{-1,0},{-1,-1},{0,-1},{1,-1},{1,0},{1,1},{0,1},{-1,1}};
-    for(int i=0; i<n; i++){
-        for(int j=0; j<n; j++){
-            if(ExistVirus(i, j)){
-                for(int k=0; k < (int)virus[i][j].size(); k++){
-                    if(virus[i][j][k] % 5 == 0){
-                        for(int d=0; d<8; d++){
-                            int nx = i + dirs[d][0], ny = j + dirs[d][1];
-                            if(InRange(nx, ny)){
-                                temp[nx][ny].push_back(1);
-                            }
-                        }
-                    }
+void Simulate() {
+    // 그 다음 바이러스, 양분 값을 초기화합니다.
+    for(int i = 0; i < n; i++)
+        for(int j = 0; j < n; j++) {
+            next_virus[i][j].clear();
+            next_food[i][j] = 0;
+        }
+        
+    // Step1. 바이러스가 양분을 섭취합니다.
+    for(int i = 0; i < n; i++)
+        for(int j = 0; j < n; j++) {
+            // Step1-1. 바이러스를 나이순으로 정렬합니다.
+            sort(virus[i][j].begin(), virus[i][j].end());
+            
+            // Step1-2. 어린 바이러스부터 순서대로 양분을 섭취합니다.
+            for(int k = 0; k < (int) virus[i][j].size(); k++) {
+                int age = virus[i][j][k];
+                // Case1.
+                // 양분이 충분하다면
+                // 바이러스는 나이가 1 증가합니다.
+                if(food[i][j] >= age) {
+                    food[i][j] -= age;
+                    next_virus[i][j].push_back(age + 1);
                 }
+                
+                // Case2.
+                // 양분이 불충분하다면
+                // 바이러스는 죽고
+                // 그 다음 양분으로 쓰입니다.
+                else
+                    next_food[i][j] += age / 2;
             }
+            
+            // Step1-3. 남은 양분 만큼을 그 다음 양분으로 넣어줍니다.
+            next_food[i][j] += food[i][j];
         }
-    }
-
-    // 3. 원래대로 돌려놓기
-    for(int i=0; i<n; i++){
-        for(int j=0; j<n; j++){
-            virus[i][j] = temp[i][j];
-        }
-    }
-}
-
-void PlusNutrient(){
-    for(int i=0; i<n; i++){
-        for(int j=0; j<n; j++){
-            nutrient[i][j] += plus_nutrient[i][j];
-        }
-    }
-}
-
-void Simulate(){
-    // Step 1. 양분 섭취하고 죽은 바이러스 양분으로 변하기
-    IntakeNutrient();
-
-    // Step 2. 바이러스가 번식 진행
-    ReproduceVirus();
-    // Step 3. 칸에 양분 추가
-    PlusNutrient();
-}
-
-void Output(){
-    int ans = 0;
-    for(int i=0; i<n; i++){
-        for(int j=0; j<n; j++){
-            // 해당 칸에 바이러스가 1개 이상이면서 그게 0이 아닌 경우
-            for(int k=0; k<(int)virus[i][j].size(); k++){
-                if(virus[i][j][k] != 0)
-                    ans++;
+    
+    // Step2. 바이러스가 번식을 진행합니다.
+    for(int i = 0; i < n; i++)
+        for(int j = 0; j < n; j++)
+            for(int k = 0; k < (int) next_virus[i][j].size(); k++) {
+                int age = next_virus[i][j][k];
+                if(age % 5 == 0)
+                    Breed(i, j);
             }
+    
+    // Step3. 각 칸에 입력으로 주어진 만큼 양분이 추가됩니다.
+    for(int i = 0; i < n; i++)
+        for(int j = 0; j < n; j++)
+            next_food[i][j] += delta[i][j];
+    
+    // 바이러스, 양분 값을 갱신해줍니다.
+    for(int i = 0; i < n; i++)
+        for(int j = 0; j < n; j++) {
+            virus[i][j] = next_virus[i][j];
+            food[i][j] = next_food[i][j];
         }
-    }
-    cout << ans;
 }
 
 int main() {
-    // 입력 받기:
-    Init();
-
-    // k번의 사이클 수에 대해 시뮬레이션 진행
-    while(k--){
-        Simulate();
+    cin >> n >> m >> k;
+    
+    for(int i = 0; i < n; i++)
+        for(int j = 0; j < n; j++)
+            cin >> delta[i][j];
+    
+    for(int i = 0; i < m; i++) {
+        int r, c, age;
+        cin >> r >> c >> age;
+        virus[r - 1][c - 1].push_back(age);
     }
-
-    // 출력하기:
-    Output();
+    
+    // 초기 양분 값을 적어줍니다.
+    for(int i = 0; i < n; i++)
+        for(int j = 0; j < n; j++)
+            food[i][j] = 5;
+    
+    // 총 k번 시뮬레이션을 진행합니다.
+    while(k--)
+        Simulate();
+    
+    int ans = 0;
+    for(int i = 0; i < n; i++)
+        for(int j = 0; j < n; j++)
+            ans += (int) virus[i][j].size();
+    
+    cout << ans;
     return 0;
 }
