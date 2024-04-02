@@ -11,7 +11,8 @@ int grid[MAX_L][MAX_L];                                     // 0: 빈칸, 1: 함
 int dirs[4][2] = {{-1,0},{0,1},{1,0},{0,-1}};       // 상, 우, 하, 좌
 tuple<int, int, int, int, int, int> knights[MAX_N+1];       // 기사들 정보(r, c, h, w, k, damage)
                                     // 탐색을 위한 큐
-
+    bool IsMoving[MAX_N+1];  
+        queue<int> q; 
 void Input(){                       // 입력을 받는 함수
     cin >> L >> N >> Q;             // L: 체스판 크기, N: 기사들 수, Q: 명령 수
     for(int i=0; i<L; i++){         // 체스판 입력받기
@@ -33,8 +34,10 @@ bool InRange(int x, int y){         // 범위 안에 있는지 확인하는 함�
 }
 
 void Move(int id, int d){
+    while(!q.empty())
+        q.pop();
     // 1. 먼저 tmp_grid에 기사들 표시하기 & IsMoving 초기화
-    bool IsMoving[MAX_N+1];                                     // 현재 턴에 움직이고 있는지 확인
+                                   // 현재 턴에 움직이고 있는지 확인
 
     for(int i=1; i<=N; i++)
         IsMoving[i] = false;
@@ -66,7 +69,7 @@ void Move(int id, int d){
     }
     */
     // 2. id와 연결되어 있는 기사 찾기
-    queue<int> q;   
+  
     q.push(id);                                 // 현재 명령을 받은 id번 기사 큐에 넣기
     IsMoving[id] = true;                        // 움직이고 있다고 표시하기
     while(!q.empty()){                      // 큐가 빌 때까지 진행
