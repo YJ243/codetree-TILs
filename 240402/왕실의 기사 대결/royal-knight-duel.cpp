@@ -55,6 +55,7 @@ void Initialize_before_search(){
         }
     }
     connected_knights.clear();
+    s.clear();
 }
 
 bool InRange(int x, int y){
@@ -111,9 +112,11 @@ void PushKnights(int id, int d){
             }
         }
         if(i != id){
+            
             for(int x=r; x<r+h; x++){
                 for(int y=c; y<c+w; y++){
                     if(chess[x][y] == 1){
+                        // << "damage받음: " << i << '\n';
                         damage[i]++;
                         k--;
                     }
@@ -144,8 +147,10 @@ void Move(int id, int d){       // id번 기사를 d 방향으로 이동시키�
     // Step 2. 만약 끝이 벽이 아니라면 밀기
     if(ExistWalls) return;
     connected_knights.push_back(id);
-    for(int i=0; i<(int)connected_knights.size(); i++)
+    for(int i=0; i<(int)connected_knights.size(); i++){
         s.insert(connected_knights[i]);
+        //cout << "연결되어 있는 애들: " << connected_knights[i] << '\n';
+    }
 
     PushKnights(id, d);
 }
@@ -153,8 +158,10 @@ void Move(int id, int d){       // id번 기사를 d 방향으로 이동시키�
 void Output(){
     int ans = 0;
     for(int i=1; i<=N; i++){
-        if(!IsDead[i])
+        if(!IsDead[i]){
             ans += damage[i];
+
+        }
     }
     cout << ans << '\n';
 }
@@ -169,6 +176,7 @@ int main() {
         cin >> id >> d;
         if(IsDead[id]) continue;
         Move(id, d);
+
     }
 
     // 출력하기
