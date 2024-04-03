@@ -173,16 +173,18 @@ void Simulate(int turn){
     FindAttacker();
     // Step 2. 공격 대상 선정
     FindTarget();
-    // 공격자 핸디캡 적용하기
+    // Step 3. 공격자 핸디캡 적용하기
     power[attacker.first][attacker.second] += N+M;
     
-    // Step 3. 공격하기
+    // Step 4. 공격자에 대해 "마지막 공격 턴" 정보 갱신
     attack_time[attacker.first][attacker.second] = turn;    // 공격한 시점 표시하기
+    
+    // Step 5. 공격 수행
     if(!tryLaser()){    // 만약 레이저 공격이 안된다면
         DoBomb();       // 포탄 공격하기
     }
 
-    // Step 4. 포탑 정비하기
+    // Step 6. 포탑 정비하기
     Repair();
     
 }
@@ -190,9 +192,10 @@ void Simulate(int turn){
 int main() {
     // 입력 받기:    
     Input();
+    // 시뮬레이션--> 시키는 것 하기! (삼성은 순서를 알려줬기 때문에 그대로 하면 된다!!)
     for(int i=1; i<=K; i++){     // K번의 턴 동안 공격 진행하기
-        if(IsFinish())      // 만약 부서지지 않은 포탑이 1개가 된다면
-            break;          // 그 즉시 중지하기
+        if(IsFinish())      // 만약 부서지지 않은 포탑이 1개가 된다면, 종료 조건을 만족했다면
+            break;          // 턴을 수행하지 않고 그 즉시 중지하기
         Simulate(i);         // 시뮬레이션 진행
     }
     FindTarget();
