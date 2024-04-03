@@ -50,12 +50,14 @@ void FindAttacker(){        // 공격자를 찾는 함수
     for(int sum = N+M-2; sum >= 0; sum--){
         for(int j = M-1; j >= 0; j--){
             int i = sum-j;
+            if(i < 0 || i >= N) continue;
             if(power[i][j] == 0) continue;
             if(make_pair(minPower, -maxTime) > make_pair(power[i][j], -attack_time[i][j])){
                 minPower = power[i][j], maxTime = attack_time[i][j], maxI = i, maxJ = j;
             }
         }
     }
+    
     attacker = make_pair(maxI, maxJ);
 }
 
@@ -65,6 +67,7 @@ void FindTarget(){          // 공격 대상을 찾는 함수
     for(int sum = 0; sum < N+M-1; sum++){
         for(int j = 0; j < M; j++){
             int i = sum-j;
+            if(i < 0 || i >= N) continue;
             if(power[i][j] == 0) continue;
             if(make_pair(maxPower, -minTime) < make_pair(power[i][j], -attack_time[i][j])){
                 maxPower = power[i][j], minTime = attack_time[i][j], minI = i, minJ = j;
@@ -181,6 +184,7 @@ void Simulate(int turn){
 
     // Step 4. 포탑 정비하기
     Repair();
+    
 }
 
 int main() {
