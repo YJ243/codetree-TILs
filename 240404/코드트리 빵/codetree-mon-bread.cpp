@@ -150,6 +150,7 @@ void GoCamp(int idx){           // idx번 사람이 격자 밖에서 출발시�
     for(int i=0; i<n; i++){
         for(int j=0; j<n; j++){
             if(grid[i][j] == -idx){
+                // << idx<<"번 편의점 위치: " << i << ' ' << j << '\n';
                 visited[i][j] = true;
                 q.push(make_pair(i, j));
             }
@@ -162,9 +163,12 @@ void GoCamp(int idx){           // idx번 사람이 격자 밖에서 출발시�
     int minL = INT_MAX, minR = INT_MAX, minC = INT_MAX;
     for(int i=0; i<n; i++){
         for(int j=0; j<n; j++){
-            if(grid[i][j] == 1){
-                if(make_tuple(minL, minR, minC) > make_tuple(step[i][j], i, j))
+            if(grid[i][j] == 1 && visited[i][j]){
+                if(make_tuple(minL, minR, minC) > make_tuple(step[i][j], i, j)){
                     minL = step[i][j], minR = i, minC = j;
+                //cout << step[i][j] << ' ' << i << ' ' << j << "는 베이스켐프" << '\n';
+                
+                }
             }
         }
     }
