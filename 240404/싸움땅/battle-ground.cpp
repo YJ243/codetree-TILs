@@ -55,7 +55,8 @@ void GetGun(int x, int y, int idx){  // idx번 플레이어가 (x,y)에서 총 �
     if(max_power_gun != 0){     // 만약 총이 놓여있다면
             // 현재 플레이어의 총의 공격력과 비교하기
             if(p == 0 || p < max_power_gun){ // 플레이어가 총을 가지고 있지 않거나, 가지고 있는 총의 공격력이 더 작다면
-                gun_power[x][y].push_back(p);
+                if(p > 0)
+                    gun_power[x][y].push_back(p);
                 p = max_power_gun;  // 총 획득하기
                 vector<int> tmp;
                 for(int i=0; i<(int)gun_power[x][y].size(); i++){
@@ -73,14 +74,15 @@ void GetGun(int x, int y, int idx){  // idx번 플레이어가 (x,y)에서 총 �
 void MoveLosePlayer(int idx){
     int x, y, d, s, p;                     // 위치 (x,y), 방향 d, 초기능력 s
     tie(x, y, d, s, p) = players[idx];     // idx번 플레이어 정보
-
+    //cout << "진 플레이어 옮기는 중: " << x << ' ' << y << ' ' << d << ' ' << s << ' ' << p << '\n';
     if(p > 0){      // 총이 있다면 총 내려놓기
         gun_power[x][y].push_back(p);
         p = 0;
     }
     int nx, ny;
+
     for(int i=0; i<4; i++){
-        nx = x + dirs[d+i][0], ny = y + dirs[d+i][1];   // idx번 플레이어가 이동할 다음 위치
+        nx = x + dirs[(d+i)%4][0], ny = y + dirs[(d+i)%4][1];   // idx번 플레이어가 이동할 다음 위치
         if(!InRange(nx, ny) || grid[nx][ny] > 0){   // 만약 격자 밖이거나 해당 칸에 다른 플레이어가 있다면
             continue;
         }
@@ -89,6 +91,7 @@ void MoveLosePlayer(int idx){
     }
     players[idx] = make_tuple(nx, ny, d, s, p);
     GetGun(nx, ny, idx);
+    
 }
 
 void Move(int idx){ // idx번 플레이어 이동시키기
@@ -100,6 +103,7 @@ void Move(int idx){ // idx번 플레이어 이동시키기
         d = (d + 2) % 4;                            // 정 반대방향으로 바꾸기
         nx = x + dirs[d][0], ny = y + dirs[d][1];   // 다시 다음 위치 설정하기
     }
+    //cout << nx << ' ' << ny << ' ' << idx << '\n';
     if(grid[nx][ny] == 0){      // 만약 이동한 방향에 플레이어가 없다면
         players[idx] = make_tuple(nx, ny, d, s, p);     // 위치, 방향, 초기능력, 총의 공격력 업데이트
         GetGun(nx, ny, idx);
@@ -122,8 +126,10 @@ void Move(int idx){ // idx번 플레이어 이동시키기
             points[grid[nx][ny]] += (s2+p2) - (s+p);
             winIdx = grid[nx][ny], loseIdx = idx;
         }
+        //cout << "이긴 인덱스는: " << winIdx << "진 인덱스는: " << loseIdx << '\n';
         grid[x][y] = 0;     // 누가 이겼든 원래 있던 자리는 0으로 만들어야 함
         players[idx] = make_tuple(nx, ny, d, s, p);     // 위치, 방향, 초기능력, 총의 공격력 업데이트
+        //cout << idx<<"번 업데이트: " << nx << ' ' << ny << ' ' << d << ' ' << s << ' ' << p << '\n';
     
         // 진 플레이어는 이동시키기
         MoveLosePlayer(loseIdx);
@@ -131,6 +137,8 @@ void Move(int idx){ // idx번 플레이어 이동시키기
         // 이긴 플레이어 총 획득하기
         GetGun(nx, ny, winIdx);
 
+    /*
+    */
     }
 }
 
@@ -154,23 +162,26 @@ void Simulate(){
         Move(i);
     }
     /*
+    Initialize();
+
     for(int i=0; i<n; i++){
         for(int j=0; j<n; j++){
-            for(int k=0; k<(int)gun_power[i][j].size(); k++){
-                cout << gun_power[i][j][k] << ' ';
-            }
-            cout << "||";
+            cout << grid[i][j] << ' ';
+            //for(int k=0; k<(int)gun_power[i][j].size(); k++){
+            //    cout << gun_power[i][j][k] << ' ';
+            //}
+            //cout << "||";
         }
         cout << '\n';
         
     }
-    */
     for(int i=1; i<=m; i++){
         int x, y, d, s, p;                     // 위치 (x,y), 방향 d, 초기능력 s
         tie(x, y, d, s, p) = players[i];     // idx번 플레이어 정보
-        //cout << i << "번 플레이어는: " << d << ' ' << s << ' ' << p << '\n';
+        cout << i << "번 플레이어는: " << d << ' ' << s << ' ' << p << '\n';
     }
-    //cout << '\n';
+    cout << '\n';
+    */
 }
 
 void Output(){
