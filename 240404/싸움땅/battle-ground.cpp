@@ -86,7 +86,7 @@ void MoveLosePlayer(int idx){
         if(!InRange(nx, ny) || grid[nx][ny] > 0){   // 만약 격자 밖이거나 해당 칸에 다른 플레이어가 있다면
             continue;
         }
-        d = d+i;
+        d = (d+i)%4;
         break;  // 그게 아니라면 반복문 나가기
     }
     players[idx] = make_tuple(nx, ny, d, s, p);
@@ -136,9 +136,6 @@ void Move(int idx){ // idx번 플레이어 이동시키기
 
         // 이긴 플레이어 총 획득하기
         GetGun(nx, ny, winIdx);
-
-    /*
-    */
     }
 }
 
@@ -161,16 +158,16 @@ void Simulate(){
         Initialize();
         Move(i);
     }
-    /*
+    
     Initialize();
-
+/*
     for(int i=0; i<n; i++){
         for(int j=0; j<n; j++){
-            cout << grid[i][j] << ' ';
-            //for(int k=0; k<(int)gun_power[i][j].size(); k++){
-            //    cout << gun_power[i][j][k] << ' ';
-            //}
-            //cout << "||";
+            //cout << grid[i][j] << ' ';
+            for(int k=0; k<(int)gun_power[i][j].size(); k++){
+                cout << gun_power[i][j][k] << ' ';
+            }
+            cout << "||";
         }
         cout << '\n';
         
@@ -178,10 +175,11 @@ void Simulate(){
     for(int i=1; i<=m; i++){
         int x, y, d, s, p;                     // 위치 (x,y), 방향 d, 초기능력 s
         tie(x, y, d, s, p) = players[i];     // idx번 플레이어 정보
-        cout << i << "번 플레이어는: " << d << ' ' << s << ' ' << p << '\n';
+        cout << i << "번 플레이어는: " << x << ' ' << y << ' ' << d << ' ' << s << ' ' << p << '\n';
     }
     cout << '\n';
     */
+    
 }
 
 void Output(){
