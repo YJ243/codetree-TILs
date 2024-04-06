@@ -146,23 +146,20 @@ void Simulate(int round){
     // Step 1. 각 팀은 머리사람을 따라 한 칸 이동하기
     MoveAll();
     DrawTurnGrid();
-    
+
     // Step 2. 각 라운드마다 공이 정해진 선을 따라 던져진다.
     int group_num = round / 4;
     int idx_in_group = round % n;
     int i = ThrowBall(group_num, idx_in_group);
     if(i == -1) return;
     // Step 3. 머리와 꼬리 바꾸기
-    
-    pair<int, int> tail_pos = team[i][tail_idx[i]-1];
-    pair<int, int> head_pos = team[i][0];
-    team[i][0] = tail_pos;
-    team[i][tail_idx[i]-1] = head_pos;
     vector<pair<int, int> > tmp;
-    for(int j=0; j<team[i].size(); j++)
+    for(int j = tail_idx[i]-1; j >= 0; j--){
         tmp.push_back(team[i][j]);
+    }
     for(int j=(int)team[i].size()-1; j >= tail_idx[i]; j--)
         tmp.push_back(team[i][j]);
+
     team[i] = tmp;
     
 }
