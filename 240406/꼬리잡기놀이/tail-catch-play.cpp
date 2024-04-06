@@ -67,22 +67,12 @@ void DivideTeam(){
 void MoveAll(){
     for(int i=0; i<MAX_M; i++){
         if((int)team[i].size() == 0) continue;
-        if(team[i].size() == tail_idx[i]){  // 만약 맨 마지막이 꼬리라면
-            // 맨 앞을 맨뒤로 보내기
-            vector<pair<int, int> > tmp;
-            for(int j=1; j<(int)team[i].size(); j++){
-                tmp.push_back(team[i][j]);
-            }
-            tmp.push_back(team[i][0]);
 
-            team[i] = tmp;  // 이동 반영하기
-        }
-        else{ // 경로가 남아있다면
             pair<int, int> last_pos = team[i][(int)team[i].size()-1];
             team[i].pop_back();
             team[i].insert(team[i].begin(), last_pos);
 
-        }
+        
     }
 }
 
@@ -111,6 +101,7 @@ int ThrowBall(int group_num, int idx){
     if(group_num == 0){
         for(int j=0; j<n; j++){
             if(grid_for_turn[idx][j] > 0){
+                //cout << "plus 점수: " << grid_for_turn[idx][j] * grid_for_turn[idx][j] << '\n';
                 score += grid_for_turn[idx][j] * grid_for_turn[idx][j];
                 return grid_for_team[idx][j];
             }
@@ -119,6 +110,7 @@ int ThrowBall(int group_num, int idx){
     else if(group_num == 1){
         for(int i=n-1; i >= 0; i--){
             if(grid_for_turn[i][idx] > 0){
+                //cout << "plus 점수: " << grid_for_turn[i][idx] * grid_for_turn[i][idx] << '\n';
                 score += grid_for_turn[i][idx] * grid_for_turn[i][idx];
                 return grid_for_team[i][idx];
             }
@@ -127,6 +119,7 @@ int ThrowBall(int group_num, int idx){
     else if(group_num == 2){
         for(int j=n-1; j >= 0; j--){
             if(grid_for_turn[n-1-idx][j] > 0){
+                //cout << "plus 점수: " << grid_for_turn[n-1-idx][j]*grid_for_turn[n-1-idx][j] << '\n';
                 score += grid_for_turn[n-1-idx][j]*grid_for_turn[n-1-idx][j];
                 return grid_for_team[n-1-idx][j];
             }
@@ -135,6 +128,7 @@ int ThrowBall(int group_num, int idx){
     else{
         for(int i=0; i<n; i++){
             if(grid_for_turn[i][n-1-idx] > 0){
+                //cout << "plus 점수: " << grid_for_turn[i][n-1-idx]*grid_for_turn[i][n-1-idx] << '\n';
                 score += grid_for_turn[i][n-1-idx]*grid_for_turn[i][n-1-idx];
                 return grid_for_team[i][n-1-idx];
             }
