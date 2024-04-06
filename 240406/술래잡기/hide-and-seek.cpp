@@ -1,146 +1,245 @@
 #include <iostream>
+#include <algorithm>
 #include <vector>
 #include <tuple>
 #include <cstdlib>
 
-#define MAX_N 99
-#define CAUGHT make_tuple(-1, -1, -1)
+#define MAX_N 100
+#define DIR_NUM 4
 
 using namespace std;
 
-int n, m, h, k;                         // n: 격자 칸 수, m: 도망자 수, h: 나무 수, k: 턴수
-bool tree[MAX_N][MAX_N];                // tree[i][j]: (i,j)에 나무가 있는지 여부
-vector<tuple<int, int, int> > runner;   // 도망자 정보: 위치, 방향
-vector<tuple<int, int, int> > next_runner;
-int dirs[4][2] = {{1,0},{-1,0},{0,1},{0,-1}};    // 0<->1, 2<->3 (하상, 우좌)
-int seeker_dirs[4][2] = {{-1,0},{0,1},{1,0},{0,-1}}; // 상우하좌
-int progress = 1;
-pair<int, int> seeker;                           // 술래의 위치
-int have_to_be_moved = 1;
-int MovingCur;
-int sd;
-int score;  // 술래가 얻게되는 총 점수
+// 변수 선언
+int n, m, h, k;
+// 각 칸에 있는 도망자 정보를 관리합니다.
+// 도망자의 방향만 저장하면 충분합니다.
+vector<int> hiders[MAX_N][MAX_N];
+vector<int> next_hiders[MAX_N][MAX_N];
+bool tree[MAX_N][MAX_N];
 
-void Init(){
-    cin >> n >> m >> h >> k; // n: 격자 칸 수, m: 도망자 수, h: 나무 수, k: 턴수
-    for(int i=0; i<m; i++){
-        int x, y, d;
-        cin >> x >> y >> d;
-        if(d == 1) d=2;     // d가 1: 좌우이고, 오른쪽으로 시작하도록 하기
-        else d = 0;         // d가 2: 상하이고, 아래부터 시작하도록 하기
-        runner.push_back(make_tuple(x-1, y-1, d));
+// 정방향 기준으로
+// 현재 위치에서 술래가 움직여야 할 방향을 관리합니다.
+int seeker_next_dir[MAX_N][MAX_N];
+// 역방향 기준으로
+// 현재 위치에서 술래가 움직여야 할 방향을 관리합니다.
+int seeker_rev_dir[MAX_N][MAX_N];
+
+// 술래의 현재 위치를 나타냅니다.
+pair<int, int> seeker_pos;
+// 술래가 움직이는 방향이 정방향이면 true / 아니라면 false입니다.
+bool forward_facing = true;
+
+int ans;
+
+// 정중앙으로부터 끝까지 움직이는 경로를 계산해줍니다.
+void InitializeSeekerPath() {
+    // 상우하좌 순서대로 넣어줍니다.
+    int dx[DIR_NUM] = {-1, 0, 1,  0};
+    int dy[DIR_NUM] = {0 , 1, 0, -1};
+
+    // 시작 위치와 방향, 
+    // 해당 방향으로 이동할 횟수를 설정합니다. 
+    int curr_x = n / 2, curr_y = n / 2;
+    int move_dir = 0, move_num = 1;
+
+    while(curr_x || curr_y) {
+        // move_num 만큼 이동합니다.
+        for(int i = 0; i < move_num; i++) {
+            seeker_next_dir[curr_x][curr_y] = move_dir;
+            curr_x += dx[move_dir]; curr_y += dy[move_dir];
+            seeker_rev_dir[curr_x][curr_y] = (move_dir < 2) ? (move_dir + 2) : (move_dir - 2);
+
+            // 이동하는 도중 (0, 0)으로 오게 되면,
+            // 움직이는 것을 종료합니다.
+            if(!curr_x && !curr_y)
+                break;
+        }
+        
+        // 방향을 바꿉니다.
+        move_dir = (move_dir + 1) % 4;
+        // 만약 현재 방향이 위 혹은 아래가 된 경우에는
+        // 특정 방향으로 움직여야 할 횟수를 1 증가시킵니다.
+        if(move_dir == 0 || move_dir == 2)
+            move_num++;
     }
-    for(int i=0; i<h; i++){ // 나무 위치 표시하기
-        int x, y;
-        cin >> x >> y;
-        tree[x-1][y-1] = true;
-    }
-    seeker = make_pair(n/2, n/2);   // 술래 위치 가운데로
-    sd = 0;
 }
 
-bool InRange(int x, int y){     // (x, y)가 범위 안에 있는지 확인하는 함수
+// 격자 내에 있는지를 판단합니다.
+bool InRange(int x, int y) {
     return 0 <= x && x < n && 0 <= y && y < n;
 }
 
-void MoveAll(){     // 도망자를 동시에 움직이는 함수
-    for(int i=0; i<(int)runner.size(); i++){
-        int x, y, d;
-        tie(x, y, d) = runner[i];   // i번 도망자의 위치와 방향
-        if((abs(x - seeker.first) + abs(y-seeker.second)) > 3 ) continue;
-        int nx = x + dirs[d][0], ny = y + dirs[d][1];
-        if(!InRange(nx, ny)){   // 만약 격자를 벗어난다면
-            d = (d % 2 == 0) ? d+1: d-1;    // 방향 반대로 틀어주기
-            nx = x + dirs[d][0], ny = y + dirs[d][1];
-        }
-        if(nx == seeker.first && ny == seeker.second){   // 움직이려는 칸에 술래가 있다면 움직이지 않음
-            runner[i] = make_tuple(x, y, d);    // 방향만 바뀐채 업데이트해주기
-        }
-        else{   // 술래가 있지 않다면 이동하기
-            runner[i] = make_tuple(nx, ny, d);
-        }
-    }
-}
+void HiderMove(int x, int y, int move_dir) {
+    // 좌우하상 순서대로 넣어줍니다.
+    int dx[DIR_NUM] = {0 , 0, 1, -1};
+    int dy[DIR_NUM] = {-1, 1, 0,  0};
 
-void MoveSeeker(){
-    int nx = seeker.first + seeker_dirs[sd][0], ny = seeker.second + seeker_dirs[sd][1];
-    // step 1. 1칸 이동
-    MovingCur++;
-    
-    if((nx == 0 && ny == 0) || (nx == n/2 && ny == n/2)){
-        sd = (sd+2)%4;
-        MovingCur = 0;
-        if(progress == 1){
-            have_to_be_moved = n-1;
-        }
-        else
-            have_to_be_moved = 1;
-        progress = -progress;
-    }
-    seeker = make_pair(nx, ny);
-    if(MovingCur == have_to_be_moved){
-        MovingCur = 0;
-        if(progress == 1){
-            sd = (sd+1)%4;
-            if(sd % 2 == 0)
-                have_to_be_moved++;
-        }
-        else{
-            sd = (sd-1+4) % 4;
-            if(sd % 2 == 1)
-                have_to_be_moved--;
-            if(seeker == make_pair(n-1, 0))
-                have_to_be_moved++;
-        }
+    int nx = x + dx[move_dir], ny = y + dy[move_dir];
+    // Step 1.
+    // 만약 격자를 벗어난다면
+    // 우선 방향을 틀어줍니다.
+    if(!InRange(nx, ny)) {
+        // 0 <-> 1 , 2 <-> 3이 되어야 합니다.
+        move_dir = (move_dir < 2) ? (1 - move_dir) : (5 - move_dir);
+        nx = x + dx[move_dir]; ny = y + dy[move_dir];
     }
     
+    // Step 2.
+    // 그 다음 위치에 술래가 없다면 움직여줍니다.
+    if(make_pair(nx, ny) != seeker_pos)
+        next_hiders[nx][ny].push_back(move_dir);
+    // 술래가 있다면 더 움직이지 않습니다.
+    else
+        next_hiders[x][y].push_back(move_dir);
 }
 
-void CatchRunner(int turn){
-    int cnt = 0;
-    int x = seeker.first , y = seeker.second;
+int DistFromSeeker(int x, int y) {
+     // 현재 술래의 위치를 불러옵니다.
+    int seeker_x, seeker_y;
+    tie(seeker_x, seeker_y) = seeker_pos;
 
-    for(int i=0; i<3; i++){
-        int nx = x + seeker_dirs[sd][0]*i, ny = y + seeker_dirs[sd][1]*i;
-        if(tree[nx][ny]) continue;
-        for(int j=0; j<(int)runner.size(); j++){
-            int rx, ry;
-            tie(rx, ry, ignore) = runner[j];
-            if(rx == nx && ry == ny){
-                cnt++;
-                runner[j] = CAUGHT;
+    return abs(seeker_x - x) + abs(seeker_y - y);
+}
+
+void HiderMoveAll() {
+    // Step 1. next hider를 초기화해줍니다.
+    for(int i = 0; i < n; i++)
+        for(int j = 0; j < n; j++)
+            next_hiders[i][j].clear();
+    
+    // Step 2. hider를 전부 움직여줍니다.
+    for(int i = 0; i < n; i++)
+        for(int j = 0; j < n; j++) {
+            // 술래와의 거리가 3 이내인 도망자들에 대해서만
+            // 움직여줍니다.
+            if(DistFromSeeker(i, j) <= 3) {
+                for(int k = 0; k < (int) hiders[i][j].size(); k++)
+                    HiderMove(i, j, hiders[i][j][k]);
+            }
+            // 그렇지 않다면 현재 위치 그대로 넣어줍니다.
+            else {
+                for(int k = 0; k < (int) hiders[i][j].size(); k++)
+                    next_hiders[i][j].push_back(hiders[i][j][k]);
             }
         }
-    }
 
-    score += (turn*cnt);
-    vector<tuple<int, int, int> > tmp;   // 도망자 정보: 위치, 방향
-    for(int i=0; i<(int)runner.size(); i++){
-        if(runner[i] != CAUGHT)
-            tmp.push_back(runner[i]);
-    }
-    runner = tmp;
+    // Step 3. next hider값을 옮겨줍니다.
+    for(int i = 0; i < n; i++)
+        for(int j = 0; j < n; j++)
+            hiders[i][j] = next_hiders[i][j];
 }
 
-void Simulate(int turn){
-    // Step 1. m명 동시에 움직이기
-    MoveAll();
+// 현재 술래가 바라보는 방향을 가져옵니다.
+int GetSeekerDir() {
+    // 현재 술래의 위치를 불러옵니다.
+    int x, y;
+    tie(x, y) = seeker_pos;
 
-    // Step 2. 술래 이동하기
-    MoveSeeker();
+    // 어느 방향으로 움직여야 하는지에 대한 정보를 가져옵니다.
+    int move_dir;
+    if(forward_facing)
+        move_dir = seeker_next_dir[x][y];
+    else
+        move_dir = seeker_rev_dir[x][y];
+    
+    return move_dir;
+}
 
-    // Step 3. 도망자 잡기
-    CatchRunner(turn);
+void CheckFacing() {
+    // Case 1. 정방향으로 끝에 다다른 경우라면, 방향을 바꿔줍니다.
+    if(seeker_pos == make_pair(0, 0) && forward_facing)
+        forward_facing = false;
+    // Case 2. 역방향으로 끝에 다다른 경우여도, 방향을 바꿔줍니다.
+    if(seeker_pos == make_pair(n / 2, n / 2) && !forward_facing)
+        forward_facing = true;
+}
+
+void SeekerMove() {
+    int x, y;
+    tie(x, y) = seeker_pos;
+
+    // 상우하좌 순서대로 넣어줍니다.
+    int dx[DIR_NUM] = {-1, 0, 1,  0};
+    int dy[DIR_NUM] = {0 , 1, 0, -1};
+
+    int move_dir = GetSeekerDir();
+
+    // 술래를 한 칸 움직여줍니다.
+    seeker_pos = make_pair(x + dx[move_dir], y + dy[move_dir]);
+    
+    // 끝에 도달했다면 방향을 바꿔줘야 합니다.
+    CheckFacing();
+}
+
+void GetScore(int t) {
+    // 상우하좌 순서대로 넣어줍니다.
+    int dx[DIR_NUM] = {-1, 0, 1,  0};
+    int dy[DIR_NUM] = {0 , 1, 0, -1};
+
+    // 현재 술래의 위치를 불러옵니다.
+    int x, y;
+    tie(x, y) = seeker_pos;
+    
+    // 술래의 방향을 불러옵니다.
+    int move_dir = GetSeekerDir();
+    
+    // 3칸을 바라봅니다.
+    for(int dist = 0; dist < 3; dist++) {
+        int nx = x + dist * dx[move_dir], ny = y + dist * dy[move_dir];
+        
+        // 격자를 벗어나지 않으며 나무가 없는 위치라면 
+        // 도망자들을 전부 잡게 됩니다.
+        if(InRange(nx, ny) && !tree[nx][ny]) {
+            // 해당 위치의 도망자 수 만큼 점수를 얻게 됩니다.
+            ans += t * (int) hiders[nx][ny].size();
+
+            // 도망자들이 사라지게 됩니다.
+            hiders[nx][ny].clear();
+        }
+    }
+}
+
+void Simulate(int t) {
+    // 도망자가 움직입니다.
+    HiderMoveAll();
+
+    // 술래가 움직입니다.
+    SeekerMove();
+    
+    // 점수를 얻습니다.
+    GetScore(t);
 }
 
 int main() {
-    // 입력받기:
-    Init();    
+    // 입력: 
+    cin >> n >> m >> h >> k;
 
-    // k번의 턴 동안 시뮬레이션 진행하기
-    for(int i=1; i <= k; i++){
-        Simulate(i);    
+    // 술래 정보를 입력받습니다.
+    while(m--) {
+        int x, y, d;
+        cin >> x >> y >> d;
+        hiders[x - 1][y - 1].push_back(d);
     }
-    cout << score;
+
+    // 나무 정보를 입력받습니다.
+    while(h--) {
+        int x, y;
+        cin >> x >> y;
+        tree[x - 1][y - 1] = true;
+    }
+
+    // 술래의 처음 위치를 설정합니다.
+    seeker_pos = make_pair(n / 2, n / 2);
+
+    // 술래잡기 시작 전에
+    // 구현상의 편의를 위해
+    // 술래 경로 정보를 미리 계산합니다.
+    InitializeSeekerPath();
+
+    // k번에 걸쳐 술래잡기를 진행합니다.
+    for(int t = 1; t <= k; t++)
+        Simulate(t);
+    
+    cout << ans;
     return 0;
 }
