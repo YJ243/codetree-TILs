@@ -107,6 +107,7 @@ void DrawTurnGrid(){
 }
 
 int ThrowBall(int group_num, int idx){
+    //cout << group_num << ' ' << idx << '\n';
     if(group_num == 0){
         for(int j=0; j<n; j++){
             if(grid_for_turn[idx][j] > 0){
@@ -148,7 +149,7 @@ void Simulate(int round){
     DrawTurnGrid();
 
     // Step 2. 각 라운드마다 공이 정해진 선을 따라 던져진다.
-    int group_num = round / 4;
+    int group_num = round / n;
     int idx_in_group = round % n;
     int i = ThrowBall(group_num, idx_in_group);
     if(i == -1) return;
