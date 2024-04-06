@@ -85,7 +85,7 @@ int FindDeadTreeCnt(int x, int y){
     for(int d=0; d<4; d++){
         for(int i=1; i<=k; i++){
             int nx = x + cdirs[d][0]*i, ny = y + cdirs[d][1]*i;
-            if(InRange(nx, ny) && grid[nx][ny] == -1)
+            if(InRange(nx, ny) && (grid[nx][ny] == -1 || grid[nx][ny] == 0))
                 break;
             if(ExistTree(nx, ny))
                 ret += grid[nx][ny];
@@ -108,11 +108,11 @@ pair<int, int> FindHerbicideSpot(){
     return make_pair(minI, minJ);
 }
 void SprayHerbicide(int year_num){
+
     int delete_cnt = 0;
     // 1. 제초제가 뿌려질 위치 찾기
     pair<int, int> target = FindHerbicideSpot();
     int x = target.first, y = target.second;
-
     // 2. 제초제 뿌리기
     herbicide[x][y] = year_num+c;
     delete_cnt += grid[x][y];
@@ -124,9 +124,9 @@ void SprayHerbicide(int year_num){
             if(InRange(nx, ny) && (grid[nx][ny] == -1 || grid[nx][ny] == 0)){
                 // 해당칸까지는 제초제 뿌리기
                 herbicide[nx][ny] = year_num+c;
-                grid[nx][ny] = 0;
                 break;
             }
+            
             if(ExistTree(nx, ny)){
                 herbicide[nx][ny] = year_num + c;
                 delete_cnt += grid[nx][ny];
@@ -147,6 +147,7 @@ void Simulate(int year_num){
 
     // Step 3. 제초제 뿌리기
     SprayHerbicide(year_num);
+
 }
 
 int main() {
