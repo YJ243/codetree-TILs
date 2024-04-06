@@ -150,6 +150,7 @@ void Simulate(int round){
 
     // Step 2. 각 라운드마다 공이 정해진 선을 따라 던져진다.
     int group_num = round / n;
+    group_num = group_num%4;
     int idx_in_group = round % n;
     int i = ThrowBall(group_num, idx_in_group);
     if(i == -1) return;
