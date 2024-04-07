@@ -187,8 +187,7 @@ void Simulate(int turn){
     // Step 1. 몬스터 복제 시도
     for(int i=0; i<n; i++){
         for(int j=0; j<n; j++){
-            if((int)grid[i][j].size() >= 1)
-                TryCopyMonster(i, j);
+            egg[i][j] = grid[i][j];
         }
     }
 
