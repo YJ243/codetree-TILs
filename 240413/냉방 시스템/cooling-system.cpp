@@ -175,7 +175,7 @@ int main() {
             break;
         elapsed_time++;
         Simulate();
-        break;
+
     }
 
     if(elapsed_time >= 100)
