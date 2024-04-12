@@ -50,7 +50,8 @@ void Input(){   // 입력을 받는 함수
             else if(walls[x][y] == 0 && walls[x-1][y] == 0)
                 val = ++wall_idx;
             walls[x][y] = val;
-            walls[x-1][y] = val;
+            if(0 <= x-1 && x-1 < n)
+                walls[x-1][y] = val;
         }       
         else{   // (x, y) 바로 왼쪽에 벽
             int val = 0;
@@ -59,7 +60,8 @@ void Input(){   // 입력을 받는 함수
             else if(walls[x][y] == 0 && walls[x][y-1] == 0)
                 val = ++wall_idx;
             walls[x][y] = val;
-            walls[x][y-1] = val;
+            if(0 <= y-1 && y-1 < n)
+                walls[x][y-1] = val;
         }
     }
 }
