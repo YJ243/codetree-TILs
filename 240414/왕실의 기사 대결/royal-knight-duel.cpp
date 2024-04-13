@@ -44,6 +44,7 @@ void Initialize(){
         selected[i] = false;    // 이번 턴에 선택되었다는 것 false로 표기
         int r, c, h, w;
         tie(r, c, h, w, ignore, ignore) = knights[i];
+        if(IsEliminated[i]) continue;
         for(int x=r; x<r+h; x++){
             for(int y=c; y<c+w; y++)
                 kgrid[x][y] = i;    // 기사를 격자에 표기하기
@@ -163,6 +164,8 @@ int main() {
         Initialize();
 
         MoveKnights(idx-1, d);
+
+            
 
     }
     // 출력하기
